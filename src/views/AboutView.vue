@@ -1,6 +1,6 @@
 <template>
   <div class="aiSection">
-    <div class="bgCanvas">
+    <div class="bgCanvas mt-5">
       <canvas id="canvas"></canvas>
     </div>
     <v-container
