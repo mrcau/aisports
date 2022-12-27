@@ -1,19 +1,12 @@
 <template>
-  <div class="jumboBox pa-5">
-    <div
-      class="rounded-lg d-flex white--text mt-5 pa-10"
-      style="
-        background-color: #0052cc;
-        background-position: right bottom;
-        background-size: contain;
-        background-image: url('https://x.gd/AxUyA');
-      "
-    >
+  <div class="jumboBox py-5">
+    <div class="rounded-lg d-flex jumbo white--text mt-10 pa-10">
       <div style="flex: 1">
         <h1 class="font-italic">{{ title }}</h1>
         <p>{{ content }}</p>
       </div>
-      <div style="flex: 1"></div>
+      <div class="jumboRight" style="flex: 1"></div>
+      <img class="jumboRight people" src="@/assets/fitness/people.png" alt="" />
     </div>
   </div>
 </template>
@@ -35,3 +28,23 @@ export default {
   methods: {},
 };
 </script>
+<style>
+@media (max-width: 600px) {
+  .jumboRight {
+    display: none;
+  }
+}
+.jumbo {
+  position: relative;
+  background-position: center;
+  background-size: cover;
+  background-image: url("@/assets/fitness/jumboBg.png");
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.4);
+}
+.jumbo .people {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 250px;
+}
+</style>

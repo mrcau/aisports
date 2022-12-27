@@ -8,7 +8,25 @@
       hide-details
     />
     <MainJumbo />
-    <h2 class="text-left">최근 운동</h2>
+    <v-row>
+      <v-col v-for="(n, i) in menus" :key="i" cols="12" sm="6">
+        <v-card>
+          <v-img
+            :src="`${require('@/assets/fitness/' + n.img)}`"
+            max-height="250"
+          >
+            <div
+              class="ma-10 pa-5 rounded-xl"
+              style="background: rgba(0, 0, 0, 0.5); height: 170px"
+            >
+              <h1 class="white--text">{{ n.title }}</h1>
+              <h3 style="color: #d7e357">{{ n.content }}</h3>
+            </div>
+          </v-img>
+        </v-card>
+      </v-col>
+    </v-row>
+    <h3 class="mt-8 text-left">최근 운동</h3>
     <v-row>
       <v-col color="info" v-for="(item, i) in items" :key="i">
         <!-- <v-col
@@ -22,13 +40,10 @@
       > -->
         <v-card :loading="loading" class="mx-auto">
           <v-img
-            height="250"
+            height="200"
             src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
           >
-            <div
-              class="ma-5"
-              style="background-color: white; backdrop-filter: blur(20px)"
-            >
+            <div class="ma-5">
               <v-card-title>Cafe Badilico</v-card-title>
 
               <v-card-text>
@@ -58,9 +73,7 @@
           <v-divider class="mx-4"></v-divider>
 
           <v-card-actions>
-            <v-btn color="deep-purple lighten-2" text @click="reserve">
-              Reserve
-            </v-btn>
+            <v-btn color="deep-purple lighten-2" text> Reserve </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -69,8 +82,9 @@
     <h2 class="text-left mt-10">인기 운동</h2>
 
     <v-row>
-      <v-col color="info" v-for="n in 5" :key="n">
-        <v-card width="400">
+      <v-col color="info" v-for="n in 5" :key="n" cols="6">
+        <!-- <v-card width="400"> -->
+        <v-card>
           <v-img
             height="200px"
             src="https://cdn.pixabay.com/photo/2020/07/12/07/47/bee-5396362_1280.jpg"
@@ -125,7 +139,7 @@
 
     <v-row>
       <v-col color="info" v-for="n in 5" :key="n">
-        <v-card class="mx-auto" color="#26c6da" dark max-width="400">
+        <v-card class="mx-auto" color="#26c6da" dark>
           <v-card-title>
             <v-icon large left> mdi-twitter </v-icon>
             <span class="text-h6 font-weight-light">Twitter</span>
@@ -174,6 +188,25 @@ export default {
   components: { MainJumbo },
   data() {
     return {
+      search: "",
+      menus: [
+        {
+          title: "WORKOUT",
+          content: "새로운 운동 개설",
+          img: "card1.png",
+        },
+        {
+          title: "GAME",
+          content: "운동 운동참여",
+          img: "card2.png",
+        },
+        {
+          title: "CREATE",
+          content: "게임 운동참여",
+          img: "card3.png",
+        },
+        { title: "Diary", content: "운동랭킹을 한눈에", img: "card4.png" },
+      ],
       items: [
         {
           id: "12313",
