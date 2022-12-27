@@ -7,6 +7,8 @@
       single-line
       hide-details
     />
+    <v-jumbotron color="primary"> 테스트 점보트론 </v-jumbotron>
+
     <div class="homeheader mt-5" style="display: flex; gap: 10px">
       <div
         color="info"
