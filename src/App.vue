@@ -1,6 +1,5 @@
 <template>
   <v-app>
-    <MainHeader />
     <v-main>
       <router-view />
     </v-main>
@@ -8,13 +7,9 @@
 </template>
 
 <script>
-import MainHeader from "../src/components/MainHeader.vue";
-
 export default {
   name: "App",
-  components: {
-    MainHeader,
-  },
+  components: {},
   data: () => ({
     //
   }),
@@ -63,20 +58,34 @@ export default {
     --smaller-size: 0.813rem;
   }
 }
+/*=============== SCROLL BAR ===============*/
+::-webkit-scrollbar {
+  width: 0.6rem;
+  border-radius: 0.5rem;
+  background-color: hsl(210, 8%, 15%);
+}
+::-webkit-scrollbar-thumb {
+  background-color: hsl(210, 8%, 25%);
+  border-radius: 0.5rem;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(210, 8%, 35%);
+}
 
 #app {
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
   width: 100%;
-  height: 100%;
-  background-image: url(./assets/bgwhite.png);
-  background-repeat: no-repeat;
-  background-size: cover;
+  height: 100vh;
+  /* background-image: url("https://x.gd/JfK6U"); */
+  /* background-image: url(./assets/bgwhite.png); */
+  /* background-repeat: no-repeat;
+  background-size: cover; */
   letter-spacing: 0.5px;
   box-sizing: border-box;
+  background-color: #959597;
 }
 a {
   font-weight: bold;
@@ -103,14 +112,28 @@ a.router-link-exact-active {
   border-right: 2px solid rgba(255, 255, 255, 0.2);
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
+.gradient1 {
+  background: linear-gradient(
+    rgba(2, 126, 251, 1) 0%,
+    rgba(0, 3, 255, 1) 100%
+      /* rgba(251, 33, 117, 1) 0%,
+    rgba(234, 76, 137, 1) 100% */
+  );
+}
+.gradient2 {
+  background: linear-gradient(
+    rgba(251, 33, 117, 1) 0%,
+    rgba(234, 76, 137, 1) 100%
+  );
+}
 .btn {
-  width: 130px;
-  height: 40px;
+  padding: 24px 0;
+  font-size: 16px;
+  font-weight: bold;
   text-align: center;
   color: #fff;
   border-radius: 5px;
   font-family: "Lato", sans-serif;
-  font-weight: 500;
   background: transparent;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -140,5 +163,10 @@ a.router-link-exact-active {
     -4px -4px 6px 0 rgba(116, 125, 136, 0.2),
     inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2),
     inset 4px 4px 6px 0 rgba(0, 0, 0, 0.2);
+}
+@keyframes move {
+  100% {
+    transform: translate3d(0, 0, 1px) rotate(360deg);
+  }
 }
 </style>

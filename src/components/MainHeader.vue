@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app class="appbar" elevation-0 color="amber">
       <div class="d-flex align-center">
         <v-img
           alt="Vuetify Logo"
@@ -12,7 +12,7 @@
         />
       </div>
       <v-spacer />
-      <div class="nav">
+      <div class="nav" style="color: #fff">
         <router-link to="/">Home</router-link> |
         <router-link to="/about">About</router-link> |
         <router-link to="/avatar">avatar</router-link>
