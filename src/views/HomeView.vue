@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="font-italic white--text pb-15">
     <v-text-field
       v-model="search"
       append-icon="mdi-magnify"
@@ -7,70 +7,68 @@
       single-line
       hide-details
     />
+    <!-- 점보 -->
     <MainJumbo />
+    <!-- 메뉴 -->
     <v-row>
       <v-col v-for="(n, i) in menus" :key="i" cols="12" sm="6">
-        <v-card>
+        <v-card style="background: #d7e357">
           <v-img
             :src="`${require('@/assets/fitness/' + n.img)}`"
             max-height="250"
           >
-            <div
-              class="ma-10 pa-5 rounded-xl"
-              style="background: rgba(0, 0, 0, 0.5); height: 170px"
-            >
+            <div class="ma-10 pa-5 rounded-xl menuBox">
               <h1 class="white--text">{{ n.title }}</h1>
-              <h3 style="color: #d7e357">{{ n.content }}</h3>
+              <h3 class="mt-5" style="color: #d7e357">{{ n.content }}</h3>
             </div>
           </v-img>
         </v-card>
       </v-col>
     </v-row>
-    <h3 class="mt-8 text-left">최근 운동</h3>
-    <v-row>
-      <v-col color="info" v-for="(item, i) in items" :key="i">
-        <!-- <v-col
-        color="info"
-        v-for="(item, i) in items"
-        :key="i"
-        cols="12"
-        sm="6"
-        md="4"
-        lg="3"
-      > -->
-        <v-card :loading="loading" class="mx-auto">
+    <!-- 새로운운동 타이틀 -->
+    <h3 class="mt-8 text-left italic title" style="color: #d7e357">
+      <v-icon color="#d7e357" class="mb-1">mdi-dumbbell</v-icon> New Workout
+    </h3>
+    <!-- 새로운운동 아이템들 -->
+    <v-row class="itemRow">
+      <v-col v-for="(n, i) in items" :key="i" cols="6" md="4">
+        <v-card :loading="loading" class="mx-auto" style="background: #d7e357">
           <v-img
             height="200"
-            src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+            :src="
+              n.img
+                ? `${n.img}`
+                : 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg'
+            "
           >
-            <div class="ma-5">
-              <v-card-title>Cafe Badilico</v-card-title>
+            <v-card-title>
+              <h2 class="white--text">
+                {{ n.title }}
+              </h2>
+            </v-card-title>
 
-              <v-card-text>
-                <v-row align="center" class="mx-0">
-                  <v-rating
-                    :value="4.5"
-                    color="amber"
-                    dense
-                    half-increments
-                    readonly
-                    size="14"
-                  ></v-rating>
+            <v-card-text>
+              <v-row align="center" class="mx-0">
+                <v-rating
+                  :value="4.5"
+                  color="amber"
+                  dense
+                  half-increments
+                  readonly
+                  size="14"
+                ></v-rating>
 
-                  <div class="grey--text ms-4">4.5 (413)</div>
-                </v-row>
+                <div class="grey--text ms-4">4.5 (413)</div>
+              </v-row>
 
-                <div class="my-4 text-subtitle-1">$ • Italian, Cafe</div>
+              <div class="my-4 text-subtitle-1">$ • Italian, Cafe</div>
 
-                <div>
-                  Small plates, salads & sandwiches - an intimate setting with
-                  12 indoor seats plus patio seating.
-                </div>
-              </v-card-text>
-            </div>
+              <div>
+                Small plates, salads & sandwiches - an intimate setting with 12
+                indoor seats plus patio seating.
+              </div>
+            </v-card-text>
           </v-img>
-
-          <v-divider class="mx-4"></v-divider>
 
           <v-card-actions>
             <v-btn color="deep-purple lighten-2" text> Reserve </v-btn>
@@ -79,10 +77,14 @@
       </v-col>
     </v-row>
 
-    <h2 class="text-left mt-10">인기 운동</h2>
-
-    <v-row>
-      <v-col color="info" v-for="n in 5" :key="n" cols="6">
+    <!-- 새로운게임 타이들 -->
+    <h2 class="text-left mt-10 title" style="color: #d7e357">
+      <v-icon color="#d7e357" class="mb-1">mdi-gamepad-variant-outline</v-icon>
+      New Game
+    </h2>
+    <!-- 새로운게임 아이템들 -->
+    <v-row class="itemRow">
+      <v-col color="info" v-for="n in 5" :key="n" cols="6" md="4">
         <!-- <v-card width="400"> -->
         <v-card>
           <v-img
@@ -113,65 +115,24 @@
               <p class="ml-3">John Doe</p>
             </v-card-title>
           </v-img>
-
-          <v-card-text>
-            <div class="font-weight-bold ml-8 mb-2">Today</div>
-
-            <v-timeline align-top dense>
-              <v-timeline-item
-                v-for="message in messages"
-                :key="message.time"
-                :color="message.color"
-                small
-              >
-                <div>
-                  <div class="font-weight-normal">
-                    <strong>{{ message.from }}</strong> @{{ message.time }}
-                  </div>
-                  <div>{{ message.message }}</div>
-                </div>
-              </v-timeline-item>
-            </v-timeline>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col color="info" v-for="n in 5" :key="n">
-        <v-card class="mx-auto" color="#26c6da" dark>
-          <v-card-title>
-            <v-icon large left> mdi-twitter </v-icon>
-            <span class="text-h6 font-weight-light">Twitter</span>
-          </v-card-title>
-
-          <v-card-text class="text-h5 font-weight-bold">
-            "Turns out semicolon-less style is easier and safer in TS because
-            most gotcha edge cases are type invalid as well."
-          </v-card-text>
-
           <v-card-actions>
-            <v-list-item class="grow">
-              <v-list-item-avatar color="grey darken-3">
-                <v-img
-                  class="elevation-6"
-                  alt=""
-                  src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"
-                ></v-img>
-              </v-list-item-avatar>
+            <v-list-item-avatar color="grey darken-3">
+              <v-img
+                src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"
+              ></v-img>
+            </v-list-item-avatar>
 
-              <v-list-item-content>
-                <v-list-item-title>Evan You</v-list-item-title>
-              </v-list-item-content>
+            <v-list-item-content>
+              <v-list-item-title>Evan You</v-list-item-title>
+            </v-list-item-content>
 
-              <v-row align="center" justify="end">
-                <v-icon class="mr-1"> mdi-heart </v-icon>
-                <span class="subheading mr-2">256</span>
-                <span class="mr-1">·</span>
-                <v-icon class="mr-1"> mdi-share-variant </v-icon>
-                <span class="subheading">45</span>
-              </v-row>
-            </v-list-item>
+            <v-row class="mr-1" justify="end">
+              <v-icon class="mr-1"> mdi-heart </v-icon>
+              <span class="subheading mr-2">256</span>
+              <span class="mr-1">·</span>
+              <v-icon class="mr-1"> mdi-share-variant </v-icon>
+              <span class="subheading">45</span>
+            </v-row>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -189,6 +150,7 @@ export default {
   data() {
     return {
       search: "",
+      loading: false,
       menus: [
         {
           title: "WORKOUT",
@@ -218,6 +180,7 @@ export default {
           password: "1233",
           startDate: "2022-10-22",
           endDate: "2022-12-22",
+          img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
         },
         {
           id: "15533",
@@ -229,6 +192,7 @@ export default {
           password: "1233",
           startDate: "2022-10-12",
           endDate: "2022-12-22",
+          img: "https://cdn.pixabay.com/photo/2020/07/12/07/47/bee-5396362_1280.jpg",
         },
         {
           id: "125353",
@@ -240,10 +204,42 @@ export default {
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-22",
+          img: "",
         },
       ],
     };
   },
 };
 </script>
-<style></style>
+<style scoped>
+.menuBox {
+  height: 170px;
+  cursor: pointer;
+  transition: all 0.5s;
+  backdrop-filter: blur(5px);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.menuBox:hover {
+  background: rgba(255, 255, 0, 0.5);
+  height: 170px;
+}
+.title {
+  text-shadow: 2px 2px 2px gray;
+}
+.itemRow {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+/* .menuBox:hover h1 {
+  transition: all 0.2s;
+  transform: scale(1.5);
+}
+.menuBox:hover h3 {
+  transition: all 0.2s;
+  transform: translateY(20px);
+} */
+</style>

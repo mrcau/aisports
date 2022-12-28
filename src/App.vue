@@ -65,11 +65,12 @@ export default {
   background-color: hsl(210, 8%, 15%);
 }
 ::-webkit-scrollbar-thumb {
-  background-color: hsl(210, 8%, 25%);
+  background-color: hsl(210, 8%, 45%);
   border-radius: 0.5rem;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(210, 8%, 35%);
+  background-color: #d7e357;
+  /* background-color: hsl(210, 8%, 35%); */
 }
 
 #app {
