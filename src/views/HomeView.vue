@@ -12,15 +12,29 @@
     <!-- 메뉴 -->
     <v-row>
       <v-col v-for="(n, i) in menus" :key="i" cols="12" sm="6">
-        <v-card style="background: #d7e357">
+        <v-card style="background: #303030; position: relative">
           <v-img
             :src="`${require('@/assets/fitness/' + n.img)}`"
             max-height="250"
           >
-            <div class="ma-10 pa-5 rounded-xl menuBox">
+            <div
+              class="d-flex justify-center align-center ma-10 pa-5 rounded-xl menuBox"
+            >
               <h1 class="white--text">{{ n.title }}</h1>
-              <h3 class="mt-5" style="color: #d7e357">{{ n.content }}</h3>
             </div>
+            <h3
+              class="mt-5 text-center menuText"
+              style="
+                color: #d7e357;
+                display: block;
+                position: absolute;
+                bottom: 20%;
+                left: 50%;
+                transform: translateX(-50%);
+              "
+            >
+              {{ n.content }}
+            </h3>
           </v-img>
         </v-card>
       </v-col>
@@ -31,47 +45,63 @@
     </h3>
     <!-- 새로운운동 아이템들 -->
     <v-row class="itemRow">
-      <v-col v-for="(n, i) in items" :key="i" cols="6" md="4">
-        <v-card :loading="loading" class="mx-auto" style="background: #d7e357">
+      <v-col
+        v-for="(n, i) in items.filter(
+          (n) => n.type === 'cards1' && dateCompare(n.endDate)
+        )"
+        :key="i"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+        <v-card
+          :loading="loading"
+          class="mx-auto"
+          style="background: #d7e357"
+          @click="routLink"
+        >
           <v-img
             height="200"
             :src="
               n.img
                 ? `${n.img}`
-                : 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg'
+                : `${require('@/assets/fitness/' + n.type + '.png')}`
             "
           >
-            <v-card-title>
-              <h2 class="white--text">
-                {{ n.title }}
-              </h2>
-            </v-card-title>
+            <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
+              <v-card-title>
+                <h2>
+                  {{ n.title }}
+                </h2>
+              </v-card-title>
 
-            <v-card-text>
-              <v-row align="center" class="mx-0">
-                <v-rating
-                  :value="4.5"
-                  color="amber"
-                  dense
-                  half-increments
-                  readonly
-                  size="14"
-                ></v-rating>
+              <v-card-text>
+                <v-row class="mx-0">
+                  <v-rating
+                    :value="n.star"
+                    color="amber"
+                    dense
+                    half-increments
+                    readonly
+                    size="14"
+                  ></v-rating>
+                  <v-spacer></v-spacer>
+                  <div class="grey--text ms-4">{{ n.school }}</div>
+                </v-row>
 
-                <div class="grey--text ms-4">4.5 (413)</div>
-              </v-row>
-
-              <div class="my-4 text-subtitle-1">$ • Italian, Cafe</div>
-
-              <div>
-                Small plates, salads & sandwiches - an intimate setting with 12
-                indoor seats plus patio seating.
-              </div>
-            </v-card-text>
+                <div class="mt-5 text-subtitle-1">
+                  Small plates, salads & sandwiches - an intimate setting with
+                  12 indoor seats plus patio seating.
+                </div>
+              </v-card-text>
+            </div>
           </v-img>
 
           <v-card-actions>
-            <v-btn color="deep-purple lighten-2" text> Reserve </v-btn>
+            <v-icon>mdi-timetable</v-icon> {{ n.endDate }}
+            <v-spacer></v-spacer>
+            <v-icon>mdi-account-group</v-icon> {{ n.members }}
           </v-card-actions>
         </v-card>
       </v-col>
@@ -84,12 +114,22 @@
     </h2>
     <!-- 새로운게임 아이템들 -->
     <v-row class="itemRow">
-      <v-col color="info" v-for="n in 5" :key="n" cols="6" md="4">
-        <!-- <v-card width="400"> -->
-        <v-card>
+      <v-col
+        v-for="(n, i) in items.filter((n) => n.type === 'cards2' && n.progress)"
+        :key="i"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+        <v-card style="background: orange">
           <v-img
             height="200px"
-            src="https://cdn.pixabay.com/photo/2020/07/12/07/47/bee-5396362_1280.jpg"
+            :src="
+              n.img
+                ? `${n.img}`
+                : `${require('@/assets/fitness/' + n.type + '.png')}`
+            "
           >
             <v-app-bar flat color="rgba(0, 0, 0, 0)">
               <v-app-bar-nav-icon color="white"></v-app-bar-nav-icon>
@@ -123,7 +163,7 @@
             </v-list-item-avatar>
 
             <v-list-item-content>
-              <v-list-item-title>Evan You</v-list-item-title>
+              {{ today }}
             </v-list-item-content>
 
             <v-row class="mr-1" justify="end">
@@ -150,24 +190,27 @@ export default {
   data() {
     return {
       search: "",
+      today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substring(0, 10),
       loading: false,
       menus: [
         {
           title: "WORKOUT",
-          content: "새로운 운동 개설",
+          content: "운동 참여",
           img: "card1.png",
         },
         {
           title: "GAME",
-          content: "운동 운동참여",
+          content: "게임 참여",
           img: "card2.png",
         },
         {
           title: "CREATE",
-          content: "게임 운동참여",
+          content: "운동 생성",
           img: "card3.png",
         },
-        { title: "Diary", content: "운동랭킹을 한눈에", img: "card4.png" },
+        { title: "Dashboard", content: "참여 현황", img: "card4.png" },
       ],
       items: [
         {
@@ -179,8 +222,12 @@ export default {
           people: 7,
           password: "1233",
           startDate: "2022-10-22",
-          endDate: "2022-12-22",
+          endDate: "2022-12-31",
+          type: "cards1",
           img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          star: 3.5,
+          members: 1115,
+          progress: "false",
         },
         {
           id: "15533",
@@ -191,8 +238,12 @@ export default {
           people: 4,
           password: "1233",
           startDate: "2022-10-12",
-          endDate: "2022-12-22",
-          img: "https://cdn.pixabay.com/photo/2020/07/12/07/47/bee-5396362_1280.jpg",
+          endDate: "2022-12-31",
+          type: "cards1",
+          img: "",
+          members: 52,
+          star: 4,
+          progress: "false",
         },
         {
           id: "125353",
@@ -203,11 +254,73 @@ export default {
           people: 2,
           password: "1233",
           startDate: "2022-10-25",
-          endDate: "2022-12-22",
+          endDate: "2022-12-31",
+          type: "cards1",
+          members: 5111,
           img: "",
+          star: 3,
+          progress: "ing",
+        },
+        {
+          id: "125353",
+          title: "모두짱game",
+          content: "모두짱이game이다모두짱이game두짱이다.",
+          name: "김고동",
+          school: "오현초",
+          people: 2,
+          password: "1233",
+          startDate: "2022-10-25",
+          endDate: "2022-12-31",
+          type: "cards2",
+          members: 225,
+          img: "",
+          star: 4,
+          progress: "ing",
+        },
+        {
+          id: "125353",
+          title: "game모두짱",
+          content: "모두짱game두짱이다모두game두짱이다.",
+          name: "김고동",
+          school: "오현초",
+          people: 2,
+          password: "1233",
+          startDate: "2022-10-25",
+          endDate: "2022-12-22",
+          type: "cards2",
+          members: 25,
+          star: 3,
+          img: "",
+          progress: true,
+        },
+        {
+          id: "125353",
+          title: "game",
+          content: "모두짱이다모두짱이다모두짱이다모두짱이다모두짱이다.",
+          name: "김고동",
+          school: "오현초",
+          people: 2,
+          password: "1233",
+          startDate: "2022-10-25",
+          endDate: "2022-12-31",
+          type: "cards2",
+          members: 52,
+          star: 4.5,
+          img: "",
+          progress: false,
         },
       ],
     };
+  },
+  methods: {
+    dateCompare(day) {
+      const date1 = new Date(this.today);
+      const date2 = new Date(day);
+      return date1 <= date2;
+    },
+    routLink() {
+      this.$router.push("/about");
+    },
   },
 };
 </script>
@@ -227,6 +340,20 @@ export default {
   background: rgba(255, 255, 0, 0.5);
   height: 170px;
 }
+.menuBox.workout {
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-right: none;
+  border-bottom: none;
+  overflow: hidden;
+}
+.menuBox:hover {
+  background: rgba(255, 255, 0, 0.5);
+  height: 170px;
+}
+.menuBox.workout:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
 .title {
   text-shadow: 2px 2px 2px gray;
 }
@@ -234,12 +361,12 @@ export default {
   flex-wrap: nowrap;
   overflow-x: auto;
 }
-/* .menuBox:hover h1 {
+.menuBox:hover h1 {
   transition: all 0.2s;
   transform: scale(1.5);
 }
 .menuBox:hover h3 {
   transition: all 0.2s;
   transform: translateY(20px);
-} */
+}
 </style>

@@ -1,8 +1,8 @@
 <template>
   <div class="jumboBox py-5">
-    <div class="rounded-lg d-flex jumbo white--text mt-10 pa-10">
-      <div style="flex: 1">
-        <h1 class="font-italic">{{ title }}</h1>
+    <div class="rounded-lg d-flex jumbo white--text mt-10">
+      <div class="pa-5" style="flex: 2">
+        <h1 class="font-italic" style="font-size: 3rem">{{ title }}</h1>
         <p>{{ content }}</p>
       </div>
       <div class="jumboRight" style="flex: 1"></div>
@@ -18,8 +18,8 @@ export default {
   data() {
     return {
       bgImg: "https://x.gd/AxUyA",
-      title: "Welcome AIGYM!!",
-      content: "lorem titletitletitletitletitle",
+      title: "AI-GYM",
+      content: "Welcome AIGYM!!",
     };
   },
 

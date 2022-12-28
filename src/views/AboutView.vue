@@ -1,38 +1,41 @@
 <template>
-  <div class="aiSection">
-    <div class="bgCanvas mt-5">
-      <canvas id="canvas"></canvas>
+  <v-container class="font-italic white--text pb-15">
+    <div class="aiSection">
+      <div class="topBar"></div>
+      <div class="bgCanvas mt-5">
+        <canvas id="canvas"></canvas>
+      </div>
+      <v-container
+        style="display: flex; width: 100%; gap: 20px"
+        class="cameraInfo mx-5 my-5"
+      >
+        <div class="card" style="flex: 1" v-if="cameraTF">
+          <h3 style="position: absolute; top: 5px">정확도</h3>
+          <div class="mt-5" id="label-container"></div>
+        </div>
+
+        <div class="btnBox" style="flex: 1">
+          <button @click="init" class="btn btn1 btnCamera" v-if="!cameraTF">
+            <h2>START</h2>
+          </button>
+          <v-progress-circular
+            :value="(timer / info.timer) * 100"
+            :width="10"
+            size="100"
+            color="var(--main-color)"
+            v-else
+          >
+            <h1>{{ timer }}</h1>
+          </v-progress-circular>
+        </div>
+
+        <div class="card" style="flex: 1" v-if="cameraTF">
+          <h3 style="position: absolute; top: 5px">점수</h3>
+          <div id="label-container"></div>
+        </div>
+      </v-container>
     </div>
-    <v-container
-      style="display: flex; width: 100%; gap: 20px"
-      class="cameraInfo mx-5 my-5"
-    >
-      <div class="card" style="flex: 1" v-if="cameraTF">
-        <h3 style="position: absolute; top: 5px">정확도</h3>
-        <div class="mt-5" id="label-container"></div>
-      </div>
-
-      <div class="btnBox" style="flex: 1">
-        <button @click="init" class="btn btn1 btnCamera" v-if="!cameraTF">
-          <h2>START</h2>
-        </button>
-        <v-progress-circular
-          :value="(timer / info.timer) * 100"
-          :width="10"
-          size="100"
-          color="var(--main-color)"
-          v-else
-        >
-          <h1>{{ timer }}</h1>
-        </v-progress-circular>
-      </div>
-
-      <div class="card" style="flex: 1" v-if="cameraTF">
-        <h3 style="position: absolute; top: 5px">점수</h3>
-        <div id="label-container"></div>
-      </div>
-    </v-container>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -135,6 +138,14 @@ export default {
   align-items: center;
   justify-content: stretch;
   overflow: hidden;
+}
+.topBar {
+  background-image: url("../assets/fitness/top-borad.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 150px;
 }
 .bgCanvas {
   background-color: rgba(255, 255, 255, 0.2);
