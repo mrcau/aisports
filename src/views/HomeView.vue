@@ -234,7 +234,7 @@ export default {
           progress: "false",
         },
         {
-          id: "15533",
+          id: "1553333",
           title: "우리짱",
           content: "우리짱이다.",
           creator: "이숭동",
