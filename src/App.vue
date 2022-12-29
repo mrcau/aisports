@@ -79,7 +79,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   /* background-image: url("https://x.gd/JfK6U"); */
   /* background-image: url(./assets/bgwhite.png); */
   /* background-repeat: no-repeat;
@@ -148,16 +148,20 @@ a.router-link-exact-active {
 .btn1 {
   border: none;
   background: linear-gradient(
-    rgba(2, 126, 251, 1) 0%,
-    rgba(0, 3, 255, 1) 100%
-      /* rgba(251, 33, 117, 1) 0%,
+    #64dd17 0%,
+    #558b2f 100% /* rgba(251, 33, 117, 1) 0%,
     rgba(234, 76, 137, 1) 100% */
   );
   color: #fff;
   overflow: hidden;
 }
 .btn1:hover {
-  background: linear-gradient(rgba(2, 126, 251, 1) 0%, rgba(0, 3, 255, 1) 100%);
+  background: rgba(255, 255, 0, 0.5);
+
+  background: linear-gradient(
+    rgba(255, 255, 0, 0.5) 0%,
+    rgba(255, 255, 0, 0.9) 100%
+  );
 }
 .btn1:active {
   box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0.3),

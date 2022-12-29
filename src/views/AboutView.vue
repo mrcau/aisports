@@ -1,13 +1,50 @@
 <template>
   <v-container class="font-italic white--text pb-15">
     <div class="aiSection">
-      <div class="topBar"></div>
-      <div class="bgCanvas mt-5">
+      <div class="topBar">
+        <v-card-title>
+          <h2>
+            {{ params.title }}
+          </h2>
+        </v-card-title>
+
+        <v-card-text>
+          <v-row class="mx-0">
+            <v-rating
+              :value="params.star"
+              color="amber"
+              dense
+              half-increments
+              readonly
+              size="14"
+            ></v-rating>
+            <v-spacer></v-spacer>
+            <div class="grey--text ms-4">{{ params.made }}</div>
+          </v-row>
+
+          <div class="mt-5 text-subtitle-1">
+            {{ params.content }}
+          </div>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-icon color="white" class="mx-2">mdi-timetable</v-icon>
+          <span>
+            {{ params.endDate }}
+          </span>
+          <v-spacer></v-spacer>
+          <v-icon color="white">mdi-account-group</v-icon>
+          <span class="mx-2 mt-1">
+            {{ params.members.length }}
+          </span>
+        </v-card-actions>
+      </div>
+      <div class="bgCanvas" :style="`background-image: url(${params.img})`">
         <canvas id="canvas"></canvas>
       </div>
       <v-container
         style="display: flex; width: 100%; gap: 20px"
-        class="cameraInfo mx-5 my-5"
+        class="cameraInfo mx-5 my-b"
       >
         <div class="card" style="flex: 1" v-if="cameraTF">
           <h3 style="position: absolute; top: 5px">정확도</h3>
@@ -48,6 +85,7 @@ export default {
         timer: 60,
         title: "해양중챔피온",
       },
+      params: this.$route.params.data || "",
       model: "",
       webcam: "",
       ctx: "",
@@ -61,7 +99,10 @@ export default {
       start: false,
     };
   },
-  mounted() {},
+
+  created() {
+    console.log(this.params);
+  },
   methods: {
     async init() {
       this.timer = this.info.timer;
@@ -132,24 +173,29 @@ export default {
 <style lang="scss" scoped>
 .aiSection {
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: stretch;
   overflow: hidden;
+  background-image: url(../assets/fitness/card-col3.png);
+  border-radius: 18px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 .topBar {
-  background-image: url("../assets/fitness/top-borad.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  background: rgba(0, 0, 0, 0.5);
   width: 100%;
-  height: 150px;
+  max-height: 300px;
+  border-bottom: solid 5px #ccf863;
+}
+.cameraInfo {
+  border-top: solid 5px #ccf863;
 }
 .bgCanvas {
   background-color: rgba(255, 255, 255, 0.2);
-  background-image: url("../assets/logo.png");
+  // background-image: url("../assets/logo.png");
   /* background-image: url('../assets/logo.png'); */
   background-position: center;
   background-repeat: no-repeat;
@@ -160,7 +206,7 @@ export default {
   justify-content: center;
   align-items: center;
   backdrop-filter: blur(5px);
-  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+  // box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-right: 2px solid rgba(255, 255, 255, 0.2);
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);

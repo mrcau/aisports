@@ -59,6 +59,76 @@
           :loading="loading"
           class="mx-auto"
           style="background: #d7e357"
+          @click="routLink(n)"
+        >
+          <v-img
+            height="200"
+            :src="
+              n.img
+                ? `${n.img}`
+                : `${require('@/assets/fitness/' + n.type + '.png')}`
+            "
+          >
+            <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
+              <v-card-title>
+                <h2>
+                  {{ n.title }}
+                </h2>
+              </v-card-title>
+
+              <v-card-text>
+                <v-row class="mx-0">
+                  <v-rating
+                    :value="n.star"
+                    color="amber"
+                    dense
+                    half-increments
+                    readonly
+                    size="14"
+                  ></v-rating>
+                  <v-spacer></v-spacer>
+                  <div class="grey--text ms-4">{{ n.made }}</div>
+                </v-row>
+
+                <div class="mt-5 text-subtitle-1">
+                  Small plates, salads & sandwiches - an intimate setting with
+                  12 indoor seats plus patio seating.
+                </div>
+              </v-card-text>
+            </div>
+          </v-img>
+
+          <v-card-actions>
+            <v-icon>mdi-timetable</v-icon> {{ n.endDate }}
+            <v-spacer></v-spacer>
+            <v-icon>mdi-account-group</v-icon>
+            <span class="mx-2 mt-1">
+              {{ n.members.length }}
+            </span>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- 새로운게임 타이들 -->
+    <h2 class="text-left mt-10 title" style="color: #d7e357">
+      <v-icon color="#d7e357" class="mb-1">mdi-gamepad-variant-outline</v-icon>
+      New Game
+    </h2>
+    <!-- 새로운게임 아이템들 -->
+    <v-row class="itemRow">
+      <v-col
+        v-for="(n, i) in items.filter((n) => n.type === 'cards2' && n.progress)"
+        :key="i"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+        <v-card
+          :loading="loading"
+          class="mx-auto"
+          style="background: #c6ef60"
           @click="routLink"
         >
           <v-img
@@ -87,7 +157,7 @@
                     size="14"
                   ></v-rating>
                   <v-spacer></v-spacer>
-                  <div class="grey--text ms-4">{{ n.school }}</div>
+                  <div class="grey--text ms-4">{{ n.made }}</div>
                 </v-row>
 
                 <div class="mt-5 text-subtitle-1">
@@ -101,78 +171,10 @@
           <v-card-actions>
             <v-icon>mdi-timetable</v-icon> {{ n.endDate }}
             <v-spacer></v-spacer>
-            <v-icon>mdi-account-group</v-icon> {{ n.members }}
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- 새로운게임 타이들 -->
-    <h2 class="text-left mt-10 title" style="color: #d7e357">
-      <v-icon color="#d7e357" class="mb-1">mdi-gamepad-variant-outline</v-icon>
-      New Game
-    </h2>
-    <!-- 새로운게임 아이템들 -->
-    <v-row class="itemRow">
-      <v-col
-        v-for="(n, i) in items.filter((n) => n.type === 'cards2' && n.progress)"
-        :key="i"
-        cols="12"
-        sm="6"
-        md="4"
-        lg="3"
-      >
-        <v-card style="background: orange">
-          <v-img
-            height="200px"
-            :src="
-              n.img
-                ? `${n.img}`
-                : `${require('@/assets/fitness/' + n.type + '.png')}`
-            "
-          >
-            <v-app-bar flat color="rgba(0, 0, 0, 0)">
-              <v-app-bar-nav-icon color="white"></v-app-bar-nav-icon>
-
-              <v-toolbar-title class="text-h6 white--text pl-0">
-                Messages
-              </v-toolbar-title>
-
-              <v-spacer></v-spacer>
-
-              <v-btn color="white" icon>
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </v-app-bar>
-
-            <v-card-title class="white--text mt-8">
-              <v-avatar size="56">
-                <img
-                  alt="user"
-                  src="https://cdn.pixabay.com/photo/2020/06/24/19/12/cabbage-5337431_1280.jpg"
-                />
-              </v-avatar>
-              <p class="ml-3">John Doe</p>
-            </v-card-title>
-          </v-img>
-          <v-card-actions>
-            <v-list-item-avatar color="grey darken-3">
-              <v-img
-                src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"
-              ></v-img>
-            </v-list-item-avatar>
-
-            <v-list-item-content>
-              {{ today }}
-            </v-list-item-content>
-
-            <v-row class="mr-1" justify="end">
-              <v-icon class="mr-1"> mdi-heart </v-icon>
-              <span class="subheading mr-2">256</span>
-              <span class="mr-1">·</span>
-              <v-icon class="mr-1"> mdi-share-variant </v-icon>
-              <span class="subheading">45</span>
-            </v-row>
+            <v-icon>mdi-account-group</v-icon>
+            <span class="mx-2 mt-1">
+              {{ n.members.length }}
+            </span>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -184,7 +186,7 @@
 import MainJumbo from "@/components/MainJumbo.vue";
 
 export default {
-  name: "HomeView",
+  creator: "HomeView",
 
   components: { MainJumbo },
   data() {
@@ -214,11 +216,12 @@ export default {
       ],
       items: [
         {
-          id: "12313",
-          title: "내가짱",
+          // Date.now().toString()
+          id: "sdsd",
+          title: "내가짱sdfsdfsdfsdfsdfssdfdsdfsdfsdfsdfsdfsdf",
           content: "내가짱이다내가짱이다내가짱이다.",
-          name: "홍길동",
-          school: "안산해양중",
+          creator: "홍길동",
+          made: "안산해양중",
           people: 7,
           password: "1233",
           startDate: "2022-10-22",
@@ -226,22 +229,24 @@ export default {
           type: "cards1",
           img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
           star: 3.5,
-          members: 1115,
+          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
+          members: [1115, "member"],
           progress: "false",
         },
         {
           id: "15533",
           title: "우리짱",
           content: "우리짱이다.",
-          name: "이숭동",
-          school: "봉담고",
+          creator: "이숭동",
+          made: "봉담고",
           people: 4,
           password: "1233",
           startDate: "2022-10-12",
           endDate: "2022-12-31",
           type: "cards1",
+          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           img: "",
-          members: 52,
+          members: [52, "member"],
           star: 4,
           progress: "false",
         },
@@ -249,14 +254,15 @@ export default {
           id: "125353",
           title: "모두짱",
           content: "모두짱이다모두짱이다모두짱이다모두짱이다모두짱이다.",
-          name: "김고동",
-          school: "오현초",
+          creator: "김고동",
+          made: "오현초",
           people: 2,
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-31",
           type: "cards1",
-          members: 5111,
+          members: [5111, "member"],
+          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           img: "",
           star: 3,
           progress: "ing",
@@ -265,14 +271,15 @@ export default {
           id: "125353",
           title: "모두짱game",
           content: "모두짱이game이다모두짱이game두짱이다.",
-          name: "김고동",
-          school: "오현초",
+          creator: "김고동",
+          made: "오현초",
           people: 2,
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-31",
           type: "cards2",
-          members: 225,
+          members: [225, "member"],
+          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           img: "",
           star: 4,
           progress: "ing",
@@ -281,14 +288,15 @@ export default {
           id: "125353",
           title: "game모두짱",
           content: "모두짱game두짱이다모두game두짱이다.",
-          name: "김고동",
-          school: "오현초",
+          creator: "김고동",
+          made: "오현초",
           people: 2,
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-22",
           type: "cards2",
-          members: 25,
+          members: [25, "member"],
+          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           star: 3,
           img: "",
           progress: true,
@@ -297,14 +305,15 @@ export default {
           id: "125353",
           title: "game",
           content: "모두짱이다모두짱이다모두짱이다모두짱이다모두짱이다.",
-          name: "김고동",
-          school: "오현초",
+          creator: "김고동",
+          made: "오현초",
           people: 2,
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-31",
           type: "cards2",
-          members: 52,
+          members: [52, "member"],
+          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           star: 4.5,
           img: "",
           progress: false,
@@ -318,8 +327,9 @@ export default {
       const date2 = new Date(day);
       return date1 <= date2;
     },
-    routLink() {
-      this.$router.push("/about");
+    routLink(n) {
+      // this.$router.push("/about");
+      this.$router.push({ name: "about", params: { data: n } });
     },
   },
 };
