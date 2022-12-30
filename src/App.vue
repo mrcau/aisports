@@ -23,10 +23,10 @@ export default {
 
   /*========== Colors ==========*/
   /*Color mode HSL(hue, saturation, lightness)*/
-  --main-color: #ff328e;
+  --main-color: #d7e357;
   --btn-color: #fff;
   --first-color: #fbc700;
-  --second-color: hsl(210, 80%, 50%);
+  --second-color: #ccf863;
 
   /*========== Font and typography ==========*/
   /*.5rem = 8px | 1rem = 16px ...*/

@@ -33,7 +33,7 @@
                 transform: translateX(-50%);
               "
             >
-              {{ n.content }}
+              <!-- {{ n.content }} -->
             </h3>
           </v-img>
         </v-card>
@@ -47,7 +47,7 @@
     <v-row class="itemRow">
       <v-col
         v-for="(n, i) in items.filter(
-          (n) => n.type === 'cards1' && dateCompare(n.endDate)
+          (n) => n.type === 'workout' && dateCompare(n.endDate)
         )"
         :key="i"
         cols="12"
@@ -64,9 +64,7 @@
           <v-img
             height="200"
             :src="
-              n.img
-                ? `${n.img}`
-                : `${require('@/assets/fitness/' + n.type + '.png')}`
+              n.img ? `${n.img}` : `${require('@/assets/fitness/cards1.png')}`
             "
           >
             <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
@@ -79,7 +77,7 @@
               <v-card-text>
                 <v-row class="mx-0">
                   <v-rating
-                    :value="n.star"
+                    :value="n.rating"
                     color="amber"
                     dense
                     half-increments
@@ -87,7 +85,9 @@
                     size="14"
                   ></v-rating>
                   <v-spacer></v-spacer>
-                  <div class="grey--text ms-4">{{ n.made }}</div>
+                  <div class="grey--text ms-4">
+                    <span style="color: var(--second-color)">{{ n.made }}</span>
+                  </div>
                 </v-row>
 
                 <div class="mt-5 text-subtitle-1">
@@ -118,7 +118,7 @@
     <!-- 새로운게임 아이템들 -->
     <v-row class="itemRow">
       <v-col
-        v-for="(n, i) in items.filter((n) => n.type === 'cards2' && n.progress)"
+        v-for="(n, i) in items.filter((n) => n.type === 'game' && n.progress)"
         :key="i"
         cols="12"
         sm="6"
@@ -129,14 +129,12 @@
           :loading="loading"
           class="mx-auto"
           style="background: #c6ef60"
-          @click="routLink"
+          @click="routLink(n)"
         >
           <v-img
             height="200"
             :src="
-              n.img
-                ? `${n.img}`
-                : `${require('@/assets/fitness/' + n.type + '.png')}`
+              n.img ? `${n.img}` : `${require('@/assets/fitness/cards2.png')}`
             "
           >
             <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
@@ -157,7 +155,9 @@
                     size="14"
                   ></v-rating>
                   <v-spacer></v-spacer>
-                  <div class="grey--text ms-4">{{ n.made }}</div>
+                  <div class="grey--text ms-4">
+                    <span style="color: var(--main-color)">{{ n.made }}</span>
+                  </div>
                 </v-row>
 
                 <div class="mt-5 text-subtitle-1">
@@ -226,12 +226,17 @@ export default {
           password: "1233",
           startDate: "2022-10-22",
           endDate: "2022-12-31",
-          type: "cards1",
+          type: "workout",
           img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          star: 3.5,
+          rating: 3.5,
           aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           members: [1115, "member"],
           progress: "false",
+          infoImg1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          infoImg2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          infoText1: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
+          infoText2:
+            "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
         },
         {
           id: "1553333",
@@ -243,12 +248,16 @@ export default {
           password: "1233",
           startDate: "2022-10-12",
           endDate: "2022-12-31",
-          type: "cards1",
+          type: "workout",
           aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           img: "",
           members: [52, "member"],
-          star: 4,
+          rating: 4,
           progress: "false",
+          infoImg1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          infoImg2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          infoText1: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
+          infoText2: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
         },
         {
           id: "125353",
@@ -260,12 +269,16 @@ export default {
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-31",
-          type: "cards1",
+          type: "workout",
           members: [5111, "member"],
           aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           img: "",
-          star: 3,
+          rating: 3,
           progress: "ing",
+          infoImg1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          infoImg2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          infoText1: "내가짱sdfsdfsdfsdf",
+          infoText2: "내가짱sdfsdfsdfsdf",
         },
         {
           id: "125353",
@@ -277,12 +290,16 @@ export default {
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-31",
-          type: "cards2",
+          type: "game",
           members: [225, "member"],
           aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
           img: "",
-          star: 4,
+          rating: 4,
           progress: "ing",
+          infoImg1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          infoImg2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+          infoText1: "",
+          infoText2: "",
         },
         {
           id: "125353",
@@ -294,10 +311,10 @@ export default {
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-22",
-          type: "cards2",
+          type: "game",
           members: [25, "member"],
           aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-          star: 3,
+          rating: 3,
           img: "",
           progress: true,
         },
@@ -311,10 +328,10 @@ export default {
           password: "1233",
           startDate: "2022-10-25",
           endDate: "2022-12-31",
-          type: "cards2",
+          type: "game",
           members: [52, "member"],
           aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-          star: 4.5,
+          rating: 4.5,
           img: "",
           progress: false,
         },
@@ -329,7 +346,7 @@ export default {
     },
     routLink(n) {
       // this.$router.push("/about");
-      this.$router.push({ name: "about", params: { data: n } });
+      this.$router.push({ name: "play", params: { data: n } });
     },
   },
 };
@@ -373,7 +390,7 @@ export default {
 }
 .menuBox:hover h1 {
   transition: all 0.2s;
-  transform: scale(1.5);
+  transform: scale(1.2);
 }
 .menuBox:hover h3 {
   transition: all 0.2s;

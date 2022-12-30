@@ -1,5 +1,13 @@
 <template>
   <v-container class="font-italic white--text pb-15">
+    <div class="d-flex mb-2">
+      <v-btn color="var(--main-color)" text small to="/">
+        <v-icon>mdi-36px mdi-home</v-icon> </v-btn
+      ><v-spacer></v-spacer>
+      <v-btn color="var(--main-color)" text small @click="dialog = true"
+        ><v-icon>mdi-36px mdi-crown</v-icon></v-btn
+      >
+    </div>
     <div class="aiSection">
       <div class="topBar">
         <v-card-title>
@@ -10,16 +18,11 @@
 
         <v-card-text>
           <v-row class="mx-0">
-            <v-rating
-              :value="params.star"
-              color="amber"
-              dense
-              half-increments
-              readonly
-              size="14"
-            ></v-rating>
+            <v-rating v-model="rating" color="amber" dense></v-rating>
             <v-spacer></v-spacer>
-            <div class="grey--text ms-4">{{ params.made }}</div>
+            <div class="grey--text ms-4">
+              <span style="color: var(--main-color)">{{ params.made }}</span>
+            </div>
           </v-row>
 
           <div class="mt-5 text-subtitle-1">
@@ -39,15 +42,79 @@
           </span>
         </v-card-actions>
       </div>
-      <div class="bgCanvas" :style="`background-image: url(${params.img})`">
+      <!-- 캔버스배경 && 티처블머신 -->
+      <div
+        class="bgCanvas"
+        style="position: relative; overflow-y: auto; overflow-x: hidden"
+        :style="
+          params.type === 'workout'
+            ? `background-image: url(${canvasBg1})`
+            : `background-image: url(${canvasBg2})`
+        "
+      >
+        <v-container
+          class="text-left"
+          style="position: absolute; top: 0"
+          v-if="!start"
+        >
+          <div>
+            <h1 style="text-shadow: 2px 2px 2px black">
+              {{ params.type === "workout" ? "운동방법" : "게임방법" }}
+            </h1>
+            <h5 style="color: var(--second-color)">
+              <v-icon color="var(--second-color)"
+                >mdi-alert-circle-outline</v-icon
+              >
+              전신이 카메라에 나올수 있도록 해주세요.
+            </h5>
+            <h2
+              class="mt-5 rounded-5"
+              style="color: var(--main-color); text-shadow: 2px 2px 2px black"
+            >
+              동작1
+            </h2>
+            <v-card style="background: rgba(255, 255, 255, 0.7)">
+              <v-card-title>
+                {{ params.infoText1 }}
+              </v-card-title>
+            </v-card>
+            <v-img
+              src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+              width="50%"
+              class="mx-auto mt-2"
+              style="border-radius: 5px"
+              v-if="params.infoImg1"
+            />
+            <h2
+              class="mt-5"
+              style="color: var(--main-color); text-shadow: 2px 2px 2px black"
+            >
+              동작2
+            </h2>
+            <v-card style="background: rgba(255, 255, 255, 0.7)">
+              <v-card-title> {{ params.infoText1 }} </v-card-title>
+            </v-card>
+            <v-img
+              src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+              width="50%"
+              height="50%"
+              class="mx-auto mt-2"
+              style="border-radius: 5px"
+              v-if="params.infoImg2"
+            />
+          </div>
+        </v-container>
         <canvas id="canvas"></canvas>
       </div>
+      <!-- 티처블머신 정보 -->
       <v-container
         style="display: flex; width: 100%; gap: 20px"
         class="cameraInfo mx-5 my-b"
       >
         <div class="card" style="flex: 1" v-if="cameraTF">
-          <h3 style="position: absolute; top: 5px">정확도</h3>
+          <h3 style="position: absolute; top: 5px; color: var(--second-color)">
+            정확도
+          </h3>
           <div class="mt-5" id="label-container"></div>
         </div>
 
@@ -67,24 +134,39 @@
         </div>
 
         <div class="card" style="flex: 1" v-if="cameraTF">
-          <h3 style="position: absolute; top: 5px">점수</h3>
+          <h3 style="position: absolute; top: 5px; color: var(--second-color)">
+            점수
+          </h3>
           <div id="label-container"></div>
         </div>
       </v-container>
     </div>
+    <v-dialog
+      v-model="dialog"
+      :overlay="false"
+      max-width="600px"
+      transition="dialog-transition"
+    >
+      <MainRank />
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+import MainRank from "@/components/MainRank.vue";
 import * as tmPose from "@teachablemachine/pose";
 export default {
   name: "ActivityTryWorkout",
   data() {
     return {
+      canvasBg1: require("@/assets/fitness/bgMan.png"),
+      canvasBg2: require("@/assets/fitness/bgWomen.png"),
+      dialog: false,
       info: {
         timer: 60,
         title: "해양중챔피온",
       },
+      rating: 3,
       params: this.$route.params.data || "",
       model: "",
       webcam: "",
@@ -99,10 +181,7 @@ export default {
       start: false,
     };
   },
-
-  created() {
-    console.log(this.params);
-  },
+  created() {},
   methods: {
     async init() {
       this.timer = this.info.timer;
@@ -167,6 +246,7 @@ export default {
       }
     },
   },
+  components: { MainRank },
 };
 </script>
 
@@ -178,7 +258,7 @@ export default {
   align-items: center;
   justify-content: stretch;
   overflow: hidden;
-  background-image: url(../assets/fitness/card-col3.png);
+  background-image: url(../assets/fitness/card-col1.png);
   border-radius: 18px;
   background-size: cover;
   background-repeat: no-repeat;
@@ -205,7 +285,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(5px);
+  // backdrop-filter: blur(25px);
   // box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-right: 2px solid rgba(255, 255, 255, 0.2);
