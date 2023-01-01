@@ -24,7 +24,8 @@ export default {
   /*========== Colors ==========*/
   /*Color mode HSL(hue, saturation, lightness)*/
   --main-color: #d7e357;
-  --btn-color: #fff;
+  --bar-color: #272727;
+  --bg-color: #595959;
   --first-color: #fbc700;
   --second-color: #ccf863;
 

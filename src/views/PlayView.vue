@@ -4,9 +4,10 @@
       <v-btn color="var(--main-color)" text small to="/">
         <v-icon>mdi-36px mdi-home</v-icon> </v-btn
       ><v-spacer></v-spacer>
-      <v-btn color="var(--main-color)" text small @click="dialog = true"
-        ><v-icon>mdi-36px mdi-crown</v-icon></v-btn
-      >
+      <v-btn color="var(--main-color)" rounded small @click="dialog = true">
+        <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
+        <h2 style="color: var(--bg-color)">Rank</h2>
+      </v-btn>
     </div>
     <div class="aiSection">
       <div class="topBar">
@@ -147,20 +148,21 @@
       max-width="600px"
       transition="dialog-transition"
     >
-      <MainRank />
+      <DialogRank :items="items" />
     </v-dialog>
   </v-container>
 </template>
 
 <script>
-import MainRank from "@/components/MainRank.vue";
+import DialogRank from "@/components/DialogRank.vue";
 import * as tmPose from "@teachablemachine/pose";
 export default {
   name: "ActivityTryWorkout",
+  components: { DialogRank },
   data() {
     return {
       canvasBg1: require("@/assets/fitness/bgMan.png"),
-      canvasBg2: require("@/assets/fitness/bgWomen.png"),
+      canvasBg2: require("@/assets/fitness/bgMan.png"),
       dialog: false,
       info: {
         timer: 60,
@@ -179,6 +181,38 @@ export default {
       timer: 0,
       radius: 45,
       start: false,
+      items: [
+        {
+          rank: "1",
+          avatar:
+            "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
+          name: "aaaaaa",
+          team: "해양중",
+          record: 23,
+          recordSum: 2,
+          recordRepeat: 2,
+        },
+        {
+          rank: "11",
+          avatar:
+            "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
+          team: "오현중",
+          name: "b",
+          record: 100,
+          recordSum: 4,
+          recordRepeat: 4,
+        },
+        {
+          rank: "9",
+          avatar:
+            "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
+          team: "호매실중",
+          name: "c",
+          record: 200,
+          recordSum: 3,
+          recordRepeat: 4,
+        },
+      ],
     };
   },
   created() {},
@@ -246,7 +280,6 @@ export default {
       }
     },
   },
-  components: { MainRank },
 };
 </script>
 

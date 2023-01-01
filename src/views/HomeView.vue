@@ -18,23 +18,11 @@
             max-height="250"
           >
             <div
-              class="d-flex justify-center align-center ma-10 pa-5 rounded-xl menuBox"
+              class="d-flex justify-center align-center ma-10 rounded-xl menuBox"
+              @click="dialogGo(n.title)"
             >
               <h1 class="white--text">{{ n.title }}</h1>
             </div>
-            <h3
-              class="mt-5 text-center menuText"
-              style="
-                color: #d7e357;
-                display: block;
-                position: absolute;
-                bottom: 20%;
-                left: 50%;
-                transform: translateX(-50%);
-              "
-            >
-              <!-- {{ n.content }} -->
-            </h3>
           </v-img>
         </v-card>
       </v-col>
@@ -86,7 +74,7 @@
                   ></v-rating>
                   <v-spacer></v-spacer>
                   <div class="grey--text ms-4">
-                    <span style="color: var(--second-color)">{{ n.made }}</span>
+                    <span style="color: var(--second-color)">{{ n.team }}</span>
                   </div>
                 </v-row>
 
@@ -156,7 +144,7 @@
                   ></v-rating>
                   <v-spacer></v-spacer>
                   <div class="grey--text ms-4">
-                    <span style="color: var(--main-color)">{{ n.made }}</span>
+                    <span style="color: var(--main-color)">{{ n.team }}</span>
                   </div>
                 </v-row>
 
@@ -179,40 +167,46 @@
         </v-card>
       </v-col>
     </v-row>
+    <!-- 방만들기 -->
+    <v-dialog v-model="dialogC" max-width="600px">
+      <DialogCreate />
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+import DialogCreate from "@/components/DialogCreate.vue";
 import MainJumbo from "@/components/MainJumbo.vue";
 
 export default {
   creator: "HomeView",
 
-  components: { MainJumbo },
+  components: { MainJumbo, DialogCreate },
   data() {
     return {
       search: "",
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substring(0, 10),
+      dialogC: false,
       loading: false,
       menus: [
         {
-          title: "WORKOUT",
+          title: "workout",
           content: "운동 참여",
           img: "card1.png",
         },
         {
-          title: "GAME",
+          title: "game",
           content: "게임 참여",
           img: "card2.png",
         },
         {
-          title: "CREATE",
+          title: "create",
           content: "운동 생성",
           img: "card3.png",
         },
-        { title: "Dashboard", content: "참여 현황", img: "card4.png" },
+        { title: "board", content: "참여 현황", img: "card4.png" },
       ],
       items: [
         {
@@ -221,11 +215,11 @@ export default {
           title: "내가짱sdfsdfsdfsdfsdfssdfdsdfsdfsdfsdfsdfsdf",
           content: "내가짱이다내가짱이다내가짱이다.",
           creator: "홍길동",
-          made: "안산해양중",
+          team: "안산해양중",
           people: 7,
           password: "1233",
           startDate: "2022-10-22",
-          endDate: "2022-12-31",
+          endDate: "2023-12-31",
           type: "workout",
           img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
           rating: 3.5,
@@ -237,103 +231,6 @@ export default {
           infoText1: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
           infoText2:
             "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
-        },
-        {
-          id: "1553333",
-          title: "우리짱",
-          content: "우리짱이다.",
-          creator: "이숭동",
-          made: "봉담고",
-          people: 4,
-          password: "1233",
-          startDate: "2022-10-12",
-          endDate: "2022-12-31",
-          type: "workout",
-          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-          img: "",
-          members: [52, "member"],
-          rating: 4,
-          progress: "false",
-          infoImg1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          infoImg2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          infoText1: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
-          infoText2: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
-        },
-        {
-          id: "125353",
-          title: "모두짱",
-          content: "모두짱이다모두짱이다모두짱이다모두짱이다모두짱이다.",
-          creator: "김고동",
-          made: "오현초",
-          people: 2,
-          password: "1233",
-          startDate: "2022-10-25",
-          endDate: "2022-12-31",
-          type: "workout",
-          members: [5111, "member"],
-          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-          img: "",
-          rating: 3,
-          progress: "ing",
-          infoImg1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          infoImg2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          infoText1: "내가짱sdfsdfsdfsdf",
-          infoText2: "내가짱sdfsdfsdfsdf",
-        },
-        {
-          id: "125353",
-          title: "모두짱game",
-          content: "모두짱이game이다모두짱이game두짱이다.",
-          creator: "김고동",
-          made: "오현초",
-          people: 2,
-          password: "1233",
-          startDate: "2022-10-25",
-          endDate: "2022-12-31",
-          type: "game",
-          members: [225, "member"],
-          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-          img: "",
-          rating: 4,
-          progress: "ing",
-          infoImg1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          infoImg2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          infoText1: "",
-          infoText2: "",
-        },
-        {
-          id: "125353",
-          title: "game모두짱",
-          content: "모두짱game두짱이다모두game두짱이다.",
-          creator: "김고동",
-          made: "오현초",
-          people: 2,
-          password: "1233",
-          startDate: "2022-10-25",
-          endDate: "2022-12-22",
-          type: "game",
-          members: [25, "member"],
-          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-          rating: 3,
-          img: "",
-          progress: true,
-        },
-        {
-          id: "125353",
-          title: "game",
-          content: "모두짱이다모두짱이다모두짱이다모두짱이다모두짱이다.",
-          creator: "김고동",
-          made: "오현초",
-          people: 2,
-          password: "1233",
-          startDate: "2022-10-25",
-          endDate: "2022-12-31",
-          type: "game",
-          members: [52, "member"],
-          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-          rating: 4.5,
-          img: "",
-          progress: false,
         },
       ],
     };
@@ -347,6 +244,12 @@ export default {
     routLink(n) {
       // this.$router.push("/about");
       this.$router.push({ name: "play", params: { data: n } });
+    },
+    dialogGo(n) {
+      console.log(n);
+      if (n === "create") {
+        this.dialogC = true;
+      }
     },
   },
 };
