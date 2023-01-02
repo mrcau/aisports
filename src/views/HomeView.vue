@@ -168,20 +168,19 @@
       </v-col>
     </v-row>
     <!-- 방만들기 -->
-    <v-dialog v-model="dialogC" max-width="600px">
+    <!-- <v-dialog v-model="dialogC" max-width="600px">
       <DialogCreate />
-    </v-dialog>
+    </v-dialog> -->
   </v-container>
 </template>
 
 <script>
-import DialogCreate from "@/components/DialogCreate.vue";
 import MainJumbo from "@/components/MainJumbo.vue";
 
 export default {
   creator: "HomeView",
 
-  components: { MainJumbo, DialogCreate },
+  components: { MainJumbo },
   data() {
     return {
       search: "",
@@ -235,6 +234,10 @@ export default {
       ],
     };
   },
+  created() {
+    console.log("hi");
+    this.getData();
+  },
   methods: {
     dateCompare(day) {
       const date1 = new Date(this.today);
@@ -248,8 +251,22 @@ export default {
     dialogGo(n) {
       console.log(n);
       if (n === "create") {
-        this.dialogC = true;
+        this.$router.push("/create");
       }
+    },
+    getData() {
+      this.$firebase
+        .firestore()
+        .collection("workout")
+        .get()
+        .then((sn) => {
+          this.items = sn.docs.map((e) => e.data());
+          console.log(this.items);
+        })
+        .catch((e) => console.log(e))
+        .finally(() => {
+          console.log("complete");
+        });
     },
   },
 };

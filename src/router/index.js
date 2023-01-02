@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import PlayView from "../views/PlayView.vue";
+import CreateView from "../views/CreateView.vue";
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,11 @@ const routes = [
     path: "/play",
     name: "play",
     component: PlayView,
+  },
+  {
+    path: "/create",
+    name: "create",
+    component: CreateView,
   },
 ];
 
