@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/valid-v-slot -->
 <template>
   <v-container class="font-italic white--text pb-15">
     <div class="d-flex mb-2">
@@ -7,7 +6,6 @@
       ><v-spacer></v-spacer>
     </div>
     <div class="aiSection">
-      <!-- <v-card class="cardRank"> -->
       <div class="topBar">
         <v-card-title>
           <h2>
@@ -19,7 +17,7 @@
           <v-row class="mx-0">
             <v-spacer></v-spacer>
             <div class="grey--text ms-4">
-              <span style="color: var(--main-color)">{{ data.made }}</span>
+              <span style="color: var(--main-color)">{{ data.team }}</span>
             </div>
           </v-row>
 
@@ -43,15 +41,47 @@
       <v-card-text class="contentBg">
         <v-form>
           <v-container>
-            <v-text-field
-              v-model="data.title"
-              label="제목"
-              required
-              dark
-              dense
-              :counter="20"
-              color="var(--main-color)"
-            ></v-text-field>
+            <v-btn-toggle v-model="toggle" mandatory style="display: flex">
+              <v-btn
+                :color="toggle ? 'grey' : 'var(--main-color)'"
+                @click="data.type = 'workout'"
+                style="flex: 1"
+              >
+                <h2 class="white--text">WORKOUT</h2>
+              </v-btn>
+              <v-btn
+                :color="!toggle ? 'grey' : 'var(--main-color)'"
+                @click="data.ype = 'game'"
+                style="flex: 1"
+              >
+                <h2 class="white--text">GAME</h2>
+              </v-btn>
+            </v-btn-toggle>
+            <v-row class="pt-5">
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="data.title"
+                  label="제목"
+                  required
+                  dark
+                  dense
+                  :counter="20"
+                  color="var(--main-color)"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  v-model="data.team"
+                  label="운영자"
+                  required
+                  dark
+                  dense
+                  :counter="10"
+                  color="var(--main-color)"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
             <v-textarea
               v-model="data.content"
               label="내용"
@@ -60,26 +90,31 @@
               textarea
               dense
               filled
-              rows="3"
+              rows="2"
               outlined
               :counter="100"
               color="var(--main-color)"
+              class="pt-5"
             ></v-textarea>
             <v-row>
               <v-col cols="6">
-                <v-text-field
-                  v-model="data.team"
-                  label="운영자"
-                  required
-                  dark
-                  dense
-                  outlined
-                  filled
-                  :counter="10"
-                  color="var(--main-color)"
-                ></v-text-field>
+                <v-menu transition="scale-transition" offset-y>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="data.endDate"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      label="마감날짜"
+                      v-bind="attrs"
+                      v-on="on"
+                      color="var(--main-color)"
+                      dark
+                    />
+                  </template>
+                  <v-date-picker v-model="data.endDate" no-title scrollable />
+                </v-menu>
               </v-col>
-              <v-col cols="6">
+              <v-col class="pt-8" cols="6">
                 <v-text-field
                   v-model="data.password"
                   label="입장 비밀번호"
@@ -87,27 +122,27 @@
                   dense
                   dark
                   :rules="Rules"
-                  outlined
-                  filled
                   :counter="10"
                   color="var(--main-color)"
                 ></v-text-field>
               </v-col>
             </v-row>
+
             <v-radio-group
-              v-model="data.type"
+              v-model="selector"
               row
               dense
               dark
               style="margin-top: -10px"
             >
-              <v-radio label="운동" value="workout" /> <v-spacer></v-spacer>
-              <v-radio label="게임" value="game" />
+              <v-radio label="기본동작" value="basic" /> <v-spacer></v-spacer>
+              <v-radio label="수정" value="custom" />
             </v-radio-group>
             <v-text-field
               v-model="data.aiSrc"
               label="AI주소"
               required
+              :disabled="selector != 'custom'"
               dark
               dense
               filled
@@ -120,6 +155,7 @@
                 <v-textarea
                   v-model="data.infoText1"
                   label="동작1"
+                  :disabled="selector != 'custom'"
                   required
                   dark
                   dense
@@ -134,6 +170,7 @@
                 <v-textarea
                   v-model="data.infoText2"
                   label="동작2"
+                  :disabled="selector != 'custom'"
                   required
                   dense
                   dark
@@ -154,6 +191,7 @@
                     label="사진"
                     id="imginput"
                     @change="addPic"
+                    :disabled="selector != 'custom'"
                     style="display: none"
                   />
                   <label for="imginput">
@@ -166,9 +204,15 @@
                         background-size: contain;
                         background-repeat: no-repeat;
                         background-position: center;
-                        cursor: pointer;
                       "
-                    ></div>
+                    >
+                      <h2
+                        style="line-height: 150px; cursor: pointer"
+                        v-if="selector === 'custom'"
+                      >
+                        동작1 변경
+                      </h2>
+                    </div>
                   </label>
                 </div>
               </v-col>
@@ -179,6 +223,7 @@
                     label="사진"
                     id="imginput2"
                     @change="addPic2"
+                    :disabled="selector != 'custom'"
                     style="display: none"
                   />
                   <label for="imginput2">
@@ -191,52 +236,24 @@
                         background-size: contain;
                         background-repeat: no-repeat;
                         background-position: center;
-                        cursor: pointer;
                       "
-                    ></div>
+                    >
+                      <h2
+                        style="line-height: 150px; cursor: pointer"
+                        v-if="selector === 'custom'"
+                      >
+                        동작2 변경
+                      </h2>
+                    </div>
                   </label>
                 </div>
-              </v-col>
-            </v-row>
-            <v-row style="margin: -10px 0 0 0">
-              <v-col cols="6">
-                <v-menu transition="scale-transition" offset-y>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="data.startDate"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      label="시작날짜"
-                      v-bind="attrs"
-                      v-on="on"
-                      dark
-                    />
-                  </template>
-                  <v-date-picker v-model="data.startDate" no-title scrollable />
-                </v-menu>
-              </v-col>
-              <v-col cols="6">
-                <v-menu transition="scale-transition" offset-y>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="data.endDate"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      label="마감날짜"
-                      v-bind="attrs"
-                      v-on="on"
-                      dark
-                    />
-                  </template>
-                  <v-date-picker v-model="data.endDate" no-title scrollable />
-                </v-menu>
               </v-col>
             </v-row>
           </v-container>
         </v-form>
         <v-divider dark color="var(--main-color)"></v-divider>
         <v-spacer></v-spacer>
-        <v-btn class="my-5" :loading="loading" dark depressed @click="save">
+        <v-btn :loading="loading" block dark depressed @click="save">
           <h2>SAVE</h2>
         </v-btn>
       </v-card-text>
@@ -251,17 +268,20 @@ export default {
   data() {
     return {
       data: {
+        id: "",
         creator: "홍길동",
         team: "안산해양중",
-        title: "",
-        content: "내가짱이다내가짱이다내가짱이다.",
+        title: "제목",
+        content: "내용",
         type: "workout",
         aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
         infoImg1: require("@/assets/fitness/sp2.png"),
         infoImg2: require("@/assets/fitness/sp1.png"),
         infoText1: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
         infoText2: "내가짱s sdfsdf내가짱sdfsdfsdfsdf",
-        startDate: "",
+        startDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+          .toISOString()
+          .substring(0, 10),
         endDate: "",
         password: "1233",
         people: 7,
@@ -276,6 +296,8 @@ export default {
       file: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
       imgsrc: "",
       loading: false,
+      toggle: true,
+      selector: "basic",
       Rules: [(v) => !!v || "필수입력란"],
     };
   },
@@ -286,16 +308,17 @@ export default {
     async addPic(e) {
       this.file = e;
       const url = URL.createObjectURL(e);
-      this.infoImg1 = url;
+      this.data.infoImg1 = url;
     },
     async addPic2(e) {
       this.file = e;
       const url = URL.createObjectURL(e);
-      this.infoImg2 = url;
+      this.data.infoImg2 = url;
     },
     save() {
       this.loading = true;
       const id = Date.now().toString();
+      this.data.id = id;
       this.$firebase
         .firestore()
         .collection("workout")
@@ -307,6 +330,7 @@ export default {
         .catch((e) => console.log(e))
         .finally(() => {
           this.loading = false;
+          this.$router.push("/");
         });
     },
   },

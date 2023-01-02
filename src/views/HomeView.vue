@@ -245,8 +245,10 @@ export default {
       return date1 <= date2;
     },
     routLink(n) {
-      // this.$router.push("/about");
-      this.$router.push({ name: "play", params: { data: n } });
+      this.$router.push({
+        name: "play",
+        params: { id: n.id, data: n },
+      });
     },
     dialogGo(n) {
       console.log(n);

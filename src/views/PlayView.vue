@@ -11,6 +11,13 @@
     </div>
     <div class="aiSection">
       <div class="topBar">
+        <!-- <div
+          :style="
+            params.type === 'workout'
+              ? `background-image: url(${canvasBg1})`
+              : `background-image: url(${canvasBg2})`
+          "
+        ></div> -->
         <v-card-title>
           <h2>
             {{ params.title }}
@@ -39,7 +46,7 @@
           <v-spacer></v-spacer>
           <v-icon color="white">mdi-account-group</v-icon>
           <span class="mx-2 mt-1">
-            {{ params.members.length }}
+            {{ params ? params.members.length : "0" }}
           </span>
         </v-card-actions>
       </div>
@@ -47,11 +54,6 @@
       <div
         class="bgCanvas"
         style="position: relative; overflow-y: auto; overflow-x: hidden"
-        :style="
-          params.type === 'workout'
-            ? `background-image: url(${canvasBg1})`
-            : `background-image: url(${canvasBg2})`
-        "
       >
         <v-container
           class="text-left"
@@ -59,50 +61,64 @@
           v-if="!start"
         >
           <div>
-            <h1 style="text-shadow: 2px 2px 2px black">
+            <h2 style="text-shadow: 2px 2px 2px black">
               {{ params.type === "workout" ? "운동방법" : "게임방법" }}
-            </h1>
-            <h5 style="color: var(--second-color)">
-              <v-icon color="var(--second-color)"
+            </h2>
+            <h5 style="color: var(--main-color)" class="mt-2">
+              <v-icon color="var(--main-color)"
                 >mdi-alert-circle-outline</v-icon
               >
               전신이 카메라에 나올수 있도록 해주세요.
             </h5>
-            <h2
-              class="mt-5 rounded-5"
-              style="color: var(--main-color); text-shadow: 2px 2px 2px black"
-            >
-              동작1
-            </h2>
-            <v-card style="background: rgba(255, 255, 255, 0.7)">
-              <v-card-title>
-                {{ params.infoText1 }}
-              </v-card-title>
-            </v-card>
-            <v-img
-              src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-              width="50%"
-              class="mx-auto mt-2"
-              style="border-radius: 5px"
-              v-if="params.infoImg1"
-            />
-            <h2
-              class="mt-5"
-              style="color: var(--main-color); text-shadow: 2px 2px 2px black"
-            >
-              동작2
-            </h2>
-            <v-card style="background: rgba(255, 255, 255, 0.7)">
-              <v-card-title> {{ params.infoText1 }} </v-card-title>
-            </v-card>
-            <v-img
-              src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-              width="50%"
-              height="50%"
-              class="mx-auto mt-2"
-              style="border-radius: 5px"
-              v-if="params.infoImg2"
-            />
+            <v-row class="mt-2">
+              <v-col cols="6">
+                <v-img
+                  :src="params.infoImg1"
+                  width="70%"
+                  class="mx-auto mt-2"
+                  style="border-radius: 5px"
+                  v-if="params.infoImg1"
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-img
+                  :src="params.infoImg2"
+                  width="70%"
+                  class="mx-auto mt-2"
+                  style="border-radius: 5px"
+                  v-if="params.infoImg2"
+                />
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col cols="6">
+                <v-card class="mx-auto" color="var(--bar-color)" dark>
+                  <v-card-title>
+                    <h3 class="text-center" style="color: var(--main-color)">
+                      POSE1
+                    </h3>
+                  </v-card-title>
+
+                  <v-card-text>
+                    <h3>{{ params.infoText1 }}</h3>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+              <v-col cols="6">
+                <v-card class="mx-auto" color="var(--bar-color)" dark>
+                  <v-card-title>
+                    <h3 class="text-center" style="color: var(--main-color)">
+                      POSE2
+                    </h3>
+                  </v-card-title>
+
+                  <v-card-text>
+                    <h3>{{ params.infoText2 }}</h3>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
           </div>
         </v-container>
         <canvas id="canvas"></canvas>
@@ -161,6 +177,10 @@ export default {
   components: { DialogRank },
   data() {
     return {
+      id: this.$route.params.id || "",
+      // params: this.$route.params.data || "",
+      params: "",
+      getDatas: "",
       canvasBg1: require("@/assets/fitness/bgMan.png"),
       canvasBg2: require("@/assets/fitness/bgMan.png"),
       dialog: false,
@@ -169,7 +189,6 @@ export default {
         title: "해양중챔피온",
       },
       rating: 3,
-      params: this.$route.params.data || "",
       model: "",
       webcam: "",
       ctx: "",
@@ -215,8 +234,28 @@ export default {
       ],
     };
   },
-  created() {},
+  created() {
+    this.getData();
+  },
   methods: {
+    getData() {
+      if (!this.id) {
+        return;
+      }
+      this.$firebase
+        .firestore()
+        .collection("workout")
+        .doc(this.id)
+        .get()
+        .then((e) => {
+          this.params = e.data();
+          console.log(this.params);
+        })
+        .catch((e) => console.log(e))
+        .finally(() => {
+          console.log("complete");
+        });
+    },
     async init() {
       this.timer = this.info.timer;
       this.cameraTF = true;
@@ -307,17 +346,17 @@ export default {
   border-top: solid 5px #ccf863;
 }
 .bgCanvas {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--bg-color);
   // background-image: url("../assets/logo.png");
   /* background-image: url('../assets/logo.png'); */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  // background-position: center;
+  // background-repeat: no-repeat;
+  // background-size: cover;
   width: 600px;
   height: 600px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
   // backdrop-filter: blur(25px);
   // box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.5);

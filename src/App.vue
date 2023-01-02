@@ -48,7 +48,7 @@ export default {
 }
 
 /* Responsive typography */
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 600px) {
   :root {
     --biggest-size: 5rem;
     --h1-size: 2.25rem;
