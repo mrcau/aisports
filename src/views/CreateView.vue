@@ -6,6 +6,7 @@
       ><v-spacer></v-spacer>
     </div>
     <div class="aiSection">
+      <!-- 상단정보 -->
       <div class="topBar">
         <v-card-title>
           <h2>
@@ -38,10 +39,12 @@
           </span>
         </v-card-actions>
       </div>
+      <!-- 입력폼 -->
       <v-card-text class="contentBg">
         <v-form>
           <v-container>
-            <v-btn-toggle v-model="toggle" mandatory style="display: flex">
+            <!-- 운동게임 선택 -->
+            <!-- <v-btn-toggle v-model="toggle" mandatory style="display: flex">
               <v-btn
                 :color="toggle ? 'grey' : 'var(--main-color)'"
                 @click="data.type = 'workout'"
@@ -56,13 +59,15 @@
               >
                 <h2 class="white--text">GAME</h2>
               </v-btn>
-            </v-btn-toggle>
-            <v-row class="pt-5">
+            </v-btn-toggle> -->
+
+            <v-row class="pt-1">
               <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="data.title"
                   label="제목"
                   required
+                  :rules="Rules"
                   dark
                   dense
                   :counter="20"
@@ -74,6 +79,7 @@
                   v-model="data.team"
                   label="운영자"
                   required
+                  :rules="Rules"
                   dark
                   dense
                   :counter="10"
@@ -86,6 +92,7 @@
               v-model="data.content"
               label="내용"
               required
+              :rules="Rules"
               dark
               textarea
               dense
@@ -94,7 +101,7 @@
               outlined
               :counter="100"
               color="var(--main-color)"
-              class="pt-5"
+              class="pt-7"
             ></v-textarea>
             <v-row>
               <v-col cols="6">
@@ -116,25 +123,18 @@
               </v-col>
               <v-col class="pt-8" cols="6">
                 <v-text-field
-                  v-model="data.password"
-                  label="입장 비밀번호"
-                  required
+                  v-model="data.time"
+                  label="운동시간"
                   dense
                   dark
+                  required
                   :rules="Rules"
-                  :counter="10"
                   color="var(--main-color)"
                 ></v-text-field>
               </v-col>
             </v-row>
 
-            <v-radio-group
-              v-model="selector"
-              row
-              dense
-              dark
-              style="margin-top: -10px"
-            >
+            <v-radio-group v-model="selector" row dense dark>
               <v-radio label="기본동작" value="basic" /> <v-spacer></v-spacer>
               <v-radio label="수정" value="custom" />
             </v-radio-group>
@@ -142,6 +142,7 @@
               v-model="data.aiSrc"
               label="AI주소"
               required
+              :rules="Rules"
               :disabled="selector != 'custom'"
               dark
               dense
@@ -150,13 +151,14 @@
               :counter="100"
               color="var(--main-color)"
             ></v-text-field>
-            <v-row>
+            <v-row class="mt-3">
               <v-col cols="12" sm="6">
                 <v-textarea
                   v-model="data.infoText1"
-                  label="동작1"
+                  label="Pose1"
                   :disabled="selector != 'custom'"
                   required
+                  :rules="Rules"
                   dark
                   dense
                   outlined
@@ -169,13 +171,13 @@
               <v-col cols="12" sm="6">
                 <v-textarea
                   v-model="data.infoText2"
-                  label="동작2"
+                  label="Pose2"
                   :disabled="selector != 'custom'"
                   required
+                  :rules="Rules"
                   dense
                   dark
                   outlined
-                  :rules="Rules"
                   filled
                   rows="2"
                   :counter="50"
@@ -210,7 +212,7 @@
                         style="line-height: 150px; cursor: pointer"
                         v-if="selector === 'custom'"
                       >
-                        동작1 변경
+                        Pose1 변경
                       </h2>
                     </div>
                   </label>
@@ -242,7 +244,7 @@
                         style="line-height: 150px; cursor: pointer"
                         v-if="selector === 'custom'"
                       >
-                        동작2 변경
+                        Pose2 변경
                       </h2>
                     </div>
                   </label>
@@ -252,8 +254,39 @@
           </v-container>
         </v-form>
         <v-divider dark color="var(--main-color)"></v-divider>
-        <v-spacer></v-spacer>
-        <v-btn :loading="loading" block dark depressed @click="save">
+        <div class="d-flex pa-2">
+          <v-btn-toggle
+            v-model="openTF"
+            color="var(--main-color)"
+            group
+            mandatory
+            class="mr-3"
+          >
+            <v-btn>
+              <v-icon>mdi-lock-open-variant-outline</v-icon>
+            </v-btn>
+            <v-btn>
+              <v-icon>mdi-lock-outline</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+          <v-text-field
+            v-model="data.password"
+            label="입장 비밀번호"
+            dense
+            dark
+            :disabled="!openTF"
+            color="var(--main-color)"
+            style="transform: translateY(15px)"
+          ></v-text-field>
+        </div>
+
+        <v-btn
+          :loading="loading"
+          color="var(--main-color)"
+          block
+          depressed
+          @click="save"
+        >
           <h2>SAVE</h2>
         </v-btn>
       </v-card-text>
@@ -270,20 +303,22 @@ export default {
       data: {
         id: "",
         creator: "홍길동",
-        team: "안산해양중",
+        team: "한국중학교",
         title: "제목",
-        content: "내용",
+        content: "어깨운동",
+        time: 60,
         type: "workout",
         aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
         infoImg1: require("@/assets/fitness/sp2.png"),
         infoImg2: require("@/assets/fitness/sp1.png"),
-        infoText1: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
-        infoText2: "내가짱s sdfsdf내가짱sdfsdfsdfsdf",
+        infoText1:
+          "양 팔을 올리고 팔꿈치를 구부려 두 손이 어깨 위치에 오도록 합니다.",
+        infoText2: "팔꿈치를 펴서 두 손을 머리 위로 올립니다.",
         startDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
           .substring(0, 10),
         endDate: "",
-        password: "1233",
+        password: "",
         people: 7,
         img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
         rating: 3.5,
@@ -297,6 +332,7 @@ export default {
       imgsrc: "",
       loading: false,
       toggle: true,
+      openTF: false,
       selector: "basic",
       Rules: [(v) => !!v || "필수입력란"],
     };
@@ -330,7 +366,11 @@ export default {
         .catch((e) => console.log(e))
         .finally(() => {
           this.loading = false;
-          this.$router.push("/");
+          // this.$router.push("/");
+          this.$router.push({
+            name: "play",
+            params: { id: id },
+          });
         });
     },
   },
@@ -376,7 +416,7 @@ v-data-table {
   background: rgba(0, 0, 0, 0.5);
   width: 100%;
   max-height: 300px;
-  border-bottom: solid 5px #ccf863;
+  border-bottom: solid 3px var(--main-color);
 }
 .cameraInfo {
   border-top: solid 5px #ccf863;

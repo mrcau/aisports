@@ -26,10 +26,14 @@
 
         <v-card-text>
           <v-row class="mx-0">
-            <v-rating v-model="rating" color="amber" dense></v-rating>
+            <v-rating
+              v-model="rating"
+              color="var(--main-color)"
+              dense
+            ></v-rating>
             <v-spacer></v-spacer>
             <div class="grey--text ms-4">
-              <span style="color: var(--main-color)">{{ params.made }}</span>
+              <span style="color: var(--main-color)">{{ params.team }}</span>
             </div>
           </v-row>
 
@@ -71,7 +75,7 @@
             background-color: var(--bg-color);
             height: 100%;
           "
-          v-if="!start && saveOn"
+          v-if="!start && !saveOn"
         >
           <div>
             <v-banner color="var(--bar-color)" dark rounded single-line>
@@ -143,7 +147,7 @@
             background-color: var(--bg-color);
             height: 100%;
           "
-          v-if="!saveOn"
+          v-if="saveOn"
         >
           <v-card color="var(--bar-color)" dark class="text-center">
             <v-card-title> SAVE RECORD </v-card-title>
@@ -192,9 +196,9 @@
       >
         <!-- 정확도 -->
         <div class="card" style="flex: 1" v-if="start && !saveOn">
-          <h3 style="position: absolute; top: 5px; color: var(--second-color)">
-            POSE 정확도
-          </h3>
+          <!-- <h3 style="position: absolute; top: 5px; color: var(--second-color)">
+            정확도
+          </h3> -->
           <div class="mt-5" id="label-container"></div>
         </div>
 
@@ -209,7 +213,7 @@
           </button>
           <!-- 진행버튼 -->
           <v-progress-circular
-            :value="(timer / info.timer) * 100"
+            :value="(timer / params.time) * 100"
             :width="10"
             size="100"
             color="var(--main-color)"
@@ -257,7 +261,6 @@ export default {
       id: this.$route.params.id || "",
       // params: this.$route.params.data || "",
       params: "",
-      getDatas: "",
       canvasBg1: require("@/assets/fitness/bgMan.png"),
       canvasBg2: require("@/assets/fitness/bgMan.png"),
       dialog: false,
@@ -339,7 +342,7 @@ export default {
     },
     async init() {
       this.start = true;
-      this.timer = this.info.timer;
+      this.timer = this.params.timer;
       this.start = true;
       // const URL = "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/";
       const URL = "https://teachablemachine.withgoogle.com/models/k-nnfICb0/";
@@ -387,7 +390,7 @@ export default {
       const prediction = await this.model.predict(posenetOutput);
       for (let i = 0; i < this.maxPredictions; i++) {
         const classPrediction =
-          prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+          "Pose" + i + 1 + ": " + prediction[i].probability.toFixed(2);
         this.labelContainer.childNodes[i].innerHTML = classPrediction;
       }
       // finally draw the poses
@@ -408,27 +411,38 @@ export default {
       this.saveOn = false;
     },
     save() {
+      const id = Date.now().toString();
+      const date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substring(0, 10);
       const data = {
+        id: id,
+        date: date,
         avatar:
           "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
         name: this.saveName,
         team: this.saveTeam,
         record: this.score,
       };
-      this.saveOn = false;
-      console.log(data);
       this.$firebase
         .firestore()
-        .collection("workoutRank")
+        .collection("rank")
         .doc(this.id)
-        .get()
-        .then((e) => {
-          this.params = e.data();
-          console.log(this.params);
+        .collection("workout")
+        .doc(id)
+        .set(data)
+        .then(() => {
+          console.log("save finished");
+          // this.$firebase
+          //   .firestore()
+          //   .collection("rank")
+          //   .doc(this.id)
+          //   .update({
+          //     count: this.$firebase.firestore.FieldValue.increment(1),
+          //   });
         })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          console.log("complete");
+        .catch((e) => {
+          console.log(e);
         });
     },
   },
@@ -453,10 +467,10 @@ export default {
   background: rgba(0, 0, 0, 0.5);
   width: 100%;
   max-height: 300px;
-  border-bottom: solid 5px #ccf863;
+  border-bottom: solid 3px var(--main-color);
 }
 .cameraInfo {
-  border-top: solid 5px #ccf863;
+  border-top: solid 3px var(--main-color);
 }
 .bgCanvas {
   background-color: var(--bg-color);

@@ -148,12 +148,8 @@ a.router-link-exact-active {
 
 .btn1 {
   border: none;
-  background: linear-gradient(
-    #64dd17 0%,
-    #558b2f 100% /* rgba(251, 33, 117, 1) 0%,
-    rgba(234, 76, 137, 1) 100% */
-  );
-  color: #fff;
+  background: var(--main-color);
+  color: var(--bar-color);
   overflow: hidden;
 }
 .btn1:hover {

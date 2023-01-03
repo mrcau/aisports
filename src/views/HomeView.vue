@@ -79,8 +79,7 @@
                 </v-row>
 
                 <div class="mt-5 text-subtitle-1">
-                  Small plates, salads & sandwiches - an intimate setting with
-                  12 indoor seats plus patio seating.
+                  {{ n.content }}
                 </div>
               </v-card-text>
             </div>
@@ -149,8 +148,7 @@
                 </v-row>
 
                 <div class="mt-5 text-subtitle-1">
-                  Small plates, salads & sandwiches - an intimate setting with
-                  12 indoor seats plus patio seating.
+                  {{ n.content }}
                 </div>
               </v-card-text>
             </div>
@@ -214,7 +212,7 @@ export default {
           title: "내가짱sdfsdfsdfsdfsdfssdfdsdfsdfsdfsdfsdfsdf",
           content: "내가짱이다내가짱이다내가짱이다.",
           creator: "홍길동",
-          team: "안산해양중",
+          team: "한국중학교",
           people: 7,
           password: "1233",
           startDate: "2022-10-22",
