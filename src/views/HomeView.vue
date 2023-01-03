@@ -247,7 +247,8 @@ export default {
     routLink(n) {
       this.$router.push({
         name: "play",
-        params: { id: n.id, data: n },
+        params: { id: n.id },
+        // params: { id: n.id, data: n },
       });
     },
     dialogGo(n) {

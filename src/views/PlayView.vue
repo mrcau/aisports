@@ -51,25 +51,37 @@
         </v-card-actions>
       </div>
       <!-- 캔버스배경 && 티처블머신 -->
-      <div
-        class="bgCanvas"
-        style="position: relative; overflow-y: auto; overflow-x: hidden"
-      >
+      <div class="bgCanvas">
+        <div v-if="start && !cameraTF" style="position: absolute">
+          <h3>카메라 로딩중...</h3>
+          <v-progress-linear
+            color="var(--main-color)"
+            indeterminate
+            rounded
+            height="6"
+          />
+        </div>
+
+        <!-- 운동방법 -->
         <v-container
-          class="text-left"
-          style="position: absolute; top: 0"
-          v-if="!start"
+          class="text-left px-10"
+          style="
+            position: absolute;
+            top: 0;
+            background-color: var(--bg-color);
+            height: 100%;
+          "
+          v-if="!start && saveOn"
         >
           <div>
-            <h2 style="text-shadow: 2px 2px 2px black">
-              {{ params.type === "workout" ? "운동방법" : "게임방법" }}
-            </h2>
-            <h5 style="color: var(--main-color)" class="mt-2">
-              <v-icon color="var(--main-color)"
-                >mdi-alert-circle-outline</v-icon
-              >
-              전신이 카메라에 나올수 있도록 해주세요.
-            </h5>
+            <v-banner color="var(--bar-color)" dark rounded single-line>
+              <h2 class="mt-1" style="color: var(--main-color)">운동방법</h2>
+              <h4 class="mt-2">
+                <v-icon>mdi-alert-circle-outline</v-icon>
+                몸 전체가 나오도록 카메라 거리 조절!
+              </h4>
+            </v-banner>
+
             <v-row class="mt-2">
               <v-col cols="6">
                 <v-img
@@ -121,6 +133,56 @@
             </v-row>
           </div>
         </v-container>
+
+        <!-- 기록저장 -->
+        <v-container
+          class="pa-10"
+          style="
+            position: absolute;
+            top: 0;
+            background-color: var(--bg-color);
+            height: 100%;
+          "
+          v-if="!saveOn"
+        >
+          <v-card color="var(--bar-color)" dark class="text-center">
+            <v-card-title> SAVE RECORD </v-card-title>
+            <v-divider></v-divider>
+            <h1>{{ score }}</h1>
+            <v-card-text>
+              <v-text-field
+                v-model="saveName"
+                label="이름"
+                required
+                dark
+                filled
+                outlined
+                dense
+                color="var(--main-color)"
+                style="padding: 0; margin: 0"
+              ></v-text-field>
+              <v-text-field
+                v-model="saveTeam"
+                label="소속"
+                required
+                dark
+                filled
+                outlined
+                dense
+                color="var(--main-color)"
+                style="padding: 0; margin: 0"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions style="margin: -20px 0 0 0">
+              <v-btn class="mb-2" block color="var(--main-color)" @click="save">
+                <h2 style="color: var(--bar-color)">
+                  {{ uid ? "저장" : "회원가입 & 기록저장" }}
+                </h2>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-container>
+        <!-- 티처블머신화면 -->
         <canvas id="canvas"></canvas>
       </div>
       <!-- 티처블머신 정보 -->
@@ -128,36 +190,50 @@
         style="display: flex; width: 100%; gap: 20px"
         class="cameraInfo mx-5 my-b"
       >
-        <div class="card" style="flex: 1" v-if="cameraTF">
+        <!-- 정확도 -->
+        <div class="card" style="flex: 1" v-if="start && !saveOn">
           <h3 style="position: absolute; top: 5px; color: var(--second-color)">
-            정확도
+            POSE 정확도
           </h3>
           <div class="mt-5" id="label-container"></div>
         </div>
 
         <div class="btnBox" style="flex: 1">
-          <button @click="init" class="btn btn1 btnCamera" v-if="!cameraTF">
-            <h2>START</h2>
+          <!-- 시작버튼 -->
+          <button
+            @click="init"
+            class="btn btn1 btnCamera"
+            v-if="!start && !saveOn"
+          >
+            <h3>START</h3>
           </button>
+          <!-- 진행버튼 -->
           <v-progress-circular
             :value="(timer / info.timer) * 100"
             :width="10"
             size="100"
             color="var(--main-color)"
-            v-else
+            v-if="start && !saveOn"
           >
             <h1>{{ timer }}</h1>
           </v-progress-circular>
+          <!-- 저장버튼 -->
+          <button @click="restart" class="btn btn1 btnCamera" v-if="saveOn">
+            <h3>RESTART</h3>
+          </button>
         </div>
-
-        <div class="card" style="flex: 1" v-if="cameraTF">
+        <!-- 점수 -->
+        <div class="card" style="flex: 1" v-if="start && !saveOn">
           <h3 style="position: absolute; top: 5px; color: var(--second-color)">
             점수
           </h3>
-          <div id="label-container"></div>
+          <div id="label-container">
+            <h1 class="mt-5">{{ score }}</h1>
+          </div>
         </div>
       </v-container>
     </div>
+
     <v-dialog
       v-model="dialog"
       :overlay="false"
@@ -177,6 +253,7 @@ export default {
   components: { DialogRank },
   data() {
     return {
+      uid: "",
       id: this.$route.params.id || "",
       // params: this.$route.params.data || "",
       params: "",
@@ -194,12 +271,16 @@ export default {
       ctx: "",
       labelContainer: "",
       maxPredictions: "",
-      cameraTF: false,
       cavasBg: "",
       circle: "",
       timer: 0,
+      score: 0,
       radius: 45,
       start: false,
+      saveOn: false,
+      cameraTF: false,
+      saveName: "",
+      saveTeam: "",
       items: [
         {
           rank: "1",
@@ -257,19 +338,21 @@ export default {
         });
     },
     async init() {
+      this.start = true;
       this.timer = this.info.timer;
-      this.cameraTF = true;
+      this.start = true;
       // const URL = "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/";
       const URL = "https://teachablemachine.withgoogle.com/models/k-nnfICb0/";
       const modelURL = URL + "model.json";
       const metadataURL = URL + "metadata.json";
       this.model = await tmPose.load(modelURL, metadataURL);
       this.maxPredictions = this.model.getTotalClasses();
-      const size = window.innerWidth < 600 ? window.innerWidth : 600;
+      const size = window.innerWidth < 600 ? window.innerWidth - 20 : 590;
       const flip = true;
       this.webcam = new tmPose.Webcam(size, size, flip);
       await this.webcam.setup();
       await this.webcam.play();
+      this.cameraTF = true;
       // append/get elements to the DOM
       const canvas = document.getElementById("canvas");
       canvas.width = size;
@@ -285,7 +368,10 @@ export default {
         this.timer--;
         if (this.timer < 1) {
           clearInterval(this.circle);
-          this.cameraTF = false;
+          this.start = false;
+          this.cameraTF = true;
+          this.saveOn = true;
+          this.webcam.stop();
         }
       }, 1000);
     },
@@ -318,6 +404,33 @@ export default {
         }
       }
     },
+    restart() {
+      this.saveOn = false;
+    },
+    save() {
+      const data = {
+        avatar:
+          "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
+        name: this.saveName,
+        team: this.saveTeam,
+        record: this.score,
+      };
+      this.saveOn = false;
+      console.log(data);
+      this.$firebase
+        .firestore()
+        .collection("workoutRank")
+        .doc(this.id)
+        .get()
+        .then((e) => {
+          this.params = e.data();
+          console.log(this.params);
+        })
+        .catch((e) => console.log(e))
+        .finally(() => {
+          console.log("complete");
+        });
+    },
   },
 };
 </script>
@@ -347,21 +460,24 @@ export default {
 }
 .bgCanvas {
   background-color: var(--bg-color);
+  width: 600px;
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   // background-image: url("../assets/logo.png");
   /* background-image: url('../assets/logo.png'); */
   // background-position: center;
   // background-repeat: no-repeat;
   // background-size: cover;
-  width: 600px;
-  height: 600px;
-  // display: flex;
-  // justify-content: center;
-  // align-items: center;
   // backdrop-filter: blur(25px);
   // box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-right: 2px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 @media (max-width: 576px) {
   .bgCanvas {
@@ -369,14 +485,7 @@ export default {
     height: 100vw;
   }
 }
-.bgCamera {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  margin-top: 20px;
-}
+
 .btnCamera {
   width: 100px;
   height: 100px;
