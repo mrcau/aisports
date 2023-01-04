@@ -1,5 +1,5 @@
 <template>
-  <v-container class="font-italic white--text pb-15">
+  <v-container class="font-italic white--text pb-3">
     <div class="d-flex mb-2">
       <v-btn color="var(--main-color)" text small to="/">
         <v-icon>mdi-36px mdi-home</v-icon> </v-btn
@@ -77,7 +77,7 @@
               <v-col cols="12" sm="6">
                 <v-text-field
                   v-model="data.team"
-                  label="운영자"
+                  label="담당"
                   required
                   :rules="Rules"
                   dark
@@ -304,15 +304,14 @@ export default {
         id: "",
         creator: "홍길동",
         team: "한국중학교",
-        title: "제목",
-        content: "어깨운동",
+        title: "어깨깡패 되기",
+        content: "AI 어깨 근력 강화 운동",
         time: 60,
         type: "workout",
         aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
         infoImg1: require("@/assets/fitness/sp2.png"),
         infoImg2: require("@/assets/fitness/sp1.png"),
-        infoText1:
-          "양 팔을 올리고 팔꿈치를 구부려 두 손이 어깨 위치에 오도록 합니다.",
+        infoText1: "팔꿈치를 구부려 두 손이 어깨 위치에 오도록 합니다.",
         infoText2: "팔꿈치를 펴서 두 손을 머리 위로 올립니다.",
         startDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
@@ -339,8 +338,15 @@ export default {
   },
 
   mounted() {},
-
+  created() {
+    this.getData();
+  },
   methods: {
+    getData() {
+      if (this.$route.params.id) {
+        this.data = this.$route.params;
+      }
+    },
     async addPic(e) {
       this.file = e;
       const url = URL.createObjectURL(e);
@@ -353,8 +359,15 @@ export default {
     },
     save() {
       this.loading = true;
-      const id = Date.now().toString();
-      this.data.id = id;
+      let id = "";
+      if (this.$route.params.id) {
+        id = this.$route.params.id;
+        this.data.id = id;
+      } else {
+        id = Date.now().toString();
+        this.data.id = id;
+      }
+
       this.$firebase
         .firestore()
         .collection("workout")

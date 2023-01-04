@@ -49,17 +49,18 @@
           style="background: #d7e357"
           @click="routLink(n)"
         >
-          <v-img
+          <v-img height="200" :src="`${require('@/assets/fitness/card1.png')}`">
+            <!-- <v-img
             height="200"
             :src="
               n.img ? `${n.img}` : `${require('@/assets/fitness/cards1.png')}`
             "
-          >
+          > -->
             <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
               <v-card-title>
-                <h2>
+                <h3>
                   {{ n.title }}
-                </h2>
+                </h3>
               </v-card-title>
 
               <v-card-text>
@@ -118,15 +119,10 @@
           style="background: #c6ef60"
           @click="routLink(n)"
         >
-          <v-img
-            height="200"
-            :src="
-              n.img ? `${n.img}` : `${require('@/assets/fitness/cards2.png')}`
-            "
-          >
+          <v-img height="200" :src="`${require('@/assets/fitness/card3.png')}`">
             <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
               <v-card-title>
-                <h2>
+                <h2 class="cardTitle">
                   {{ n.title }}
                 </h2>
               </v-card-title>
@@ -165,10 +161,6 @@
         </v-card>
       </v-col>
     </v-row>
-    <!-- 방만들기 -->
-    <!-- <v-dialog v-model="dialogC" max-width="600px">
-      <DialogCreate />
-    </v-dialog> -->
   </v-container>
 </template>
 
@@ -233,14 +225,31 @@ export default {
     };
   },
   created() {
-    console.log("hi");
     this.getData();
   },
   methods: {
+    getData() {
+      this.$firebase
+        .firestore()
+        .collection("workout")
+        .get()
+        .then((sn) => {
+          this.items = sn.docs.map((e) => e.data());
+          console.log(this.items);
+        })
+        .catch((e) => console.log(e))
+        .finally(() => {
+          console.log("complete get Data");
+        });
+    },
     dateCompare(day) {
-      const date1 = new Date(this.today);
-      const date2 = new Date(day);
-      return date1 <= date2;
+      if (day) {
+        const date1 = new Date(this.today);
+        const date2 = new Date(day);
+        return date1 <= date2;
+      } else {
+        return true;
+      }
     },
     routLink(n) {
       this.$router.push({
@@ -254,20 +263,6 @@ export default {
       if (n === "create") {
         this.$router.push("/create");
       }
-    },
-    getData() {
-      this.$firebase
-        .firestore()
-        .collection("workout")
-        .get()
-        .then((sn) => {
-          this.items = sn.docs.map((e) => e.data());
-          console.log(this.items);
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          console.log("complete");
-        });
     },
   },
 };
@@ -300,7 +295,7 @@ export default {
   height: 170px;
 }
 .menuBox.workout:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 0, 0.5);
 }
 .title {
   text-shadow: 2px 2px 2px gray;
@@ -309,12 +304,8 @@ export default {
   flex-wrap: nowrap;
   overflow-x: auto;
 }
-.menuBox:hover h1 {
-  transition: all 0.2s;
-  transform: scale(1.2);
-}
 .menuBox:hover h3 {
   transition: all 0.2s;
-  transform: translateY(20px);
+  transform: scale(1.1);
 }
 </style>

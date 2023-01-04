@@ -1,5 +1,9 @@
 <template>
-  <v-container class="font-italic white--text pb-15">
+  <v-container
+    class="font-italic white--text pb-3 d-flex flex-column"
+    style="height: 100%"
+  >
+    <!-- 1. 상단 홈 바로가기/RANK -->
     <div class="d-flex mb-2">
       <v-btn color="var(--main-color)" text small to="/">
         <v-icon>mdi-36px mdi-home</v-icon> </v-btn
@@ -9,7 +13,9 @@
         <h2 style="color: var(--bg-color)">Rank</h2>
       </v-btn>
     </div>
+    <!-- 2. 앱바운동정보 / 티처블머신 -->
     <div class="aiSection">
+      <!-- 2-1. 상단 앱바 운동정보 -->
       <div class="topBar">
         <!-- <div
           :style="
@@ -19,9 +25,10 @@
           "
         ></div> -->
         <v-card-title>
-          <h2>
-            {{ params.title }}
-          </h2>
+          <h3>{{ params.title }}</h3>
+          <v-spacer></v-spacer>
+          <v-btn color="success" @click="editData">수정</v-btn>
+          <v-btn color="success" @click="removeData">삭제</v-btn>
         </v-card-title>
 
         <v-card-text>
@@ -54,7 +61,7 @@
           </span>
         </v-card-actions>
       </div>
-      <!-- 캔버스배경 && 티처블머신 -->
+      <!--  2-2. 캔버스배경    -->
       <div class="bgCanvas">
         <div v-if="start && !cameraTF" style="position: absolute">
           <h3>카메라 로딩중...</h3>
@@ -66,7 +73,7 @@
           />
         </div>
 
-        <!-- 운동방법 -->
+        <!--  2-3.  운동방법 -->
         <v-container
           class="text-left px-10"
           style="
@@ -80,10 +87,8 @@
           <div>
             <v-banner color="var(--bar-color)" dark rounded single-line>
               <h2 class="mt-1" style="color: var(--main-color)">운동방법</h2>
-              <h4 class="mt-2">
-                <v-icon>mdi-alert-circle-outline</v-icon>
-                몸 전체가 나오도록 카메라 거리 조절!
-              </h4>
+              <h4 class="mt-2">1. 신체와 카메라 거리 조절</h4>
+              <h4 class="mt-2">2. Pose1과 Pose2 동작 반복</h4>
             </v-banner>
 
             <v-row class="mt-2">
@@ -138,7 +143,7 @@
           </div>
         </v-container>
 
-        <!-- 기록저장 -->
+        <!-- 2-4. 기록저장 -->
         <v-container
           class="pa-10"
           style="
@@ -155,8 +160,33 @@
             <h1>{{ score }}</h1>
             <v-card-text>
               <v-text-field
+                v-model="saveEmail"
+                label="이메일"
+                :rules="Rules"
+                required
+                dark
+                filled
+                outlined
+                dense
+                color="var(--main-color)"
+                style="padding: 0; margin: 0"
+              ></v-text-field>
+              <v-text-field
+                v-model="savePass"
+                label="비밀번호"
+                :rules="Rules"
+                required
+                dark
+                filled
+                outlined
+                dense
+                color="var(--main-color)"
+                style="padding: 0; margin: 0"
+              ></v-text-field>
+              <v-text-field
                 v-model="saveName"
                 label="이름"
+                :rules="Rules"
                 required
                 dark
                 filled
@@ -168,6 +198,7 @@
               <v-text-field
                 v-model="saveTeam"
                 label="소속"
+                :rules="Rules"
                 required
                 dark
                 filled
@@ -186,84 +217,83 @@
             </v-card-actions>
           </v-card>
         </v-container>
-        <!-- 티처블머신화면 -->
+        <!-- 2.5 티처블머신화면 -->
         <canvas id="canvas"></canvas>
       </div>
-      <!-- 티처블머신 정보 -->
-      <v-container
-        style="display: flex; width: 100%; gap: 20px"
-        class="cameraInfo mx-5 my-b"
-      >
-        <!-- 정확도 -->
-        <div class="card" style="flex: 1" v-if="start && !saveOn">
-          <!-- <h3 style="position: absolute; top: 5px; color: var(--second-color)">
+    </div>
+    <!-- 3. 하단바 티처블머신 정보 -->
+    <v-container
+      style="display: flex; width: 100%; gap: 20px; align-items: center"
+      class="cameraInfo"
+    >
+      <!-- 정확도 -->
+      <div class="card" style="flex: 1" v-if="start && !saveOn">
+        <!-- <h3 style="position: absolute; top: 5px; color: var(--second-color)">
             정확도
           </h3> -->
-          <div class="mt-5" id="label-container"></div>
-        </div>
+        <div class="mt-5" id="label-container"></div>
+      </div>
 
-        <div class="btnBox" style="flex: 1">
-          <!-- 시작버튼 -->
-          <button
-            @click="init"
-            class="btn btn1 btnCamera"
-            v-if="!start && !saveOn"
-          >
-            <h3>START</h3>
-          </button>
-          <!-- 진행버튼 -->
-          <v-progress-circular
-            :value="(timer / params.time) * 100"
-            :width="10"
-            size="100"
-            color="var(--main-color)"
-            v-if="start && !saveOn"
-          >
-            <h1>{{ timer }}</h1>
-          </v-progress-circular>
-          <!-- 저장버튼 -->
-          <button @click="restart" class="btn btn1 btnCamera" v-if="saveOn">
-            <h3>RESTART</h3>
-          </button>
+      <div class="btnBox" style="flex: 1">
+        <!-- 시작버튼 -->
+        <button
+          @click="init"
+          class="btn btn1 btnCamera"
+          v-if="!start && !saveOn"
+        >
+          <h3>START</h3>
+        </button>
+        <!-- 진행/시간 버튼 -->
+        <v-progress-circular
+          :value="(timer / params.time) * 100"
+          :width="10"
+          size="100"
+          color="var(--main-color)"
+          v-if="start && !saveOn"
+        >
+          <h1>{{ timer }}</h1>
+        </v-progress-circular>
+        <!-- 저장버튼 -->
+        <button @click="restart" class="btn btn1 btnCamera" v-if="saveOn">
+          <h3>RESTART</h3>
+        </button>
+      </div>
+      <!-- 점수 -->
+      <div class="card" style="flex: 1" v-if="start && !saveOn">
+        <h3 style="position: absolute; top: 5px; color: var(--second-color)">
+          점수
+        </h3>
+        <div id="label-container">
+          <h1 class="mt-5">{{ score }}</h1>
         </div>
-        <!-- 점수 -->
-        <div class="card" style="flex: 1" v-if="start && !saveOn">
-          <h3 style="position: absolute; top: 5px; color: var(--second-color)">
-            점수
-          </h3>
-          <div id="label-container">
-            <h1 class="mt-5">{{ score }}</h1>
-          </div>
-        </div>
-      </v-container>
-    </div>
-
-    <v-dialog
-      v-model="dialog"
-      :overlay="false"
-      max-width="600px"
-      transition="dialog-transition"
-    >
+      </div>
+    </v-container>
+    <v-dialog v-model="dialogRank" max-width="600px">
       <DialogRank :items="items" />
+    </v-dialog>
+    <v-dialog v-model="dialogSave" max-width="600px">
+      <DialogSave :score="score" />
     </v-dialog>
   </v-container>
 </template>
 
 <script>
 import DialogRank from "@/components/DialogRank.vue";
+import DialogSave from "@/components/DialogSave.vue";
 import * as tmPose from "@teachablemachine/pose";
 export default {
   name: "ActivityTryWorkout",
-  components: { DialogRank },
+  components: { DialogRank, DialogSave },
   data() {
     return {
+      // params: this.$route.params.data || "",
+      // canvasBg1: require("@/assets/fitness/bgMan.png"),
       uid: "",
       id: this.$route.params.id || "",
-      // params: this.$route.params.data || "",
       params: "",
-      canvasBg1: require("@/assets/fitness/bgMan.png"),
-      canvasBg2: require("@/assets/fitness/bgMan.png"),
-      dialog: false,
+      items: [],
+      dialogRank: false,
+      dialogSave: false,
       info: {
         timer: 60,
         title: "해양중챔피온",
@@ -283,43 +313,20 @@ export default {
       saveOn: false,
       cameraTF: false,
       saveName: "",
+      savePass: "",
+      saveEmail: "",
       saveTeam: "",
-      items: [
-        {
-          rank: "1",
-          avatar:
-            "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
-          name: "aaaaaa",
-          team: "해양중",
-          record: 23,
-          recordSum: 2,
-          recordRepeat: 2,
-        },
-        {
-          rank: "11",
-          avatar:
-            "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
-          team: "오현중",
-          name: "b",
-          record: 100,
-          recordSum: 4,
-          recordRepeat: 4,
-        },
-        {
-          rank: "9",
-          avatar:
-            "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
-          team: "호매실중",
-          name: "c",
-          record: 200,
-          recordSum: 3,
-          recordRepeat: 4,
-        },
-      ],
+      Rules: [(v) => !!v || "필수입력란"],
     };
   },
   created() {
     this.getData();
+  },
+  beforeDestroy() {
+    if (this.webcam) {
+      console.log(this.webcam, "webcam 닫기");
+      this.webcam.stop();
+    }
   },
   methods: {
     getData() {
@@ -333,16 +340,46 @@ export default {
         .get()
         .then((e) => {
           this.params = e.data();
-          console.log(this.params);
+          this.$firebase
+            .firestore()
+            .collection("workout")
+            .doc(this.id)
+            .collection("rank")
+            .get()
+            .then((sn) => {
+              this.items = sn.docs.map((e) => e.data());
+            })
+            .catch((e) => console.log(e))
+            .finally(() => {
+              console.log("get Item");
+            });
         })
         .catch((e) => console.log(e))
         .finally(() => {
-          console.log("complete");
+          console.log("get Data");
         });
     },
+    removeData() {
+      this.$firebase
+        .firestore()
+        .collection("workout")
+        .doc(this.id)
+        .delete()
+        .then(() => {
+          this.$router.push("/");
+        })
+        .catch((e) => console.log(e));
+    },
+    editData() {
+      this.$router.push({
+        name: "create",
+        params: this.params,
+      });
+    },
+
     async init() {
       this.start = true;
-      this.timer = this.params.timer;
+      this.timer = this.params.time;
       this.start = true;
       // const URL = "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/";
       const URL = "https://teachablemachine.withgoogle.com/models/k-nnfICb0/";
@@ -373,7 +410,8 @@ export default {
           clearInterval(this.circle);
           this.start = false;
           this.cameraTF = true;
-          this.saveOn = true;
+          // this.saveOn = true;
+          this.dialogSave = true;
           this.webcam.stop();
         }
       }, 1000);
@@ -421,25 +459,20 @@ export default {
         avatar:
           "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
         name: this.saveName,
+        email: this.saveEmail,
         team: this.saveTeam,
         record: this.score,
       };
       this.$firebase
         .firestore()
-        .collection("rank")
-        .doc(this.id)
         .collection("workout")
+        .doc(this.id)
+        .collection("rank")
         .doc(id)
         .set(data)
         .then(() => {
           console.log("save finished");
-          // this.$firebase
-          //   .firestore()
-          //   .collection("rank")
-          //   .doc(this.id)
-          //   .update({
-          //     count: this.$firebase.firestore.FieldValue.increment(1),
-          //   });
+          this.saveOn = false;
         })
         .catch((e) => {
           console.log(e);
@@ -458,7 +491,7 @@ export default {
   justify-content: stretch;
   overflow: hidden;
   background-image: url(../assets/fitness/card-col1.png);
-  border-radius: 18px;
+  border-radius: 10px 10px 0 0;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -470,7 +503,13 @@ export default {
   border-bottom: solid 3px var(--main-color);
 }
 .cameraInfo {
+  flex: auto;
   border-top: solid 3px var(--main-color);
+  background-image: url(../assets/fitness/card-col1.png);
+  border-radius: 0 0 10px 10px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
 }
 .bgCanvas {
   background-color: var(--bg-color);
