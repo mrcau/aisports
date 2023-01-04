@@ -1,6 +1,6 @@
 <template>
-  <div class="jumboBox py-5">
-    <div class="rounded-lg d-flex jumbo white--text mt-10">
+  <div class="jumboBox">
+    <div class="rounded-lg d-flex jumbo white--text">
       <div class="pa-5" style="flex: 2">
         <h1 class="font-italic" style="font-size: 3rem">{{ title }}</h1>
         <p>{{ content }}</p>

@@ -1,72 +1,84 @@
 <template>
   <v-card class="cardRank">
-    <v-card-title dark> SAVE RECORD </v-card-title>
-    <v-divider></v-divider>
-    <h1 style="font-size: 80px; color: white">{{ score }}</h1>
-    <v-card-text>
-      <v-text-field
-        v-model="saveEmail"
-        label="이메일"
-        :rules="Rules"
-        required
+    <v-form ref="form" lazy-validation>
+      <v-card-title class="text-h5 white--text rankTop">
+        <h2>SCORE</h2>
+      </v-card-title>
+      <h1 style="font-size: 70px; color: white">{{ score }}</h1>
+      <v-card-text class="pa-3">
+        <div class="px-5 pt-5 rounded" style="background: var(--bar-color)">
+          <v-text-field
+            v-model="saveEmail"
+            label="Email"
+            :rules="emailRules"
+            required
+            dark
+            filled
+            outlined
+            dense
+            color="var(--main-color)"
+            style="padding: 0; margin: 0"
+          ></v-text-field>
+          <v-text-field
+            v-model="savePass"
+            label="Password"
+            :rules="Rules"
+            required
+            dark
+            filled
+            outlined
+            dense
+            color="var(--main-color)"
+            style="padding: 0; margin: 0"
+          ></v-text-field>
+          <v-text-field
+            v-model="saveName"
+            label="Name"
+            :rules="nameRules"
+            required
+            dark
+            filled
+            outlined
+            dense
+            color="var(--main-color)"
+            style="padding: 0; margin: 0"
+          ></v-text-field>
+          <v-text-field
+            v-model="saveTeam"
+            label="Team"
+            dark
+            filled
+            outlined
+            dense
+            color="var(--main-color)"
+            style="padding: 0; margin: 0"
+          ></v-text-field>
+        </div>
+      </v-card-text>
+      <v-checkbox
         dark
-        filled
-        outlined
-        dense
-        color="var(--main-color)"
-        style="padding: 0; margin: 0"
-      ></v-text-field>
-      <v-text-field
-        v-model="savePass"
-        label="비밀번호"
-        :rules="Rules"
+        class="ml-3"
+        v-model="checkbox"
+        :rules="[(v) => !!v || '필수체크란']"
+        label="기록저장 / 회원가입에 동의합니다."
         required
-        dark
-        filled
-        outlined
-        dense
-        color="var(--main-color)"
-        style="padding: 0; margin: 0"
-      ></v-text-field>
-      <v-text-field
-        v-model="saveName"
-        label="이름"
-        :rules="Rules"
-        required
-        dark
-        filled
-        outlined
-        dense
-        color="var(--main-color)"
-        style="padding: 0; margin: 0"
-      ></v-text-field>
-      <v-text-field
-        v-model="saveTeam"
-        label="소속"
-        :rules="Rules"
-        required
-        dark
-        filled
-        outlined
-        dense
-        color="var(--main-color)"
-        style="padding: 0; margin: 0"
-      ></v-text-field>
-    </v-card-text>
-    <v-card-actions style="margin: -20px 0 0 0">
-      <v-btn class="mb-2" block color="var(--main-color)" @click="save">
-        <h2 style="color: var(--bar-color)">
-          {{ uid ? "저장" : "회원가입 & 기록저장" }}
-        </h2>
-      </v-btn>
-    </v-card-actions>
+        style="margin: -10px 0 0 0"
+      ></v-checkbox>
+      <v-card-actions>
+        <v-btn class="mb-2" block color="var(--second-color)" @click="save">
+          <h2>SAVE</h2>
+        </v-btn>
+      </v-card-actions>
+    </v-form>
   </v-card>
 </template>
 
 <script>
+import { AvatarGenerator } from "random-avatar-generator";
+
 export default {
   name: "DialogRank",
-  props: ["score"],
+  props: ["score", "id"],
   data() {
     return {
       uid: "",
@@ -74,23 +86,43 @@ export default {
       savePass: "",
       saveEmail: "",
       saveTeam: "",
+      checkbox: false,
       Rules: [(v) => !!v || "필수입력란"],
+      nameRules: [
+        (v) => !!v || "필수입력란",
+        (v) => v.length <= 10 || "10자내로 입력",
+      ],
+      emailRules: [
+        (v) => !!v || "필수입력란",
+        (v) => /.+@.+/.test(v) || "E-mail 형식",
+      ],
     };
   },
 
   mounted() {},
 
   methods: {
+    // avatarCreate() {
+    //   const generator = new AvatarGenerator();
+    //   this.avatarSrc = generator.generateRandomAvatar();
+    // },
     save() {
+      const valid = this.$refs.form.validate();
+      if (!valid) {
+        return;
+      }
+
       const id = Date.now().toString();
       const date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substring(0, 10);
+
+      const generator = new AvatarGenerator();
+      const avatarSrc = generator.generateRandomAvatar();
       const data = {
         id: id,
         date: date,
-        avatar:
-          "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
+        avatar: avatarSrc,
         name: this.saveName,
         email: this.saveEmail,
         team: this.saveTeam,
@@ -104,11 +136,13 @@ export default {
         .doc(id)
         .set(data)
         .then(() => {
-          console.log("save finished");
           this.saveOn = false;
         })
         .catch((e) => {
           console.log(e);
+        })
+        .finally(() => {
+          this.$emit("close");
         });
     },
   },

@@ -1,34 +1,29 @@
 <template>
   <v-container class="font-italic white--text pb-15">
-    <v-text-field
-      v-model="search"
-      append-icon="mdi-magnify"
-      label="Search"
-      single-line
-      hide-details
-    />
+    <h1>hi hello</h1>
     <!-- 점보 -->
     <MainJumbo />
     <!-- 메뉴 -->
-    <v-row>
-      <v-col v-for="(n, i) in menus" :key="i" cols="12" sm="6">
+    <v-row class="mt-3">
+      <v-col v-for="(n, i) in menus" :key="i" cols="6">
         <v-card style="background: #303030; position: relative">
           <v-img
             :src="`${require('@/assets/fitness/' + n.img)}`"
-            max-height="250"
+            max-height="200"
+            style="padding: 20px"
           >
             <div
-              class="d-flex justify-center align-center ma-10 rounded-xl menuBox"
+              class="d-flex justify-center align-center menuBox"
               @click="dialogGo(n.title)"
             >
-              <h1 class="white--text">{{ n.title }}</h1>
+              <h1 class="white--text smallText">{{ n.title }}</h1>
             </div>
           </v-img>
         </v-card>
       </v-col>
     </v-row>
     <!-- 새로운운동 타이틀 -->
-    <h3 class="mt-8 text-left italic title" style="color: #d7e357">
+    <h3 class="mt-5 text-left italic title" style="color: #d7e357">
       <v-icon color="#d7e357" class="mb-1">mdi-dumbbell</v-icon> New Workout
     </h3>
     <!-- 새로운운동 아이템들 -->
@@ -49,7 +44,10 @@
           style="background: #d7e357"
           @click="routLink(n)"
         >
-          <v-img height="200" :src="`${require('@/assets/fitness/card1.png')}`">
+          <v-img
+            max-height="150"
+            :src="`${require('@/assets/fitness/card1.png')}`"
+          >
             <!-- <v-img
             height="200"
             :src="
@@ -99,7 +97,7 @@
     </v-row>
 
     <!-- 새로운게임 타이들 -->
-    <h2 class="text-left mt-10 title" style="color: #d7e357">
+    <h2 class="text-left mt-5 title" style="color: #d7e357">
       <v-icon color="#d7e357" class="mb-1">mdi-gamepad-variant-outline</v-icon>
       New Game
     </h2>
@@ -173,7 +171,6 @@ export default {
   components: { MainJumbo },
   data() {
     return {
-      search: "",
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substring(0, 10),
@@ -269,10 +266,11 @@ export default {
 </script>
 <style scoped>
 .menuBox {
-  height: 170px;
+  height: 100%;
   cursor: pointer;
   transition: all 0.5s;
   backdrop-filter: blur(5px);
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.3);
   box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -281,7 +279,6 @@ export default {
 }
 .menuBox:hover {
   background: rgba(255, 255, 0, 0.5);
-  height: 170px;
 }
 .menuBox.workout {
   background: rgba(0, 0, 0, 0.3);
@@ -292,7 +289,6 @@ export default {
 }
 .menuBox:hover {
   background: rgba(255, 255, 0, 0.5);
-  height: 170px;
 }
 .menuBox.workout:hover {
   background: rgba(255, 255, 0, 0.5);
@@ -307,5 +303,16 @@ export default {
 .menuBox:hover h3 {
   transition: all 0.2s;
   transform: scale(1.1);
+}
+.smallText {
+  text-transform: uppercase;
+}
+@media (max-width: 500px) {
+  .smallText {
+    font-size: x-large;
+  }
+  .menuBox {
+    border-radius: 10px;
+  }
 }
 </style>

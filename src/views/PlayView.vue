@@ -8,7 +8,7 @@
       <v-btn color="var(--main-color)" text small to="/">
         <v-icon>mdi-36px mdi-home</v-icon> </v-btn
       ><v-spacer></v-spacer>
-      <v-btn color="var(--main-color)" rounded small @click="dialog = true">
+      <v-btn color="var(--main-color)" rounded small @click="dialogRank = true">
         <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
         <h2 style="color: var(--bg-color)">Rank</h2>
       </v-btn>
@@ -86,9 +86,11 @@
         >
           <div>
             <v-banner color="var(--bar-color)" dark rounded single-line>
-              <h2 class="mt-1" style="color: var(--main-color)">운동방법</h2>
-              <h4 class="mt-2">1. 신체와 카메라 거리 조절</h4>
-              <h4 class="mt-2">2. Pose1과 Pose2 동작 반복</h4>
+              <h2 class="mt-1 mb-5" style="color: var(--main-color)">
+                운동방법
+              </h2>
+              <p>1. 신체와 카메라 거리 조절</p>
+              <p>2. Pose1과 Pose2 동작 반복</p>
             </v-banner>
 
             <v-row class="mt-2">
@@ -122,7 +124,7 @@
                   </v-card-title>
 
                   <v-card-text>
-                    <h3>{{ params.infoText1 }}</h3>
+                    <p>{{ params.infoText1 }}</p>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -135,7 +137,7 @@
                   </v-card-title>
 
                   <v-card-text>
-                    <h3>{{ params.infoText2 }}</h3>
+                    <p>{{ params.infoText2 }}</p>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -269,10 +271,10 @@
       </div>
     </v-container>
     <v-dialog v-model="dialogRank" max-width="600px">
-      <DialogRank :items="items" />
+      <DialogRank :id="id" />
     </v-dialog>
     <v-dialog v-model="dialogSave" max-width="600px">
-      <DialogSave :score="score" />
+      <DialogSave :score="score" :id="id" @close="dialogSave = false" />
     </v-dialog>
   </v-container>
 </template>
@@ -340,23 +342,6 @@ export default {
         .get()
         .then((e) => {
           this.params = e.data();
-          this.$firebase
-            .firestore()
-            .collection("workout")
-            .doc(this.id)
-            .collection("rank")
-            .get()
-            .then((sn) => {
-              this.items = sn.docs.map((e) => e.data());
-            })
-            .catch((e) => console.log(e))
-            .finally(() => {
-              console.log("get Item");
-            });
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          console.log("get Data");
         });
     },
     removeData() {

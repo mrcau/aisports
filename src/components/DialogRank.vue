@@ -26,9 +26,12 @@
 <script>
 export default {
   name: "DialogRank",
-  props: ["items"],
+  props: ["id"],
   data() {
     return {
+      items: [],
+      unsub: "",
+
       headers: [
         { value: "rank", text: "순위", align: "center" },
         { value: "name", text: "이름", align: "center", sortable: false },
@@ -40,9 +43,34 @@ export default {
     };
   },
 
-  mounted() {},
-
-  methods: {},
+  created() {
+    this.getData();
+  },
+  destroyed() {
+    if (this.unsub) this.unsub();
+  },
+  methods: {
+    getData() {
+      if (!this.id) {
+        return;
+      }
+      this.unsub = this.$firebase
+        .firestore()
+        .collection("workout")
+        .doc(this.id)
+        .collection("rank")
+        .orderBy("record", "desc")
+        .onSnapshot((sn) => {
+          const items = sn.docs.map((e) => e.data());
+          const items2 = [];
+          items.forEach((e) => {
+            const rank = items.indexOf(e) + 1;
+            items2.push({ ...e, rank: rank });
+          });
+          this.items = items2;
+        });
+    },
+  },
 };
 </script>
 
@@ -53,10 +81,6 @@ v-data-table {
 .rankTop {
   background-color: #272727;
   border-bottom: 3px solid var(--second-color);
-  // background-image: url(../assets/fitness/top-board3.png);
-  // background-repeat: no-repeat;
-  // background-size: cover;
-  // background-position: top;
 }
 .cardRank {
   overflow: auto;
