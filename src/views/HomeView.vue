@@ -10,7 +10,7 @@
         dark
         @click="dialogLogin = true"
       >
-        LOGIN
+        <h2 style="color: #303030">LOGIN</h2>
       </v-btn>
     </div>
     <v-dialog v-model="dialogLogin" max-width="500px">
