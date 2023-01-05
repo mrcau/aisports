@@ -12,7 +12,7 @@ firebase.initializeApp(firebaseConfig);
 vue.prototype.$firebase = firebase;
 
 firebase.auth().onAuthStateChanged((fu) => {
-  store.commit("setFierUser", fu);
+  store.commit("adminTF", fu);
   if (fu) {
     firebase
       .firestore()
@@ -23,7 +23,6 @@ firebase.auth().onAuthStateChanged((fu) => {
         const data = e.data();
         store.commit("setUserData", data);
       });
-    // store.dispatch('getRadar')
     store.dispatch("getUserdata");
   }
 });

@@ -8,7 +8,7 @@
       <v-btn color="var(--main-color)" text small to="/">
         <v-icon>mdi-36px mdi-home</v-icon> </v-btn
       ><v-spacer></v-spacer>
-      <v-btn color="var(--main-color)" rounded small @click="dialog = true">
+      <v-btn color="var(--main-color)" rounded small @click="dialogRank = true">
         <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
         <h2 style="color: var(--bg-color)">Rank</h2>
       </v-btn>
@@ -25,7 +25,7 @@
           "
         ></div> -->
         <v-card-title>
-          <h3>{{ params.title }}</h3>
+          <h3 style="font-size: var(--h1-size)">{{ params.title }}</h3>
           <v-spacer></v-spacer>
 
           <v-menu bottom>
@@ -63,7 +63,7 @@
             </div>
           </v-row>
 
-          <div class="mt-5 text-subtitle-1">
+          <div class="mt-5" style="font-size: var(--h3-size)">
             {{ params.content }}
           </div>
         </v-card-text>

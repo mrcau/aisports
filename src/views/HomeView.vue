@@ -2,16 +2,31 @@
   <v-container class="font-italic white--text pb-15">
     <!-- 로그인 -->
     <div class="d-flex login">
-      <Avataaars :width="50" :height="50" :avatarOptions="options" />
       <v-btn
         rounded
         color="var(--main-color)"
         class="mb-2"
         dark
         @click="dialogLogin = true"
+        v-if="!$store.state.fireUser"
       >
         LOGIN
       </v-btn>
+      <div v-else>
+        <v-btn
+          rounded
+          color="var(--main-color)"
+          class="mb-2"
+          dark
+          @click="
+            $firebase.auth().signOut();
+            dialogLogin = false;
+          "
+        >
+          LOOUT
+        </v-btn>
+        <Avataaars :width="50" :height="50" :avatarOptions="options" />
+      </div>
     </div>
     <v-dialog v-model="dialogLogin" max-width="500px">
       <DialogLogin />
@@ -190,6 +205,7 @@ export default {
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substring(0, 10),
+      // uid: this.$store.state.fireUser.uid || "",
       dialogLogin: false,
       loading: false,
       menus: [

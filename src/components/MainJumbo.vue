@@ -2,10 +2,10 @@
   <div class="jumboBox">
     <div class="rounded-lg d-flex jumbo white--text">
       <div class="pa-5" style="flex: 2; z-index: 2">
-        <h1 class="font-italic" style="font-size: 3rem; z-index: 2">
+        <h1 style="font-size: var(--big-size)">
           {{ title }}
         </h1>
-        <p>{{ content }}</p>
+        <p style="font-size: var(--h3-size)">{{ content }}</p>
       </div>
       <!-- <div class="jumboRight" style="flex: 1"></div> -->
       <img class="jumboRight people" :src="bgImg" style="z-index: 1" />
