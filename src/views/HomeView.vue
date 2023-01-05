@@ -1,6 +1,21 @@
 <template>
   <v-container class="font-italic white--text pb-15">
-    <h1>hi hello</h1>
+    <!-- 로그인 -->
+    <div class="d-flex login">
+      <Avataaars :width="50" :height="50" :avatarOptions="options" />
+      <v-btn
+        rounded
+        color="var(--main-color)"
+        class="mb-2"
+        dark
+        @click="dialogLogin = true"
+      >
+        LOGIN
+      </v-btn>
+    </div>
+    <v-dialog v-model="dialogLogin" max-width="500px">
+      <DialogLogin />
+    </v-dialog>
     <!-- 점보 -->
     <MainJumbo />
     <!-- 메뉴 -->
@@ -163,18 +178,19 @@
 </template>
 
 <script>
+import DialogLogin from "@/components/DialogLogin.vue";
 import MainJumbo from "@/components/MainJumbo.vue";
-
+import Avataaars from "vue-avataaars";
 export default {
   creator: "HomeView",
 
-  components: { MainJumbo },
+  components: { MainJumbo, Avataaars, DialogLogin },
   data() {
     return {
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substring(0, 10),
-      dialogC: false,
+      dialogLogin: false,
       loading: false,
       menus: [
         {
@@ -219,6 +235,22 @@ export default {
             "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
         },
       ],
+      options: {
+        backgroundType: "transparent",
+        backgroundColor: "black",
+        skinColor: "light",
+        clothesType: "blazerShirt",
+        clothesColor: "black",
+        clothesGraphicsType: "diamond",
+        eyesType: "cry",
+        eyebrowType: "angry",
+        mouthType: "disbelief",
+        facialHairType: "beardMedium",
+        facialHairColor: "auburn",
+        accessoriesType: "eyepatch",
+        topType: "hijab",
+        topColor: "blonde",
+      },
     };
   },
   created() {
@@ -307,12 +339,18 @@ export default {
 .smallText {
   text-transform: uppercase;
 }
+.login {
+  margin-top: 20px;
+}
 @media (max-width: 500px) {
   .smallText {
     font-size: x-large;
   }
   .menuBox {
     border-radius: 10px;
+  }
+  .login {
+    margin-top: 2px;
   }
 }
 </style>

@@ -8,7 +8,7 @@
       <v-btn color="var(--main-color)" text small to="/">
         <v-icon>mdi-36px mdi-home</v-icon> </v-btn
       ><v-spacer></v-spacer>
-      <v-btn color="var(--main-color)" rounded small @click="dialogRank = true">
+      <v-btn color="var(--main-color)" rounded small @click="dialog = true">
         <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
         <h2 style="color: var(--bg-color)">Rank</h2>
       </v-btn>
@@ -27,8 +27,27 @@
         <v-card-title>
           <h3>{{ params.title }}</h3>
           <v-spacer></v-spacer>
-          <v-btn color="success" @click="editData">수정</v-btn>
-          <v-btn color="success" @click="removeData">삭제</v-btn>
+
+          <v-menu bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn dark icon v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item>
+                <v-btn icon @click="editData"
+                  ><v-icon>mdi-pencil</v-icon></v-btn
+                >
+              </v-list-item>
+              <v-list-item>
+                <v-btn icon @click="removeData"
+                  ><v-icon>mdi-delete</v-icon></v-btn
+                >
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </v-card-title>
 
         <v-card-text>
@@ -86,11 +105,9 @@
         >
           <div>
             <v-banner color="var(--bar-color)" dark rounded single-line>
-              <h2 class="mt-1 mb-5" style="color: var(--main-color)">
-                운동방법
-              </h2>
-              <p>1. 신체와 카메라 거리 조절</p>
-              <p>2. Pose1과 Pose2 동작 반복</p>
+              <h2 class="mt-1" style="color: var(--main-color)">운동방법</h2>
+              <h4 class="mt-2">1. 신체와 카메라 거리 조절</h4>
+              <h4 class="mt-2">2. Pose1과 Pose2 동작 반복</h4>
             </v-banner>
 
             <v-row class="mt-2">
@@ -124,7 +141,7 @@
                   </v-card-title>
 
                   <v-card-text>
-                    <p>{{ params.infoText1 }}</p>
+                    <h3>{{ params.infoText1 }}</h3>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -137,7 +154,7 @@
                   </v-card-title>
 
                   <v-card-text>
-                    <p>{{ params.infoText2 }}</p>
+                    <h3>{{ params.infoText2 }}</h3>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -271,10 +288,10 @@
       </div>
     </v-container>
     <v-dialog v-model="dialogRank" max-width="600px">
-      <DialogRank :id="id" />
+      <DialogRank :items="items" />
     </v-dialog>
     <v-dialog v-model="dialogSave" max-width="600px">
-      <DialogSave :score="score" :id="id" @close="dialogSave = false" />
+      <DialogSave :score="score" />
     </v-dialog>
   </v-container>
 </template>
@@ -342,6 +359,23 @@ export default {
         .get()
         .then((e) => {
           this.params = e.data();
+          this.$firebase
+            .firestore()
+            .collection("workout")
+            .doc(this.id)
+            .collection("rank")
+            .get()
+            .then((sn) => {
+              this.items = sn.docs.map((e) => e.data());
+            })
+            .catch((e) => console.log(e))
+            .finally(() => {
+              console.log("get Item");
+            });
+        })
+        .catch((e) => console.log(e))
+        .finally(() => {
+          console.log("get Data");
         });
     },
     removeData() {

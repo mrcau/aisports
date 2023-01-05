@@ -1,12 +1,14 @@
 <template>
   <div class="jumboBox">
     <div class="rounded-lg d-flex jumbo white--text">
-      <div class="pa-5" style="flex: 2">
-        <h1 class="font-italic" style="font-size: 3rem">{{ title }}</h1>
+      <div class="pa-5" style="flex: 2; z-index: 2">
+        <h1 class="font-italic" style="font-size: 3rem; z-index: 2">
+          {{ title }}
+        </h1>
         <p>{{ content }}</p>
       </div>
-      <div class="jumboRight" style="flex: 1"></div>
-      <img class="jumboRight people" src="@/assets/fitness/people.png" alt="" />
+      <!-- <div class="jumboRight" style="flex: 1"></div> -->
+      <img class="jumboRight people" :src="bgImg" style="z-index: 1" />
     </div>
   </div>
 </template>
@@ -17,9 +19,9 @@ export default {
 
   data() {
     return {
-      bgImg: "https://x.gd/AxUyA",
-      title: "AI-GYM",
-      content: "Welcome AIGYM!!",
+      bgImg: require("@/assets/fitness/people.png"),
+      title: "Ai-GYM",
+      content: "체력 향상을 위한 Ai 운동 프로그램",
     };
   },
 
@@ -29,7 +31,7 @@ export default {
 };
 </script>
 <style>
-@media (max-width: 600px) {
+@media (max-width: 500px) {
   .jumboRight {
     display: none;
   }
