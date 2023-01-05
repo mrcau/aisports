@@ -2,7 +2,7 @@
   <v-card class="cardRank">
     <v-form ref="form" lazy-validation>
       <v-card-title class="text-h5 white--text rankTop">
-        <h2>LOGIN</h2>
+        <h1 style="text-shadow: 1px 1px 1px 1px black">LOGIN</h1>
       </v-card-title>
       <v-card-text class="pa-3" v-if="login">
         <div class="px-5 pt-5 rounded" style="background: var(--bar-color)">
