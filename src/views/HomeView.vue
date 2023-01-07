@@ -2,34 +2,36 @@
   <v-container class="font-italic white--text pb-15">
     <!-- 로그인 -->
     <div class="d-flex login">
+      <Avataaars :width="50" :height="50" v-if="!$store.state.userData" />
+      <!-- <Avataaars :width="50" :height="50" :avatarOptions="options" v-if="!$store.state.userData" /> -->
+      <v-avatar size="50" style="transform: translateY(-2px)" v-else>
+        <img :src="$store.state.userData.avatar" alt="alt" />
+      </v-avatar>
       <v-btn
         rounded
+        small
         color="var(--main-color)"
-        class="mb-2"
-        dark
         @click="dialogLogin = true"
         v-if="!$store.state.fireUser"
+        style="margin: 12px 0 0 5px"
       >
-        LOGIN
+        <h3>Login</h3>
       </v-btn>
       <div v-else>
         <v-btn
           rounded
-          color="var(--main-color)"
-          class="mb-2"
+          small
+          color="var(--bar-color)"
           dark
-          @click="
-            $firebase.auth().signOut();
-            dialogLogin = false;
-          "
+          @click="logout"
+          style="margin: 12px 0 0 5px"
         >
-          LOOUT
+          <h3>Logout</h3>
         </v-btn>
-        <Avataaars :width="50" :height="50" :avatarOptions="options" />
       </div>
     </div>
     <v-dialog v-model="dialogLogin" max-width="500px">
-      <DialogLogin />
+      <DialogLogin @close="dialogLogin = false" />
     </v-dialog>
     <!-- 점보 -->
     <MainJumbo />
@@ -189,6 +191,7 @@
         </v-card>
       </v-col>
     </v-row>
+    {{ $store.state.userData }}
   </v-container>
 </template>
 
@@ -280,12 +283,8 @@ export default {
         .get()
         .then((sn) => {
           this.items = sn.docs.map((e) => e.data());
-          console.log(this.items);
         })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          console.log("complete get Data");
-        });
+        .catch((e) => console.log(e));
     },
     dateCompare(day) {
       if (day) {
@@ -304,10 +303,18 @@ export default {
       });
     },
     dialogGo(n) {
-      console.log(n);
-      if (n === "create") {
+      console.log(this.$store.state.fireUser);
+      if (n === "create" || n === "board") {
+        if (!this.$store.state.fireUser) {
+          this.dialogLogin = true;
+          return;
+        }
         this.$router.push("/create");
       }
+    },
+    logout() {
+      console.log("logout");
+      this.$firebase.auth().signOut();
     },
   },
 };

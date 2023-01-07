@@ -1,13 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import firebase from "firebase";
-import "firebase/firestore";
-// import createPersistedState from 'vuex-persistedstate'
-
+// import firebase from "firebase";
+// import "firebase/firestore";
+import createPersistedState from "vuex-persistedstate";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  // plugins: [createPersistedState()],
+  plugins: [createPersistedState()],
   state: {
     fireUser: null,
     admin: false,
@@ -16,34 +15,36 @@ export default new Vuex.Store({
   },
   getters: {},
   mutations: {
-    adminTF(state, fu) {
+    //로그인- 관리자판정
+    authTF(state, fu) {
       state.fireUser = fu;
-      if (!state.fireUser) {
+      if (!fu) {
+        state.userData = fu;
         return;
       }
       state.fireUid = fu.uid;
-      if (fu.uid === "UeiJvPIx2GYB4nCmKYb8ob49FUF3") {
+      if (fu.uid === process.env.VUE_APP_FIREBASE_Admin) {
         state.admin = true;
       } else {
         state.admin = false;
       }
     },
+    //유저데이터 저장
     setUserData(state, data) {
       state.userData = data;
     },
   },
-  actions: {
-    getUserdata(store) {
-      firebase
-        .firestore()
-        .collection("user")
-        .doc(this.state.fireUid)
-        .get()
-        .then((e) => {
-          const data = e.data();
-          store.commit("setUserData", data);
-        });
-    },
-  },
-  modules: {},
+  // actions: {
+  //   getUserdata(context) {
+  //     firebase
+  //       .firestore()
+  //       .collection("user")
+  //       .doc(this.state.fireUid)
+  //       .get()
+  //       .then((e) => {
+  //         const data = e.data();
+  //         context.commit("setUserData", data);
+  //       });
+  //   },
+  // },
 });

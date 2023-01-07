@@ -6,14 +6,14 @@
       </v-card-title>
       <!-- 로그인홈 -->
       <div class="pa-5" v-if="!email">
-        <v-btn block color="var(--second-color)" rounded @click="googleLogin"
+        <v-btn block color="var(--main-color)" rounded @click="googleLogin"
           ><h2><v-icon>mdi-google</v-icon> Google</h2></v-btn
         >
         <v-btn
           rounded
           block
           class="mt-5"
-          color="var(--second-color)"
+          color="var(--main-color)"
           @click="email = true"
           ><h2><v-icon>mdi-email-outline</v-icon> email</h2></v-btn
         >
@@ -137,7 +137,7 @@
             ></v-checkbox>
           </div>
         </div>
-        <div class="d-flex">
+        <!-- <div class="d-flex">
           <v-spacer></v-spacer>
           <v-btn
             color="var(--main-color)"
@@ -146,7 +146,7 @@
             @click="signup = false"
             >Sign in</v-btn
           >
-        </div>
+        </div> -->
       </v-card-text>
 
       <v-card-actions v-if="email">
@@ -166,7 +166,7 @@
           class="mb-2"
           block
           color="var(--second-color)"
-          @click="save"
+          @click="register"
           :loading="loading"
           v-else
         >
@@ -185,6 +185,14 @@ export default {
   // props: ["score", "id"],
   data() {
     return {
+      nameRules: [
+        (v) => !!v || "필수입력란",
+        (v) => v.length <= 10 || "10자내로 입력",
+      ],
+      emailRules: [
+        (v) => !!v || "필수입력란",
+        (v) => /.+@.+/.test(v) || "E-mail 형식",
+      ],
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substring(0, 10),
@@ -201,38 +209,38 @@ export default {
       saveTeam: "",
       ranNum: Math.floor(Math.random() * 101),
       Rules: [(v) => !!v || "필수입력란"],
-      nameRules: [
-        (v) => !!v || "필수입력란",
-        (v) => v.length <= 10 || "10자내로 입력",
-      ],
-      emailRules: [
-        (v) => !!v || "필수입력란",
-        (v) => /.+@.+/.test(v) || "E-mail 형식",
-      ],
+      options: {
+        backgroundType: ["circle", "transparent"],
+        /* eslint-disable */
+        backgroundColor: ["black", "blue01", "blue02", "blue03", "gray01", "gray02", "heather", "pastelBlue", "pastelGreen", "pastelOrange", "pastelRed", "pastelYellow", "pink", "red", "white"],
+        skinColor: ["tanned", "yellow", "pale", "light", "brown", "darkBrown", "dark"],
+        clothesType: ["blazerShirt", "blazerSweater", "collarSweater", "graphicShirt", "hoodie", "overall", "shirtCrewNeck", "shirtScoopNeck", "shirtVNeck"],
+        clothesColor: ["black", "blue01", "blue02", "blue03", "gray01", "gray02", "heather", "pastelBlue", "pastelGreen", "pastelOrange", "pastelRed", "pastelYellow", "pink", "red", "white"],
+        clothesGraphicsType: ["none", "bat", "cumbia", "diamond", "pizza", "resist", "selena", "bear", "skullOutline", "skull"],
+        eyesType: ["close", "cry", "default", "dizzy", "eyeroll", "happy", "hearts", "side", "squint", "surprised", "wink", "winkWacky"],
+        eyebrowType: ["angry", "angryNatural", "default", "defaultNatural", "flatNatural", "frownNatural", "raisedExcited", "raisedExcitedNatural", "sadConcerned", "sadConcernedNatural", "unibrowNatural", "updown", "updownNatural"],
+        mouthType: ["concerned", "default", "disbelief", "eating", "grimace", "sad", "screamOpen", "serious", "smile", "tongue", "twinkle", "vomit"],
+        facialHairType: ["none", "beardMedium", "beardLight", "beardMajestic", "moustacheFancy", "moustacheMagnum"],
+        facialHairColor: ["auburn", "black", "blonde", "blondeGolden", "brown", "brownDark", "platinum", "red"],
+        accessoriesType: ["none", "eyepatch", "kurt", "prescription01", "prescription02", "round"],
+        topType: ["none", "hat", "hijab", "turban", "winterHat1", "winterHat2", "winterHat3", "winterHat4", "longHairBigHair", "longHairBob", "longHairBun", "longHairCurly", "longHairCurvy", "longHairDreads", "longHairFro", "longHairFroBand", "longHairNotTooLong", "longHairShavedSides", "longHairMiaWallace", "longHairStraight", "longHairStraight2", "longHairStraightStrand", "shortHairDreads01", "shortHairDreads02", "shortHairFrizzle", "shortHairShaggyMullet", "shortHairShortCurly", "shortHairShortFlat", "shortHairShortRound", "shortHairShortWaved", "shortHairSides", "shortHairTheCaesar", "shortHairTheCaesarSidePart"],
+        topColor: ["auburn", "black", "blonde", "blondeGolden", "brown", "brownDark", "platinum", "red","blue01", "blue02", "blue03", "gray01", "gray02", "heather", "pastelBlue", "pastelGreen", "pastelOrange", "pastelRed", "pastelYellow", "pink", "red01", "white"]
+      },
     };
   },
 
   mounted() {},
 
   methods: {
+    // 아바타만들기
     avatarCreate() {
       const generator = new AvatarGenerator();
       this.avatarSrc = generator.generateRandomAvatar();
     },
-    emailLogin() {
-      this.loading = true;
-      this.$firebase
-        .auth()
-        .signInWithEmailAndPassword(this.saveEmail, this.savePass)
-        .then((result) => {
-          console.log(result);
-          this.loading = false;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    },
+    // 구글로그인
     async googleLogin() {
+      this.$emit("close");
+
       const provider = new this.$firebase.auth.GoogleAuthProvider();
       this.$firebase.auth().languageCode = "ko";
 
@@ -249,81 +257,97 @@ export default {
                 const userId = users.docs.map((a) => {
                   return a.id;
                 });
-                console.log(userId.includes(e.user.uid));
                 if (userId.includes(e.user.uid)) {
                   return;
                 }
-                const userData = {
-                  uid: e.user.uid || "",
-                  name: e.user.displayName || "",
-                  email: e.user.email || "",
-                  avatar: e.user.photoURL || "",
-                  since: this.today,
-                  point: 1000,
-                  Level: 1,
-                  ability: [],
-                  badge: [],
-                  team: "",
-                  sex: "남",
-                  age: 10,
-                  pw: "",
-                };
-                this.$firebase
-                  .firestore()
-                  .collection("user")
-                  .doc(e.user.uid)
-                  .set(userData)
-                  .then(() => {
-                    this.loading = false;
-                  });
+                this.saveUserdata(e);
               });
           });
       } catch {
         console.log("stop!");
       } finally {
         this.loading = false;
+        this.email = false;
+        this.signup = false;
         // this.userSave()
       }
     },
-    save() {
+    // 유저데이터 저장(회원가입 && 구글로그인)
+    saveUserdata(e) {
+      console.log(e);
+      const generator = new AvatarGenerator();
+      const avatarSrc = generator.generateRandomAvatar();
+      const userData = {
+        uid: e.user.uid || "",
+        name: e.user.displayName ? e.user.displayName : this.saveName,
+        email: e.user.displayName ? e.user.email : this.saveEmail,
+        pw: e.user.displayName ? "" : this.savePass,
+        avatar: avatarSrc || "",
+        since: this.today,
+        point: 1000,
+        Level: 1,
+        ability: [],
+        badge: [],
+        team: "",
+        sex: "남",
+        age: 10,
+      };
+      this.$firebase
+        .firestore()
+        .collection("user")
+        .doc(e.user.uid)
+        .set(userData)
+        .then(() => {
+          this.loading = false;
+          this.email = false;
+          this.signup = false;
+        });
+    },
+    // 이메일 로그인
+    emailLogin() {
       const valid = this.$refs.form.validate();
       if (!valid) {
         return;
       }
-
-      const id = Date.now().toString();
-      const date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substring(0, 10);
-
-      const generator = new AvatarGenerator();
-      const avatarSrc = generator.generateRandomAvatar();
-      const data = {
-        id: id,
-        date: date,
-        avatar: avatarSrc,
-        name: this.saveName,
-        email: this.saveEmail,
-        team: this.saveTeam,
-        // record: this.score,
-      };
-      console.log(data);
-      // this.$firebase
-      //   .firestore()
-      //   .collection("workout")
-      //   .doc(this.id)
-      //   .collection("rank")
-      //   .doc(id)
-      //   .set(data)
-      //   .then(() => {
-      //     this.saveOn = false;
-      //   })
-      //   .catch((e) => {
-      //     console.log(e);
-      //   })
-      //   .finally(() => {
-      //     this.$emit("close");
-      //   });
+      this.loading = true;
+      this.$firebase
+        .auth()
+        .signInWithEmailAndPassword(this.saveEmail, this.savePass)
+        .then(() => {
+          this.$emit("close");
+          this.loading = false;
+        })
+        .catch((e) => {
+          console.log(
+            e,
+            "회원정보가 없습니다. 이메일과 비밀번호를 확인해주세요."
+          );
+        })
+        .finally(() => (this.loading = false));
+    },
+    // 이메일 회원가입
+    async register() {
+      const valid = this.$refs.form.validate();
+      if (!valid) {
+        return;
+      }
+      try {
+        await this.$firebase
+          .auth()
+          .createUserWithEmailAndPassword(this.saveEmail, this.savePass)
+          .then((result) => {
+            this.saveUserdata(result);
+          })
+          .catch((e) => {
+            console.log(e);
+          })
+          .finally(() => {
+            this.$emit("close");
+          });
+      } catch {
+        // this.$swal.fire("E-mail을 확인해주세요.\n 이미 가입된 E-mail입니다.");
+        console.log("E-mail을 확인해주세요.\n 이미 가입된 E-mail입니다.");
+      }
     },
   },
 };

@@ -77,7 +77,7 @@
 import { AvatarGenerator } from "random-avatar-generator";
 
 export default {
-  name: "DialogRank",
+  name: "DialogSave",
   props: ["score", "id"],
   data() {
     return {
