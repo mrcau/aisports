@@ -12,6 +12,7 @@ firebase.initializeApp(firebaseConfig);
 vue.prototype.$firebase = firebase;
 
 firebase.auth().onAuthStateChanged((fu) => {
+  // fu는 로그인 상태를 나타냄 null 또는 참데이터
   store.commit("authTF", fu);
   // store.commit("setUserData", fu);
 
@@ -23,7 +24,9 @@ firebase.auth().onAuthStateChanged((fu) => {
       .get()
       .then((e) => {
         const data = e.data();
-        store.commit("setUserData", data);
+        if (data) {
+          store.commit("setUserData", data);
+        }
       });
     // store.dispatch("getUserdata");
   } else {

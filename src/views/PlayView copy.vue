@@ -1,31 +1,10 @@
 <template>
-  <v-container class="font-italic white--text pb-3 d-flex flex-column" style="height: 100%" >
-    <!-- {{ this.$store.state.userData?!!this.$store.state.userData.uid:false }} -->
-   <!-- 로그인 -->
-   <div class="d-flex login">
-      <!-- <Avataaars :width="50" :height="50" v-if="!$store.state.userData" /> -->
-      <div @click="gohome" style="cursor: pointer;padding: 0;margin: 0; height: 50px;">
-        <v-progress-circular indeterminate color="var(--main-color)" style="transform: translateY(10px);" v-if="$store.state.fireUser&&!$store.state.userData"  />
-        <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options" v-if="$store.state.fireUser&&$store.state.userData" />
-        <v-avatar  size="50px" v-else><v-icon dark> mdi-48px mdi-account</v-icon></v-avatar>
-      </div>
-      <v-btn rounded small color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  style="transform: translateY(10px);" >
-        <h3>Login</h3>
-      </v-btn>
-      <v-btn rounded small color="var(--bar-color)" dark @click="logout"  v-else style="transform: translateY(10px);">
-        <h3>Logout</h3>
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn color="var(--main-color)" rounded small @click="dialogRank = true" style="transform: translateY(10px);" >
-        <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
-        <h2 style="color: var(--bg-color)">Rank</h2>
-      </v-btn>
-    </div>
-    <v-dialog v-model="dialogLogin" max-width="500px">
-      <DialogLogin @close="dialogLogin = false" />
-    </v-dialog>
+  <v-container
+    class="font-italic white--text pb-3 d-flex flex-column"
+    style="height: 100%"
+  >
     <!-- 1. 상단 홈 바로가기/RANK -->
-    <!-- <div class="d-flex mb-2">
+    <div class="d-flex mb-2">
       <v-btn color="var(--main-color)" text small to="/">
         <v-icon>mdi-36px mdi-home</v-icon> </v-btn
       ><v-spacer></v-spacer>
@@ -33,7 +12,7 @@
         <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
         <h2 style="color: var(--bg-color)">Rank</h2>
       </v-btn>
-    </div> -->
+    </div>
     <!-- 2. 앱바운동정보 / 티처블머신 -->
     <div class="aiSection">
       <!-- 2-1. 상단 앱바 운동정보 -->
@@ -46,7 +25,7 @@
           "
         ></div> -->
         <v-card-title>
-          <h3 style="font-size: var(--h1-size)">{{ params.title }}</h3>
+          <!-- <h3 style="font-size: var(--h1-size)">{{ params.title }}</h3> -->
           <v-spacer></v-spacer>
 
           <v-menu bottom v-if="uid===params.uid">
@@ -97,7 +76,12 @@
       <div class="bgCanvas">
         <div v-if="start && !cameraTF" style="position: absolute">
           <h3>카메라 로딩중...</h3>
-          <v-progress-linear color="var(--main-color)" indeterminate rounded height="6" />
+          <v-progress-linear
+            color="var(--main-color)"
+            indeterminate
+            rounded
+            height="6"
+          />
         </div>
 
         <!--  2-3.  운동방법 -->
@@ -115,12 +99,22 @@
 
             <v-row class="mt-2">
               <v-col cols="6">
-                <v-img :src="params.infoImg1" width="70%" class="mx-auto mt-2" style="border-radius: 5px"
-                  v-if="params.infoImg1" />
+                <v-img
+                  :src="params.infoImg1"
+                  width="70%"
+                  class="mx-auto mt-2"
+                  style="border-radius: 5px"
+                  v-if="params.infoImg1"
+                />
               </v-col>
               <v-col cols="6">
-                <v-img :src="params.infoImg2" width="70%" class="mx-auto mt-2" style="border-radius: 5px"
-                  v-if="params.infoImg2" />
+                <v-img
+                  :src="params.infoImg2"
+                  width="70%"
+                  class="mx-auto mt-2"
+                  style="border-radius: 5px"
+                  v-if="params.infoImg2"
+                />
               </v-col>
             </v-row>
 
@@ -128,7 +122,9 @@
               <v-col cols="6">
                 <v-card class="mx-auto" color="var(--bar-color)" dark>
                   <v-card-title>
-                    <h3 class="text-center" style="color: var(--main-color)"> POSE1 </h3>
+                    <h3 class="text-center" style="color: var(--main-color)">
+                      POSE1
+                    </h3>
                   </v-card-title>
 
                   <v-card-text>
@@ -139,7 +135,9 @@
               <v-col cols="6">
                 <v-card class="mx-auto" color="var(--bar-color)" dark>
                   <v-card-title>
-                    <h3 class="text-center" style="color: var(--main-color)"> POSE2 </h3>
+                    <h3 class="text-center" style="color: var(--main-color)">
+                      POSE2
+                    </h3>
                   </v-card-title>
 
                   <v-card-text>
@@ -152,22 +150,69 @@
         </v-container>
 
         <!-- 2-4. 기록저장 -->
-        <!-- <v-container class="pa-10" style=" position: absolute; top: 0; background-color: var(--bg-color);
-            height: 100%; " v-if="saveOn" >
+        <v-container
+          class="pa-10"
+          style="
+            position: absolute;
+            top: 0;
+            background-color: var(--bg-color);
+            height: 100%;
+          "
+          v-if="saveOn"
+        >
           <v-card color="var(--bar-color)" dark class="text-center">
             <v-card-title> SAVE RECORD </v-card-title>
             <v-divider></v-divider>
             <h1>{{ score }}</h1>
             <v-card-text>
               <v-text-field
-                v-model="saveEmail" label="이메일" :rules="Rules" required dark
-                filled outlined dense color="var(--main-color)" style="padding: 0; margin: 0" ></v-text-field>
-              <v-text-field v-model="savePass" label="비밀번호" :rules="Rules" required dark
-                filled outlined dense color="var(--main-color)" style="padding: 0; margin: 0" ></v-text-field>
-              <v-text-field v-model="saveName" label="이름" :rules="Rules" required dark
-                filled outlined dense color="var(--main-color)" style="padding: 0; margin: 0" ></v-text-field>
-              <v-text-field v-model="saveTeam" label="소속" :rules="Rules" required dark
-                filled outlined dense color="var(--main-color)" style="padding: 0; margin: 0" ></v-text-field>
+                v-model="saveEmail"
+                label="이메일"
+                :rules="Rules"
+                required
+                dark
+                filled
+                outlined
+                dense
+                color="var(--main-color)"
+                style="padding: 0; margin: 0"
+              ></v-text-field>
+              <v-text-field
+                v-model="savePass"
+                label="비밀번호"
+                :rules="Rules"
+                required
+                dark
+                filled
+                outlined
+                dense
+                color="var(--main-color)"
+                style="padding: 0; margin: 0"
+              ></v-text-field>
+              <v-text-field
+                v-model="saveName"
+                label="이름"
+                :rules="Rules"
+                required
+                dark
+                filled
+                outlined
+                dense
+                color="var(--main-color)"
+                style="padding: 0; margin: 0"
+              ></v-text-field>
+              <v-text-field
+                v-model="saveTeam"
+                label="소속"
+                :rules="Rules"
+                required
+                dark
+                filled
+                outlined
+                dense
+                color="var(--main-color)"
+                style="padding: 0; margin: 0"
+              ></v-text-field>
             </v-card-text>
             <v-card-actions style="margin: -20px 0 0 0">
               <v-btn class="mb-2" block color="var(--main-color)" @click="save">
@@ -177,7 +222,7 @@
               </v-btn>
             </v-card-actions>
           </v-card>
-        </v-container> -->
+        </v-container>
         <!-- 2.5 티처블머신화면 -->
         <canvas id="canvas"></canvas>
       </div>
@@ -230,36 +275,31 @@
       </div>
     </v-container>
     <v-dialog v-model="dialogRank" max-width="600px">
-      <DialogRank :items="items" :id="id" />
+      <DialogRank :items="items" />
     </v-dialog>
     <v-dialog v-model="dialogSave" max-width="600px">
-      <!-- <DialogSave :score="score" /> -->
-      <DialogLogin :score="score" :id="id" @close="dialogSave = false"/>
+      <DialogSave :score="score" />
     </v-dialog>
   </v-container>
 </template>
 
 <script>
-import DialogLogin from "@/components/DialogLogin.vue";
 import DialogRank from "@/components/DialogRank.vue";
-// import DialogSave from "@/components/DialogSave.vue";
+import DialogSave from "@/components/DialogSave.vue";
 import * as tmPose from "@teachablemachine/pose";
 export default {
   name: "ActivityTryWorkout",
-  components: { DialogRank,  DialogLogin },
+  components: { DialogRank, DialogSave },
   data() {
     return {
       // params: this.$route.params.data || "",
       // canvasBg1: require("@/assets/fitness/bgMan.png"),
-      today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substring(0, 10),
       uid:this.$store.state.userData?this.$store.state.userData.uid:'',
       id: this.$route.params.id || "",
       params: "",
-      userRecord: '',
       items: [],
       dialogRank: false,
       dialogSave: false,
-      dialogLogin:false,
       info: {
         timer: 60,
         title: "해양중챔피온",
@@ -295,39 +335,59 @@ export default {
     }
   },
   methods: {
-    logout() {  this.$firebase.auth().signOut(); },
-    gohome() { this.$router.push('/')},
-    // 랭킹데이터 가져오기
     getData() {
       if (!this.id) {
         return;
       }
       this.$firebase
-        .firestore().collection("workout").doc(this.id).get()
+        .firestore()
+        .collection("workout")
+        .doc(this.id)
+        .get()
         .then((e) => {
           this.params = e.data();
-          this.$firebase.firestore().collection("workout").doc(this.id).collection("rank")
-            .get().then((sn) => {
+          this.$firebase
+            .firestore()
+            .collection("workout")
+            .doc(this.id)
+            .collection("rank")
+            .get()
+            .then((sn) => {
               this.items = sn.docs.map((e) => e.data());
-            }).catch((e) => console.log(e))
+            })
+            .catch((e) => console.log(e))
+            .finally(() => {
+              console.log("get Item");
+            });
         })
         .catch((e) => console.log(e))
+        .finally(() => {
+          console.log("get Data");
+        });
     },
-    // 챌린지룸 제거
     removeData() {
-      this.$firebase.firestore().collection("workout").doc(this.id).delete()
+      this.$firebase
+        .firestore()
+        .collection("workout")
+        .doc(this.id)
+        .delete()
         .then(() => {
           this.$router.push("/");
-        }).catch((e) => console.log(e));
+        })
+        .catch((e) => console.log(e));
     },
     editData() {
-      this.$router.push({name: "create",params: this.params});
+      this.$router.push({
+        name: "create",
+        params: this.params,
+      });
     },
-    // 티처블 운동 시작
+
     async init() {
       this.start = true;
       this.timer = this.params.time;
       this.start = true;
+      // const URL = "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/";
       const URL = "https://teachablemachine.withgoogle.com/models/k-nnfICb0/";
       const modelURL = URL + "model.json";
       const metadataURL = URL + "metadata.json";
@@ -350,7 +410,6 @@ export default {
         // and class labels
         this.labelContainer.appendChild(document.createElement("div"));
       }
-      // 운동타이머 시작
       this.circle = setInterval(() => {
         this.timer--;
         if (this.timer < 1) {
@@ -358,17 +417,8 @@ export default {
           this.start = false;
           this.cameraTF = true;
           // this.saveOn = true;
-          // this.dialogSave = true;
+          this.dialogSave = true;
           this.webcam.stop();
-          if(this.$store.state.userData?this.$store.state.userData.uid:false){
-            console.log("uid있음")
-            this.save().then(() => {
-              this.dialogRank=true
-            });
-          }else{
-            console.log("uid없음")
-            this.dialogSave=true;
-          }
         }
       }, 1000);
     },
@@ -404,50 +454,36 @@ export default {
     restart() {
       this.saveOn = false;
     },
-   async save() {
-    this.$firebase.firestore().collection('workout').doc(this.id)
-        .collection('rank').doc(this.uid).get().then((e) => {
-          this.userRecord = e.data()
-          if (e.data() === undefined) { this.save1() } else { this.save2() }
-        }).catch((e) => { console.log(e) }) 
-      },
-    save1(){
+    save() {
       const id = Date.now().toString();
+      const date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substring(0, 10);
       const data = {
         id: id,
-        date: this.today,
-        uid: this.$store.state.userData.uid ,
-        name: this.$store.state.userData.name,
-        email: this.$store.state.userData.email,
-        team: this.$store.state.userData.team,
-        options:this.$store.state.userData.options,
+        date: date,
+        avatar:
+          "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light",
+        name: this.saveName,
+        email: this.saveEmail,
+        team: this.saveTeam,
         record: this.score,
-        recordSum: this.score,
-        recordRepeat: 1,
       };
-      this.$firebase.firestore().collection("workout").doc(this.id)
-      .collection("rank").doc(this.uid).set(data)
-      .then(() => {
+      this.$firebase
+        .firestore()
+        .collection("workout")
+        .doc(this.id)
+        .collection("rank")
+        .doc(id)
+        .set(data)
+        .then(() => {
+          console.log("save finished");
           this.saveOn = false;
-        }).catch((e) => { console.log(e); });
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
-    save2(){
-      console.log('save2')
-      const record = Math.max(this.userRecord.record, this.score)
-      const recordSum = this.userRecord.recordSum
-      const recordRepeat = this.userRecord.recordRepeat
-      const data = {
-        ...this.userRecord,
-        recordSum: recordSum + this.score,
-        recordRepeat: recordRepeat + 1,
-        record: record
-      }
-      this.$firebase.firestore().collection('workout').doc(this.id)
-        .collection('rank').doc(this.uid).update(data)
-      .then(() => {
-          this.saveOn = false;
-        }).catch((e) => { console.log(e); });
-    }
   },
 };
 </script>
@@ -519,4 +555,3 @@ export default {
   height: 100px;
 }
 </style>
-a

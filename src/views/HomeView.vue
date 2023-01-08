@@ -2,33 +2,23 @@
   <v-container class="font-italic white--text pb-15">
     <!-- 로그인 -->
     <div class="d-flex login">
-      <Avataaars :width="50" :height="50" v-if="!$store.state.userData" />
-      <!-- <Avataaars :width="50" :height="50" :avatarOptions="options" v-if="!$store.state.userData" /> -->
-      <v-avatar size="50" style="transform: translateY(-2px)" v-else>
-        <img :src="$store.state.userData.avatar" alt="alt" />
-      </v-avatar>
-      <v-btn
-        rounded
-        small
-        color="var(--main-color)"
-        @click="dialogLogin = true"
-        v-if="!$store.state.fireUser"
-        style="margin: 12px 0 0 5px"
-      >
+      <!-- <Avataaars :width="50" :height="50" v-if="!$store.state.userData" /> -->
+      
+      <v-progress-circular indeterminate color="var(--main-color)" style="transform: translateY(10px);" v-if="$store.state.fireUser&&!$store.state.userData"  />
+      <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options" v-if="$store.state.fireUser&&$store.state.userData" />
+ 
+      <v-avatar  size="50px" v-else>
+        <!-- <img :src="$store.state.userData.avatar" alt="alt" /> -->
+      <v-icon dark>
+        mdi-48px mdi-account
+      </v-icon>
+    </v-avatar>
+      <v-btn rounded small color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  style="transform: translateY(10px);" >
         <h3>Login</h3>
       </v-btn>
-      <div v-else>
-        <v-btn
-          rounded
-          small
-          color="var(--bar-color)"
-          dark
-          @click="logout"
-          style="margin: 12px 0 0 5px"
-        >
+        <v-btn rounded small color="var(--bar-color)" dark @click="logout"  v-else style="transform: translateY(10px);">
           <h3>Logout</h3>
         </v-btn>
-      </div>
     </div>
     <v-dialog v-model="dialogLogin" max-width="500px">
       <DialogLogin @close="dialogLogin = false" />
@@ -191,7 +181,6 @@
         </v-card>
       </v-col>
     </v-row>
-    {{ $store.state.userData }}
   </v-container>
 </template>
 
@@ -200,8 +189,7 @@ import DialogLogin from "@/components/DialogLogin.vue";
 import MainJumbo from "@/components/MainJumbo.vue";
 import Avataaars from "vue-avataaars";
 export default {
-  creator: "HomeView",
-
+  name: "HomeView",
   components: { MainJumbo, Avataaars, DialogLogin },
   data() {
     return {
@@ -212,21 +200,9 @@ export default {
       dialogLogin: false,
       loading: false,
       menus: [
-        {
-          title: "workout",
-          content: "운동 참여",
-          img: "card1.png",
-        },
-        {
-          title: "game",
-          content: "게임 참여",
-          img: "card2.png",
-        },
-        {
-          title: "create",
-          content: "운동 생성",
-          img: "card3.png",
-        },
+        {title: "workout",content: "운동 참여",img: "card1.png",},
+        {title: "game",content: "게임 참여",img: "card2.png",},
+        {title: "create", content: "운동 생성",img: "card3.png",},
         { title: "board", content: "참여 현황", img: "card4.png" },
       ],
       items: [
@@ -313,7 +289,6 @@ export default {
       }
     },
     logout() {
-      console.log("logout");
       this.$firebase.auth().signOut();
     },
   },
@@ -362,9 +337,9 @@ export default {
 .smallText {
   text-transform: uppercase;
 }
-.login {
+/* .login {
   margin-top: 20px;
-}
+} */
 @media (max-width: 500px) {
   .smallText {
     font-size: x-large;
@@ -372,8 +347,8 @@ export default {
   .menuBox {
     border-radius: 10px;
   }
-  .login {
+  /* .login {
     margin-top: 2px;
-  }
+  } */
 }
 </style>

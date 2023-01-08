@@ -63,74 +63,27 @@
 
             <v-row class="pt-1">
               <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="data.title"
-                  label="제목"
-                  required
-                  :rules="Rules"
-                  dark
-                  dense
-                  :counter="20"
-                  color="var(--main-color)"
-                ></v-text-field>
+                <v-text-field v-model="data.title" label="제목" required :rules="Rules" dark dense :counter="20" color="var(--main-color)" ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="data.team"
-                  label="담당"
-                  required
-                  :rules="Rules"
-                  dark
-                  dense
-                  :counter="10"
-                  color="var(--main-color)"
-                ></v-text-field>
+                <v-text-field v-model="data.team" label="담당" required :rules="Rules" dark dense :counter="10" color="var(--main-color)" ></v-text-field>
               </v-col>
             </v-row>
 
-            <v-textarea
-              v-model="data.content"
-              label="내용"
-              required
-              :rules="Rules"
-              dark
-              textarea
-              dense
-              filled
-              rows="2"
-              outlined
-              :counter="100"
-              color="var(--main-color)"
-              class="pt-7"
-            ></v-textarea>
+            <v-textarea v-model="data.content" label="내용" required :rules="Rules" dark textarea dense filled rows="2" outlined :counter="100"
+              color="var(--main-color)" class="pt-7" ></v-textarea>
+              <!-- 달력 -->
             <v-row>
               <v-col cols="6">
                 <v-menu transition="scale-transition" offset-y>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="data.endDate"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      label="마감날짜"
-                      v-bind="attrs"
-                      v-on="on"
-                      color="var(--main-color)"
-                      dark
-                    />
+                    <v-text-field v-model="data.endDate" prepend-icon="mdi-calendar" readonly label="마감날짜" v-bind="attrs" v-on="on" color="var(--main-color)" dark />
                   </template>
                   <v-date-picker v-model="data.endDate" no-title scrollable />
                 </v-menu>
               </v-col>
               <v-col class="pt-8" cols="6">
-                <v-text-field
-                  v-model="data.time"
-                  label="운동시간"
-                  dense
-                  dark
-                  required
-                  :rules="Rules"
-                  color="var(--main-color)"
-                ></v-text-field>
+                <v-text-field v-model="data.time" label="운동시간" dense dark required :rules="Rules" color="var(--main-color)" ></v-text-field>
               </v-col>
             </v-row>
 
@@ -138,114 +91,37 @@
               <v-radio label="기본동작" value="basic" /> <v-spacer></v-spacer>
               <v-radio label="수정" value="custom" />
             </v-radio-group>
-            <v-text-field
-              v-model="data.aiSrc"
-              label="AI주소"
-              required
-              :rules="Rules"
-              :disabled="selector != 'custom'"
-              dark
-              dense
-              filled
-              outlined
-              :counter="100"
-              color="var(--main-color)"
-            ></v-text-field>
+            <!--AI 동작설명 -->
+            <v-text-field v-model="data.aiSrc" label="AI주소" required :rules="Rules" :disabled="selector != 'custom'" dark
+              dense filled outlined :counter="100" color="var(--main-color)" ></v-text-field>
             <v-row class="mt-3">
               <v-col cols="12" sm="6">
-                <v-textarea
-                  v-model="data.infoText1"
-                  label="Pose1"
-                  :disabled="selector != 'custom'"
-                  required
-                  :rules="Rules"
-                  dark
-                  dense
-                  outlined
-                  filled
-                  rows="2"
-                  :counter="50"
-                  color="var(--main-color)"
-                ></v-textarea>
+                <v-textarea v-model="data.infoText1" label="Pose1" :disabled="selector != 'custom'" required :rules="Rules" dark dense outlined filled
+                  rows="2" :counter="50" color="var(--main-color)" ></v-textarea>
               </v-col>
               <v-col cols="12" sm="6">
-                <v-textarea
-                  v-model="data.infoText2"
-                  label="Pose2"
-                  :disabled="selector != 'custom'"
-                  required
-                  :rules="Rules"
-                  dense
-                  dark
-                  outlined
-                  filled
-                  rows="2"
-                  :counter="50"
-                  color="var(--main-color)"
-                ></v-textarea>
+                <v-textarea v-model="data.infoText2" label="Pose2" :disabled="selector != 'custom'" required :rules="Rules" dense dark outlined filled
+                  rows="2" :counter="50" color="var(--main-color)" ></v-textarea>
               </v-col>
             </v-row>
+            <!-- 동작 이미지 -->
             <v-row style="margin: 0">
               <v-col cols="6">
                 <div class="text-center">
-                  <v-file-input
-                    accept="image/*"
-                    label="사진"
-                    id="imginput"
-                    @change="addPic"
-                    :disabled="selector != 'custom'"
-                    style="display: none"
-                  />
+                  <v-file-input accept="image/*" label="사진" id="imginput" @change="addPic" :disabled="selector != 'custom'" style="display: none" />
                   <label for="imginput">
-                    <div
-                      class="mx-auto"
-                      :style="`background-image:url(${data.infoImg1})`"
-                      style="
-                        height: 150px;
-                        border-radius: 2px;
-                        background-size: contain;
-                        background-repeat: no-repeat;
-                        background-position: center;
-                      "
-                    >
-                      <h2
-                        style="line-height: 150px; cursor: pointer"
-                        v-if="selector === 'custom'"
-                      >
-                        Pose1 변경
-                      </h2>
+                    <div class="mx-auto imgBg" :style="`background-image:url(${data.infoImg1})`"  >
+                      <h2 style="line-height: 150px; cursor: pointer" v-if="selector === 'custom'" > Pose1 변경 </h2>
                     </div>
                   </label>
                 </div>
               </v-col>
               <v-col cols="6">
                 <div class="text-center">
-                  <v-file-input
-                    accept="image/*"
-                    label="사진"
-                    id="imginput2"
-                    @change="addPic2"
-                    :disabled="selector != 'custom'"
-                    style="display: none"
-                  />
+                  <v-file-input accept="image/*" label="사진" id="imginput2" @change="addPic2" :disabled="selector != 'custom'" style="display: none" />
                   <label for="imginput2">
-                    <div
-                      class="mx-auto"
-                      :style="`background-image:url(${data.infoImg2})`"
-                      style="
-                        height: 150px;
-                        border-radius: 2px;
-                        background-size: contain;
-                        background-repeat: no-repeat;
-                        background-position: center;
-                      "
-                    >
-                      <h2
-                        style="line-height: 150px; cursor: pointer"
-                        v-if="selector === 'custom'"
-                      >
-                        Pose2 변경
-                      </h2>
+                    <div class="mx-auto imgBg" :style="`background-image:url(${data.infoImg2})`" >
+                      <h2 style="line-height: 150px; cursor: pointer" v-if="selector === 'custom'" > Pose2 변경 </h2>
                     </div>
                   </label>
                 </div>
@@ -254,41 +130,16 @@
           </v-container>
         </v-form>
         <v-divider dark color="var(--main-color)"></v-divider>
+        <!-- 저장버튼 -->
         <div class="d-flex pa-2">
-          <v-btn-toggle
-            v-model="openTF"
-            color="var(--main-color)"
-            group
-            mandatory
-            class="mr-3"
-          >
-            <v-btn>
-              <v-icon>mdi-lock-open-variant-outline</v-icon>
-            </v-btn>
-            <v-btn>
-              <v-icon>mdi-lock-outline</v-icon>
-            </v-btn>
+          <v-btn-toggle v-model="openTF" color="var(--main-color)" group mandatory class="mr-3" >
+            <v-btn> <v-icon>mdi-lock-open-variant-outline</v-icon> </v-btn>
+            <v-btn>  <v-icon>mdi-lock-outline</v-icon> </v-btn>
           </v-btn-toggle>
-          <v-text-field
-            v-model="data.password"
-            label="입장 비밀번호"
-            dense
-            dark
-            :disabled="!openTF"
-            color="var(--main-color)"
-            style="transform: translateY(15px)"
-          ></v-text-field>
+          <v-text-field v-model="data.password" label="입장 비밀번호" dense dark :disabled="!openTF" color="var(--main-color)" style="transform: translateY(15px)" ></v-text-field>
         </div>
 
-        <v-btn
-          :loading="loading"
-          color="var(--main-color)"
-          block
-          depressed
-          @click="save"
-        >
-          <h2>SAVE</h2>
-        </v-btn>
+        <v-btn :loading="loading" color="var(--main-color)" block depressed @click="save" > <h2>SAVE</h2> </v-btn>
       </v-card-text>
       <!-- </v-card> -->
     </div>
@@ -302,7 +153,8 @@ export default {
     return {
       data: {
         id: "",
-        creator: "홍길동",
+        uid:this.$store.state.userData?this.$store.state.userData.uid:'',
+        creator: this.$store.state.userData?this.$store.state.userData.name:'',
         team: "한국중학교",
         title: "어깨깡패 되기",
         content: "AI 어깨 근력 강화 운동",
@@ -436,5 +288,12 @@ v-data-table {
 }
 .contentBg {
   background-color: rgb(43, 40, 40);
+}
+.imgBg{
+  height: 150px;
+  border-radius: 2px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 </style>
