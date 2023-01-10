@@ -23,14 +23,10 @@
 import Avataaars from "vue-avataaars";
 export default {
   name: "DialogRank",
-  props: ["id"],
+  props: ['items','rank',"id"],
   components: {  Avataaars },
   data() {
     return {
-      uid:this.$store.state.userData?this.$store.state.userData.uid:'',
-      items: [],
-      unsub: "",
-      rank:'',
       headers: [
         { value: "rank", text: "순위", align: "center" },
         { value: "name", text: "이름", align: "center", sortable: false },
@@ -43,33 +39,10 @@ export default {
   },
 
   created() {
-    this.getData();
   },
   destroyed() {
-    if (this.unsub) this.unsub();
   },
-  methods: {
-    getData() {
-      if (!this.id) {
-        return;
-      }
-      this.unsub = this.$firebase.firestore().collection("workout").doc(this.id)
-        .collection("rank").orderBy("record", "desc")
-        .onSnapshot((sn) => {
-          const items = sn.docs.map((e) => e.data());
-          const items2 = [];
-          items.forEach((e) => {
-            const rank = items.indexOf(e) + 1;
-            items2.push({ ...e, rank: rank });
-          });
-          this.items = items2;
-          const item = items2.filter((e)=>e.uid === this.uid)
-          this.rank = item[0]? item[0].rank:''
-        });
-    }, 
-    // this.$firebase.firestore().collection("workout").doc(this.id)
-    // .collection("rank").doc(this.uid).set(data).then(() => {
-    //     }).catch((e) => { console.log(e); });
+  methods: { 
   },
 };
 </script>

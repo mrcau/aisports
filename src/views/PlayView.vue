@@ -17,38 +17,35 @@
         <h3>Logout</h3>
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="var(--main-color)" rounded  @click="dialogRank = true" style="transform: translateY(10px);" >
+      <v-btn color="var(--main-color)" rounded  @click="getRank();dialogRank = true;" style="transform: translateY(10px);" >
         <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
         <h3 style="color: var(--bg-color)">Rank</h3>
       </v-btn>
-    </div>
-    <v-dialog v-model="dialogLogin" max-width="500px" :retain-focus="false">
-      <DialogLogin @close="dialogLogin = false" />
-    </v-dialog>
+    </div> 
     <!-- 2. 앱바운동정보 / 티처블머신 -->
     <div class="aiSection">
       <!-- 2-1. 상단 앱바 운동정보 -->
       <div class="topBar">
-        <!-- <div :style=" params.type === 'workout' ? `background-image: url(${canvasBg1})` : `background-image: url(${canvasBg2})`
-          " ></div> -->
+  <!-- <div :style=" params.type === 'workout' ? `background-image: url(${canvasBg1})` : `background-image: url(${canvasBg2})` " ></div> -->
         <v-card-title>
           <h3 style="font-size: var(--h1-size)">{{ params.title }}</h3>
           <v-spacer></v-spacer>
 
-          <v-menu bottom v-if="uid===params.uid">
+          <!-- <v-menu bottom v-if="uid===params.uid"> -->
+          <v-menu bottom v-if="$store.state.fireUser">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn dark icon v-bind="attrs" v-on="on">
+              <v-btn dark icon v-bind="attrs" v-on="on" @click="getUserData">
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
 
-            <v-list>
+            <v-list v-if="$store.state.fireUser.uid===params.uid">
               <v-list-item>
                 <v-btn icon @click="editData"><v-icon>mdi-pencil</v-icon></v-btn>
               </v-list-item>
               <v-list-item>
                 <v-btn icon @click="removeData"><v-icon>mdi-delete</v-icon></v-btn>
-              </v-list-item>
+              </v-list-item> 
             </v-list>
           </v-menu>
         </v-card-title>
@@ -98,8 +95,9 @@
           <div v-else>
             <h2 class="mt-1" style="color: var(--main-color);font-size: var(--h2-size)">운동방법</h2>
             <v-banner color="var(--bar-color)" dark rounded single-line >
-              <h4 style="font-size: var(--h3-size)">1. 전신이 나오도록 카메라 거리 조절.</h4>
-              <h4 class="mt-2" style="font-size: var(--h3-size)">2. Pose1과 Pose2 동작을 반복합니다.</h4>
+              <h3 style="font-size: var(--normal-size)">1. 카메라 사용을 허용합니다.</h3>
+              <h3 style="font-size: var(--normal-size)">2. Pose1과 Pose2 동작을 반복합니다.</h3>
+              <h3 style="font-size: var(--normal-size)">3. 정확한 측정을 위해 카메라 거리를 조절합니다.</h3>
             </v-banner>
 
             <v-row class="mt-2">
@@ -112,20 +110,16 @@
             </v-row>
 
             <v-row>
-              <v-col cols="6">
+              <v-col cols="6" style="padding-top: 0;">
                 <h3 class="text-center" style="color: var(--main-color)"> POSE1 </h3>
-                <v-card class="mx-auto" color="var(--bar-color)" dark> 
-                  <v-card-text>
+                <v-card class="mx-auto pa-2" color="var(--bar-color)" dark> 
                     <h3 style="font-size: var(--normal-size)">{{ params.infoText1 }}</h3>
-                  </v-card-text>
                 </v-card>
               </v-col>
-              <v-col cols="6">
+              <v-col cols="6" style="padding-top: 0;">
                 <h3 class="text-center" style="color: var(--main-color)"> POSE2 </h3>
-                <v-card class="mx-auto" color="var(--bar-color)" dark>
-                  <v-card-text>
+                <v-card class="mx-auto pa-2" color="var(--bar-color)" dark>
                     <h3 style="font-size: var(--normal-size)">{{ params.infoText2 }}</h3>
-                  </v-card-text>
                 </v-card>
               </v-col>
             </v-row>
@@ -175,11 +169,10 @@
       </div>
     </v-container>
     <v-dialog v-model="dialogRank" max-width="600px">
-      <DialogRank :items="items" :id="id" />
+      <DialogRank :items="items" :rank="rank" :id="id"  />
     </v-dialog>
-    <v-dialog v-model="dialogLogin" max-width="600px">
-      <!-- <DialogSave :score="score" /> -->
-      <DialogLogin :score="score" :id="id" @close="dialogLogin = false"/>
+    <v-dialog v-model="dialogLogin" max-width="600px" :retain-focus="false">
+      <DialogLogin :score="score" :id="id" @close="dialogLogin = false" @rank="rankView" />
     </v-dialog>
   </v-container>
 </template>
@@ -197,13 +190,15 @@ export default {
       // params: this.$route.params.data || "",
       // canvasBg1: require("@/assets/fitness/bgMan.png"),
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substring(0, 10),
-      uid:this.$store.state.userData?this.$store.state.userData.uid:'',
+      uid:this.$store.state.fireUser?this.$store.state.fireUser.uid:'',
+      userData:'',
       id: this.$route.params.id || "",
       params: "",
       passinput:"",
       password:"",
       userRecord: '',
       items: [],
+      rank:'',
       dialogRank: false,
       dialogSave: false,
       dialogLogin:false,
@@ -234,33 +229,54 @@ export default {
       saveEmail: "",
       saveTeam: "",
       Rules: [(v) => !!v || "필수입력란"],
+      unsub: "",
     };
   },
   created() {
     this.getData();
+    this.getRank();
   },
   beforeDestroy() {
     if(this.cameraTF){ this.cancel() }
+    if (this.unsub) this.unsub();
   },
   methods: {
-    logout() {  this.$firebase.auth().signOut();this.score = 0;this.uid='' },
+    logout() {  this.$firebase.auth().signOut();this.score = 0; },
     gohome() { this.$router.push('/')},
     passTf(){ this.password = this.passinput},
+    rankView() { 
+      this.dialogRank=true;
+      this.score=0;
+      this.getRank(); },
     // 랭킹데이터 가져오기
     getData() {
-      if (!this.id) {
-        return;
+      if (!this.id) {return }
+      this.$firebase.firestore().collection("workout").doc(this.id).get()
+        .then((e) => {this.params = e.data()}).catch((e) => console.log(e))
+    },
+    getRank(){
+      if (!this.id) {return }
+      this.unsub = this.$firebase.firestore().collection("workout").doc(this.id)
+        .collection("rank").orderBy("record", "desc")
+        .onSnapshot((sn) => {
+          const items = sn.docs.map((e) => e.data());
+          const items2 = [];
+          items.forEach((e) => {
+            const rank = items.indexOf(e) + 1;
+            items2.push({ ...e, rank: rank });
+          });
+          this.items = items2;
+          if (!this.$store.state.fireUser) {return }
+          const item = items2.filter((e)=>e.uid === this.$store.state.fireUser.uid)
+          this.rank = item[0]? item[0].rank:''
+        });
+    },
+    //유저데이터 가져오기
+    getUserData(){
+      if (this.$store.state.fireUser) { 
+      this.$firebase.firestore().collection("user").doc(this.$store.state.fireUser.uid).get()
+       .then((e) => {   this.userData = e.data();  })
       }
-      this.$firebase
-        .firestore().collection("workout").doc(this.id).get()
-        .then((e) => {
-          this.params = e.data();
-          this.$firebase.firestore().collection("workout").doc(this.id).collection("rank")
-            .get().then((sn) => {
-              this.items = sn.docs.map((e) => e.data());
-            }).catch((e) => console.log(e))
-        })
-        .catch((e) => console.log(e))
     },
     // 챌린지룸 제거
     removeData() {
@@ -292,21 +308,16 @@ export default {
       const canvas = document.getElementById("canvas");
       canvas.width = size;
       canvas.height = size;
-      this.ctx = canvas.getContext("2d");
-      // this.labelContainer = document.getElementById("label-container");
-      // window.requestAnimationFrame(this.loop);
-      this.loop();
-      // for (let i = 0; i < this.maxPredictions; i++) { 
-      //   this.labelContainer.appendChild(document.createElement("div"));
-      // }
+      this.ctx = canvas.getContext("2d"); 
+      this.loop(); 
       // 운동타이머 시작
       this.circle = setInterval(() => {
         this.timer--;
         if (this.timer < 1) { 
           this.cancel()     ;
           //시간초과 저장
-          if(this.$store.state.userData){
-          // if(this.$store.state.userData?this.$store.state.userData.uid:false){
+          if(this.$store.state.userData){ 
+            console.log("uid있음")
             this.save().then(() => {
               this.dialogRank=true
             });
@@ -337,19 +348,17 @@ export default {
       this.drawPose(pose);
       //동작판정하기
       if (prediction[0].probability.toFixed(2) > 0.99) {
-        if (this.status == 'down') {this.score++;}
+        if (this.status == 'down') {
+          this.score++;
+          this.countSound()
+        }
         this.status = 'up'
       }else if (prediction[1].probability.toFixed(2) > 0.99) {
         this.status = 'down'
       } 
       //동작판정치수나타내기
       this.pose1 = prediction[0].probability.toFixed(2)
-      this.pose2 = prediction[1].probability.toFixed(2)
-      // for (let i = 0; i < this.maxPredictions; i++) {
-      //   const classPrediction =
-      //   "Pose" + (Number(i) + 1) + ": " + prediction[i].probability.toFixed(2);
-      //   this.labelContainer.childNodes[i].innerHTML = classPrediction;
-      // }
+      this.pose2 = prediction[1].probability.toFixed(2) 
     },
     // 포즈그리기
     drawPose(pose) {
@@ -366,11 +375,18 @@ export default {
     restart() {
       this.saveOn = false;
     },
+    countSound () {
+      const audio = new Audio(require('../assets/mp3/' + (this.score % 10) + '.mp3'))
+      const audioPlay = audio.play()
+      if (audioPlay !== undefined) {
+        audioPlay.then(() => { audio.play() })
+          .catch(e => { audio.pause() })
+      }
+    },
    async save() {
     this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').doc(this.uid).get()
     .then((e) => {
       this.userRecord = e.data()
-      console.log(e.data())
           if (e.data() === undefined) { this.save1() } else { this.save2() }
         }).catch((e) => { console.log(e) }) 
       },

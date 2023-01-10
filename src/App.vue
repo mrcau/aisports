@@ -10,9 +10,39 @@
 export default {
   name: "App",
   components: {},
-  data: () => ({
-    //
-  }),
+  data () {
+    return {
+      loaded: false,
+      version: '01100'
+    }
+  },
+  created () {
+    this.getV()
+  },
+  methods: {
+    async getV () {
+      this.$firebase.firestore().collection('version').doc('version').get().then((e) => {
+        if (!e.data()) { return }
+        const getVersion = e.data().version
+        console.log('버전', getVersion)
+        this.loaded = true
+        if (getVersion !== this.version) {
+          this.reload()
+        }
+      }).catch((e) => { console.log(e) })
+    },
+    async reload () {
+      caches
+        .keys().then(c => {
+          for (const i of c) {
+            caches.delete(i)
+          }
+        })
+        .then(() => {
+          location.reload(true)
+        })
+    }
+  }
 };
 </script>
 

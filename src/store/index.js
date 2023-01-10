@@ -10,7 +10,6 @@ export default new Vuex.Store({
   state: {
     fireUser: null,
     admin: false,
-    fireUid: "",
     userData: null,
   },
   getters: {},
@@ -22,7 +21,6 @@ export default new Vuex.Store({
         state.userData = fu;
         return;
       }
-      state.fireUid = fu.uid;
       if (fu.uid === process.env.VUE_APP_FIREBASE_Admin) {
         state.admin = true;
       } else {

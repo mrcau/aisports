@@ -39,7 +39,7 @@
         <div class="px-5 pt-5 rounded" style="background: var(--bar-color)">
           <v-text-field v-model="saveEmail" label="Email" :rules="emailRules" required dark filled outlined dense color="var(--main-color)"
             style="font-style: normal" ></v-text-field>
-          <v-text-field v-model="savePass" label="Password" :rules="Rules" required dark filled outlined dense color="var(--main-color)"
+          <v-text-field v-model="savePass" label="Password" :rules="passRules" required dark filled outlined dense color="var(--main-color)"
             style="font-style: normal" ></v-text-field>
           <v-text-field v-model="saveName" label="Name" :rules="nameRules" required dark filled outlined dense color="var(--main-color)"
             style="font-style: normal" ></v-text-field>
@@ -70,7 +70,8 @@ export default {
       Rules: [(v) => !!v || "필수입력란"],
       nameRules: [ (v) => !!v || "필수입력란", (v) => v.length <= 10 || "10자내로 입력", ],
       emailRules: [ (v) => !!v || "필수입력란", (v) => /.+@.+/.test(v) || "E-mail 형식", ],
-      uid:this.$store.state.userData?this.$store.state.userData.uid:'',
+      passRules: [ (v) => !!v || "필수입력란", (v) => v.length >= 6 || "6자 이상 입력", ],
+      uid:this.$store.state.fireUser?this.$store.state.fireUser.uid:'',
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substring(0, 10),
       login: true,
       signup: false,
@@ -102,7 +103,6 @@ export default {
     };
   },
   created() {
-    console.log(this.score,'score')
   },  
   methods: {
     // 구글로그인
@@ -115,6 +115,7 @@ export default {
           .auth()
           .signInWithPopup(provider)
           .then((e) => {
+            this.uid = e.user.uid
             this.$firebase.firestore().collection("user").get().then((users) => {
                 const userId = users.docs.map(a => a.id);
                 if (userId.includes(e.user.uid)) {return}
@@ -199,7 +200,7 @@ export default {
       this.loading = true;
       this.$firebase.auth().signInWithEmailAndPassword(this.saveEmail, this.savePass)
         .then((e) => {
-            if(this.score>0){  console.log("이메일 기록저장 Login",e); this.save();  } 
+            if(this.score>0){  console.log("이메일 기록저장 Login"); this.save(e);  } 
           this.$emit("close");
           this.loading = false;
         })
@@ -221,6 +222,7 @@ export default {
           .auth()
           .createUserWithEmailAndPassword(this.saveEmail, this.savePass)
           .then((e) => {
+            this.uid = e.user.uid
             this.$emit("close");
             this.loading = false;
             this.saveUserdata(e).then(() => {
@@ -246,35 +248,45 @@ export default {
     },
 
 // 기록저장
-    async save() {
-    this.$firebase.firestore().collection('workout').doc(this.id)
-        .collection('rank').doc(this.uid).get().then((e) => {
+    async save(sn) {
+      const uid = this.uid||sn.user.uid
+      this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').doc(uid)
+      .get().then((e) => {
           this.userRecord = e.data()
-          if (e.data() === undefined) { this.save1() } else { this.save2() }
+          if (e.data() === undefined) { this.save1(uid) } else { this.save2(uid) }
         }).catch((e) => { console.log(e) }) 
       },
-    save1(){
-      const id = Date.now().toString();
-      const data = {
+    save1(uid){
+      console.log('save1')
+      let userData ={}
+      this.$firebase.firestore().collection("user").doc(uid).get().then((e) => {
+        userData = e.data();
+      }).then(()=>{
+        const id = Date.now().toString();
+        const data = {
         id: id,
         date: this.today,
-        uid: this.$store.state.userData.uid ,
-        name: this.$store.state.userData.name,
-        email: this.$store.state.userData.email,
-        team: this.$store.state.userData.team,
-        options:this.$store.state.userData.options,
+        uid: userData.uid ,
+        name: userData.name,
+        team: userData.team,
+        email: userData.email,
+        options:userData.options,
         record: this.score,
         recordSum: this.score,
         recordRepeat: 1,
       };
       this.$firebase.firestore().collection("workout").doc(this.id)
-      .collection("rank").doc(this.uid).set(data)
+      .collection("rank").doc(uid).set(data)
       .then(() => {
           this.saveOn = false;
-        }).catch((e) => { console.log(e); });
+        }).catch((e) => { console.log(e); }).finally(() => {
+        this.$emit('rank');
+        })
+      })
+    
     },
-    save2(){
-      console.log('save2')
+    save2(uid){
+      console.log('save2',uid, this.userRecord)
       const record = Math.max(this.userRecord.record, this.score)
       const recordSum = this.userRecord.recordSum
       const recordRepeat = this.userRecord.recordRepeat
@@ -285,10 +297,12 @@ export default {
         record: record
       }
       this.$firebase.firestore().collection('workout').doc(this.id)
-        .collection('rank').doc(this.uid).update(data)
+        .collection('rank').doc(uid).update(data)
       .then(() => {
           this.saveOn = false;
-        }).catch((e) => { console.log(e); });
+        }).catch((e) => { console.log(e); }).finally(() => {
+        this.$emit('rank');
+        })
     }
 
   },
