@@ -4,7 +4,7 @@
     <!-- 랭크제목줄 -->
     <v-card-title class="text-h5 white--text mb-3 rankTop" style="padding: 5px 12px 0 12px"> 
       RANK <v-spacer></v-spacer>
-      {{ rank }}th
+     <h3 v-if="$store.state.userData"> {{ rank }}th </h3>
       <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options" v-if="$store.state.userData" />
     </v-card-title>
     <!-- 랭크테이블 -->
@@ -50,7 +50,6 @@ export default {
   },
   methods: {
     getData() {
-      console.log(this.id)
       if (!this.id) {
         return;
       }
@@ -65,7 +64,7 @@ export default {
           });
           this.items = items2;
           const item = items2.filter((e)=>e.uid === this.uid)
-          this.rank = item[0].rank
+          this.rank = item[0]? item[0].rank:''
         });
     }, 
     // this.$firebase.firestore().collection("workout").doc(this.id)

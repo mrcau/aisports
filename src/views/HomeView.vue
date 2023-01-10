@@ -13,10 +13,10 @@
         mdi-48px mdi-account
       </v-icon>
     </v-avatar>
-      <v-btn rounded small color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  style="transform: translateY(10px);" >
+      <v-btn rounded color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  style="transform: translateY(10px);" >
         <h3>Login</h3>
       </v-btn>
-        <v-btn rounded small color="var(--bar-color)" dark @click="logout"  v-else style="transform: translateY(10px);">
+        <v-btn rounded color="var(--bar-color)" dark @click="logout"  v-else style="transform: translateY(10px);">
           <h3>Logout</h3>
         </v-btn>
     </div>
@@ -27,18 +27,47 @@
     <MainJumbo />
     <!-- 메뉴 -->
     <v-row class="mt-3">
-      <v-col v-for="(n, i) in menus" :key="i" cols="6">
+      <!-- <v-col v-for="(n, i) in menus" :key="i" cols="6">
         <v-card style="background: #303030; position: relative">
-          <v-img
-            :src="`${require('@/assets/fitness/' + n.img)}`"
-            max-height="200"
-            style="padding: 20px"
-          >
-            <div
-              class="d-flex justify-center align-center menuBox"
-              @click="dialogGo(n.title)"
-            >
+          <v-img :src="`${require('@/assets/fitness/' + n.img)}`" max-height="200" style="padding: 20px" >
+            <div class="d-flex justify-center align-center menuBox" @click="dialogGo(n.src)" >
               <h1 class="white--text smallText">{{ n.title }}</h1>
+            </div>
+          </v-img>
+        </v-card>
+      </v-col> -->
+      <v-col   cols="6">
+        <v-card style="background: #303030; position: relative">
+          <v-img :src="`${require('@/assets/fitness/card1.png')}`" max-height="200" style="padding: 20px" >
+            <div class="d-flex justify-center align-center menuBox" @click="$router.push('/create')" >
+              <h1 style="font-size:var(--h1-size);color:white;line-height:35px">workout</h1>
+            </div>
+          </v-img>
+        </v-card>
+      </v-col>
+      <v-col   cols="6">
+        <v-card style="background: #303030; position: relative">
+          <v-img :src="`${require('@/assets/fitness/card2.png')}`" max-height="200" style="padding: 20px" >
+            <div class="d-flex justify-center align-center menuBox" @click="$router.push('/create')" >
+              <h1 style="font-size:var(--h1-size);color:white;line-height:35px">recommend routine</h1>
+            </div>
+          </v-img>
+        </v-card>
+      </v-col>
+      <v-col   cols="6">
+        <v-card style="background: #303030; position: relative">
+          <v-img :src="`${require('@/assets/fitness/card3.png')}`" max-height="200" style="padding: 20px" >
+            <div class="d-flex justify-center align-center menuBox" @click="$router.push('/create')" >
+              <h1 style="font-size:var(--h1-size);color:white;line-height:35px">challenge exercise</h1>
+            </div>
+          </v-img>
+        </v-card>
+      </v-col>
+      <v-col   cols="6">
+        <v-card style="background: #303030; position: relative">
+          <v-img :src="`${require('@/assets/fitness/card4.png')}`" max-height="200" style="padding: 20px" >
+            <div class="d-flex justify-center align-center menuBox" @click="$router.push('/create')" >
+              <h1 style="font-size:var(--h1-size);color:white;line-height:35px">create challenge</h1>
             </div>
           </v-img>
         </v-card>
@@ -46,53 +75,19 @@
     </v-row>
     <!-- 새로운운동 타이틀 -->
     <h3 class="mt-5 text-left italic title" style="color: #d7e357">
-      <v-icon color="#d7e357" class="mb-1">mdi-dumbbell</v-icon> New Workout
+      <v-icon color="#d7e357" class="mb-1">mdi-dumbbell</v-icon> New challenge
     </h3>
     <!-- 새로운운동 아이템들 -->
     <v-row class="itemRow">
-      <v-col
-        v-for="(n, i) in items.filter(
-          (n) => n.type === 'workout' && dateCompare(n.endDate)
-        )"
-        :key="i"
-        cols="12"
-        sm="6"
-        md="4"
-        lg="3"
-      >
-        <v-card
-          :loading="loading"
-          class="mx-auto"
-          style="background: #d7e357"
-          @click="routLink(n)"
-        >
-          <v-img
-            max-height="150"
-            :src="`${require('@/assets/fitness/card1.png')}`"
-          >
-            <!-- <v-img
-            height="200"
-            :src="
-              n.img ? `${n.img}` : `${require('@/assets/fitness/cards1.png')}`
-            "
-          > -->
+      <v-col v-for="(n, i) in items.filter( (n) => n.type === 'workout' && dateCompare(n.endDate) )"
+        :key="i" cols="12" sm="6" md="4" lg="3" >
+        <v-card :loading="loading" class="mx-auto" style="background: #d7e357" @click="routLink(n)" >
+          <v-img max-height="150" :src="`${require('@/assets/fitness/card1.png')}`" > 
             <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
-              <v-card-title>
-                <h3>
-                  {{ n.title }}
-                </h3>
-              </v-card-title>
-
+              <v-card-title><h3>{{ n.title }}</h3></v-card-title>
               <v-card-text>
                 <v-row class="mx-0">
-                  <v-rating
-                    :value="n.rating"
-                    color="amber"
-                    dense
-                    half-increments
-                    readonly
-                    size="14"
-                  ></v-rating>
+                  <v-rating :value="n.rating" color="amber" dense half-increments readonly size="14" ></v-rating>
                   <v-spacer></v-spacer>
                   <div class="grey--text ms-4">
                     <span style="color: var(--second-color)">{{ n.team }}</span>
@@ -125,20 +120,9 @@
     </h2>
     <!-- 새로운게임 아이템들 -->
     <v-row class="itemRow">
-      <v-col
-        v-for="(n, i) in items.filter((n) => n.type === 'game' && n.progress)"
-        :key="i"
-        cols="12"
-        sm="6"
-        md="4"
-        lg="3"
-      >
-        <v-card
-          :loading="loading"
-          class="mx-auto"
-          style="background: #c6ef60"
-          @click="routLink(n)"
-        >
+      <v-col v-for="(n, i) in items.filter((n) => n.type === 'game' && n.progress)" :key="i"
+        cols="12" sm="6" md="4" lg="3" >
+        <v-card :loading="loading" class="mx-auto" style="background: #c6ef60" @click="routLink(n)" >
           <v-img height="200" :src="`${require('@/assets/fitness/card3.png')}`">
             <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
               <v-card-title>
@@ -149,14 +133,7 @@
 
               <v-card-text>
                 <v-row class="mx-0">
-                  <v-rating
-                    :value="n.star"
-                    color="amber"
-                    dense
-                    half-increments
-                    readonly
-                    size="14"
-                  ></v-rating>
+                  <v-rating :value="n.star" color="amber" dense half-increments readonly size="14" ></v-rating>
                   <v-spacer></v-spacer>
                   <div class="grey--text ms-4">
                     <span style="color: var(--main-color)">{{ n.team }}</span>
@@ -196,56 +173,15 @@ export default {
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substring(0, 10),
-      // uid: this.$store.state.fireUser.uid || "",
       dialogLogin: false,
       loading: false,
       menus: [
-        {title: "workout",content: "운동 참여",img: "card1.png",},
-        {title: "game",content: "게임 참여",img: "card2.png",},
-        {title: "create", content: "운동 생성",img: "card3.png",},
-        { title: "board", content: "참여 현황", img: "card4.png" },
+        {title: "workout ai-exercise",content: "운동 참여",src:'create',img: "card1.png",},
+        {title: "game",content: "게임 참여",src:'create',img: "card2.png",},
+        {title: "challenge exercise", content: "운동 생성",src:'create',img: "card3.png",},
+        { title: "create challenge", content: "참여 현황",src:'create', img: "card4.png" },
       ],
-      items: [
-        {
-          // Date.now().toString()
-          id: "sdsd",
-          title: "내가짱sdfsdfsdfsdfsdfssdfdsdfsdfsdfsdfsdfsdf",
-          content: "내가짱이다내가짱이다내가짱이다.",
-          creator: "홍길동",
-          team: "한국중학교",
-          people: 7,
-          password: "1233",
-          startDate: "2022-10-22",
-          endDate: "2023-12-31",
-          type: "workout",
-          img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          rating: 3.5,
-          aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-          members: [1115, "member"],
-          progress: "false",
-          infoImg1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          infoImg2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
-          infoText1: "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
-          infoText2:
-            "내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf내가짱sdfsdfsdfsdf",
-        },
-      ],
-      options: {
-        backgroundType: "transparent",
-        backgroundColor: "black",
-        skinColor: "light",
-        clothesType: "blazerShirt",
-        clothesColor: "black",
-        clothesGraphicsType: "diamond",
-        eyesType: "cry",
-        eyebrowType: "angry",
-        mouthType: "disbelief",
-        facialHairType: "beardMedium",
-        facialHairColor: "auburn",
-        accessoriesType: "eyepatch",
-        topType: "hijab",
-        topColor: "blonde",
-      },
+      items: [], 
     };
   },
   created() {

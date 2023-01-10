@@ -37,7 +37,7 @@ export default {
   --h1-size: 1.5rem;
   --h2-size: 1.25rem;
   --h3-size: 1rem;
-  --normal-size: 0.938rem;
+  --normal-size: 0.8rem;
   --small-size: 0.813rem;
   --smaller-size: 0.75rem;
 

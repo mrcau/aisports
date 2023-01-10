@@ -70,11 +70,11 @@ export default {
       Rules: [(v) => !!v || "필수입력란"],
       nameRules: [ (v) => !!v || "필수입력란", (v) => v.length <= 10 || "10자내로 입력", ],
       emailRules: [ (v) => !!v || "필수입력란", (v) => /.+@.+/.test(v) || "E-mail 형식", ],
+      uid:this.$store.state.userData?this.$store.state.userData.uid:'',
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substring(0, 10),
       login: true,
       signup: false,
       email: false,
-      uid: "",
       loading: false,
       avatarSrc: "",
       checkbox: false,
@@ -82,6 +82,7 @@ export default {
       savePass: "",
       saveEmail: "",
       saveTeam: "",
+      userRecord:'',
       ranNum: Math.floor(Math.random() * 101),
       // avatar options:
       backgroundType: ["circle", "transparent"],
@@ -110,7 +111,6 @@ export default {
       const provider = new this.$firebase.auth.GoogleAuthProvider();
       this.$firebase.auth().languageCode = "ko";
       try {
-        // 신규구글로그인시 데이터 저장
         await this.$firebase
           .auth()
           .signInWithPopup(provider)
@@ -118,6 +118,7 @@ export default {
             this.$firebase.firestore().collection("user").get().then((users) => {
                 const userId = users.docs.map(a => a.id);
                 if (userId.includes(e.user.uid)) {return}
+              // 최초구글 로그인시 데이터 저장
                 this.saveUserdata(e).then(() => {
                   this.$firebase.firestore().collection("user").doc(e.user.uid).get()
                   .then((e) => {
@@ -126,10 +127,15 @@ export default {
                     });
                 });
               });
-          });
+          }).then(() => {
+            if(this.score>0){ 
+              console.log("저장 Login"); this.save(); 
+              } 
+            })
         } catch {
           console.log("stop!");
-        } finally {
+        } 
+        finally {
           this.loading = false;
           this.email = false;
           this.signup = false;
@@ -177,11 +183,7 @@ export default {
           clothesGraphicsType:this.randomItem(this.clothesGraphicsType),
         }
       };
-      this.$firebase
-        .firestore()
-        .collection("user")
-        .doc(e.user.uid)
-        .set(userData)
+      this.$firebase.firestore().collection("user").doc(e.user.uid).set(userData)
         .then(() => {
           this.loading = false;
           this.email = false;
@@ -195,16 +197,15 @@ export default {
         return;
       }
       this.loading = true;
-      this.$firebase
-        .auth()
-        .signInWithEmailAndPassword(this.saveEmail, this.savePass)
-        .then(() => {
+      this.$firebase.auth().signInWithEmailAndPassword(this.saveEmail, this.savePass)
+        .then((e) => {
+            if(this.score>0){  console.log("이메일 기록저장 Login",e); this.save();  } 
           this.$emit("close");
           this.loading = false;
         })
         .catch((e) => {
           this.loading = false;
-            this.$swal.fire({ title: '회원정보 오류',text:'이메일과 비밀번호를 확인해주세요.', icon: 'error' })
+            this.$swal.fire({ title: 'Info error',text:'이메일과 비밀번호를 확인해주세요.', icon: 'error' })
           console.log( e);
         }) 
     },
@@ -219,57 +220,76 @@ export default {
         await this.$firebase
           .auth()
           .createUserWithEmailAndPassword(this.saveEmail, this.savePass)
-          .then((result) => {
-            console.log(result);
-            this.saveUserdata(result);
-              this.$emit("close");
-          this.loading = false;
+          .then((e) => {
+            this.$emit("close");
+            this.loading = false;
+            this.saveUserdata(e).then(() => {
+                  this.$firebase.firestore().collection("user").doc(e.user.uid).get()
+                  .then((e) => {
+                      const data = e.data();
+                      this.$store.commit("setUserData", data);
+                    });
+                }).then(() => {
+            if(this.score>0){ 
+              console.log("이메일 회원가입 기록저장 Login"); this.save(); 
+              } 
+            });
           })
           .catch((e) => {
             console.log(e);
-            this.$swal.fire({ title: '이메일 오류',text:'입력하신 이메일은 이미 등록된 메일입니다.', icon: 'error' })
+            this.$swal.fire({ title: 'E-mail error',text:'입력하신 이메일은 이미 등록된 메일입니다.', icon: 'error' })
           this.loading = false;
           })
-          // .finally(() => {
-          // });
       } catch {
         console.log("E-mail을 확인해주세요.\n 이미 가입된 E-mail입니다.");
       }
     },
 
-    saveRecord() { 
-
+// 기록저장
+    async save() {
+    this.$firebase.firestore().collection('workout').doc(this.id)
+        .collection('rank').doc(this.uid).get().then((e) => {
+          this.userRecord = e.data()
+          if (e.data() === undefined) { this.save1() } else { this.save2() }
+        }).catch((e) => { console.log(e) }) 
+      },
+    save1(){
       const id = Date.now().toString();
-      const generator = new AvatarGenerator();
-      const avatarSrc = generator.generateRandomAvatar();
       const data = {
         id: id,
-        uid:this.$store.state.userData?this.$store.state.userData.uid:'',
         date: this.today,
-        avatar: avatarSrc,
-        option:this.$store.state.userData?this.$store.state.userData.option:'',
-        name: this.saveName,
-        email: this.saveEmail,
-        team: this.saveTeam,
+        uid: this.$store.state.userData.uid ,
+        name: this.$store.state.userData.name,
+        email: this.$store.state.userData.email,
+        team: this.$store.state.userData.team,
+        options:this.$store.state.userData.options,
         record: this.score,
+        recordSum: this.score,
+        recordRepeat: 1,
       };
-      this.$firebase
-        .firestore()
-        .collection("workout")
-        .doc(this.id)
-        .collection("rank")
-        .doc(id)
-        .set(data)
-        .then(() => {
+      this.$firebase.firestore().collection("workout").doc(this.id)
+      .collection("rank").doc(this.uid).set(data)
+      .then(() => {
           this.saveOn = false;
-        })
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          this.$emit("close");
-        });
+        }).catch((e) => { console.log(e); });
     },
+    save2(){
+      console.log('save2')
+      const record = Math.max(this.userRecord.record, this.score)
+      const recordSum = this.userRecord.recordSum
+      const recordRepeat = this.userRecord.recordRepeat
+      const data = {
+        ...this.userRecord,
+        recordSum: recordSum + this.score,
+        recordRepeat: recordRepeat + 1,
+        record: record
+      }
+      this.$firebase.firestore().collection('workout').doc(this.id)
+        .collection('rank').doc(this.uid).update(data)
+      .then(() => {
+          this.saveOn = false;
+        }).catch((e) => { console.log(e); });
+    }
 
   },
 };

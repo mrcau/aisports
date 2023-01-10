@@ -92,18 +92,20 @@
               <v-radio label="수정" value="custom" />
             </v-radio-group>
             <!--AI 동작설명 -->
-            <v-text-field v-model="data.aiSrc" label="AI주소" required :rules="Rules" :disabled="selector != 'custom'" dark
-              dense filled outlined :counter="100" color="var(--main-color)" ></v-text-field>
-            <v-row class="mt-3">
-              <v-col cols="12" sm="6">
-                <v-textarea v-model="data.infoText1" label="Pose1" :disabled="selector != 'custom'" required :rules="Rules" dark dense outlined filled
-                  rows="2" :counter="50" color="var(--main-color)" ></v-textarea>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-textarea v-model="data.infoText2" label="Pose2" :disabled="selector != 'custom'" required :rules="Rules" dense dark outlined filled
-                  rows="2" :counter="50" color="var(--main-color)" ></v-textarea>
-              </v-col>
-            </v-row>
+            <div v-if="selector === 'custom'">
+              <v-text-field v-model="data.aiSrc" label="AI주소" required :rules="Rules" :disabled="selector != 'custom'" dark
+                dense filled outlined :counter="100" color="var(--main-color)" ></v-text-field>
+              <v-row class="mt-3">
+                <v-col cols="12" sm="6">
+                  <v-textarea v-model="data.infoText1" label="Pose1" :disabled="selector != 'custom'" required :rules="Rules" dark dense outlined filled
+                    rows="2" :counter="50" color="var(--main-color)" ></v-textarea>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-textarea v-model="data.infoText2" label="Pose2" :disabled="selector != 'custom'" required :rules="Rules" dense dark outlined filled
+                    rows="2" :counter="50" color="var(--main-color)" ></v-textarea>
+                </v-col>
+              </v-row>
+            </div>
             <!-- 동작 이미지 -->
             <v-row style="margin: 0">
               <v-col cols="6">
@@ -163,8 +165,10 @@ export default {
         aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
         infoImg1: require("@/assets/fitness/sp2.png"),
         infoImg2: require("@/assets/fitness/sp1.png"),
-        infoText1: "팔꿈치를 구부려 두 손이 어깨 위치에 오도록 합니다.",
-        infoText2: "팔꿈치를 펴서 두 손을 머리 위로 올립니다.",
+        fileName1:'',
+        fileName2:'',
+        infoText1: "팔을 구부려 두 손을 어깨 높이로 올립니다.",
+        infoText2: "팔을 쭉 펴서 두 손을 머리 위로 올립니다.",
         startDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
           .substring(0, 10),
@@ -179,7 +183,8 @@ export default {
       progress: "false",
       menuDate1: "false",
       menuDate2: "false",
-      file: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+      file1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+      file2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
       imgsrc: "",
       loading: false,
       toggle: true,
@@ -195,49 +200,51 @@ export default {
   },
   methods: {
     getData() {
-      if (this.$route.params.id) {
-        this.data = this.$route.params;
-      }
+      if (this.$route.params.id) {this.data = this.$route.params;}
     },
-    async addPic(e) {
-      this.file = e;
+    async addPic(e) { 
+      this.file1 = e; 
       const url = URL.createObjectURL(e);
       this.data.infoImg1 = url;
     },
     async addPic2(e) {
-      this.file = e;
+      this.file2 = e;
       const url = URL.createObjectURL(e);
       this.data.infoImg2 = url;
     },
-    save() {
+   async save() {
       this.loading = true;
       let id = "";
+      //새로만들기 인지 편집인지 판별
       if (this.$route.params.id) {
         id = this.$route.params.id;
         this.data.id = id;
       } else {
         id = Date.now().toString();
         this.data.id = id;
+      }      
+      //이미지 업로드
+      console.log(this.file1.name)
+      if(this.file1.name){
+        const sn = await this.$firebase.storage().ref().child('challenge/' + this.file1.size).put(this.file1)
+        sn.ref.getDownloadURL().then((url)=>{this.data.infoImg1=url})
+        this.data.fileName1 = this.file1.size
       }
-
-      this.$firebase
-        .firestore()
-        .collection("workout")
-        .doc(id)
-        .set(this.data)
-        .then(() => {
-          console.log("saved");
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          this.loading = false;
-          // this.$router.push("/");
-          this.$router.push({
-            name: "play",
-            params: { id: id },
-          });
-        });
+      if(this.file2.name){
+        const sn = await this.$firebase.storage().ref().child('challenge/' + this.file2.size).put(this.file2)
+        sn.ref.getDownloadURL().then((url)=>{this.data.infoImg2=url})
+        this.data.fileName2 = this.file2.size
+      }
+      this.upLoad(id)
     },
+    upLoad(id){
+      this.$firebase.firestore().collection("workout").doc(id).set(this.data)
+        .then(() => {
+          this.loading = false;
+          this.$router.push({ name: "play", params: { id: id }});
+        })
+        .catch((e) => console.log(e)) 
+    }
   },
 };
 </script>
