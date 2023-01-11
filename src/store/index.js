@@ -17,6 +17,7 @@ export default new Vuex.Store({
     //로그인- 관리자판정
     authTF(state, fu) {
       state.fireUser = fu;
+      state.admin = false;
       if (!fu) {
         state.userData = fu;
         return;

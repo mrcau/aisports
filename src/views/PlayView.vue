@@ -1,23 +1,24 @@
 <template>
  
   <v-container class="font-italic white--text pb-3 d-flex flex-column" style="height: 100%"   >
-    <!-- {{ this.$store.state.userData?!!this.$store.state.userData.uid:false }} -->
    <!-- 로그인 -->
-   <div class="d-flex login">
-      <!-- <Avataaars :width="50" :height="50" v-if="!$store.state.userData" /> -->
-      <div  style="cursor: pointer;padding: 0;margin: 0; height: 50px;">
-        <v-progress-circular indeterminate color="var(--main-color)" style="transform: translateY(10px);" v-if="$store.state.fireUser&&!$store.state.userData"  />
-        <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options" v-if="$store.state.fireUser&&$store.state.userData" />
-        <v-avatar  size="50px" v-else><v-icon dark> mdi-48px mdi-account</v-icon></v-avatar>
-      </div>
-      <v-btn rounded  color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  style="transform: translateY(10px);" >
-        <h3>Login</h3>
-      </v-btn>
-      <v-btn rounded  color="var(--bar-color)" dark @click="logout"  v-else style="transform: translateY(10px);">
-        <h3>Logout</h3>
-      </v-btn>
+   <div class="d-flex login" style="height:45px"> 
+        <v-btn rounded color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  >
+          <h3>Login</h3>
+        </v-btn>
+        <v-progress-circular indeterminate color="var(--main-color)"  v-if="$store.state.fireUser&&!$store.state.userData"  />
+        <v-speed-dial v-model="fab"    direction="right"  v-if="$store.state.fireUser&&$store.state.userData"  >
+            <template v-slot:activator> 
+              <v-btn v-model="fab" small color="var(--main-color)" dark fab style="transform: translateX(10px);" >
+                <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options"  />
+              </v-btn>
+            </template> 
+            <v-btn rounded dark small @click="logout" color="var(--main-color)" style="color:black"  >
+              Logout
+            </v-btn>
+        </v-speed-dial>
       <v-spacer></v-spacer>
-      <v-btn color="var(--main-color)" rounded  @click="getRank();dialogRank = true;" style="transform: translateY(10px);" >
+      <v-btn color="var(--main-color)" rounded  @click="dialogRank = true"  >
         <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
         <h3 style="color: var(--bg-color)">Rank</h3>
       </v-btn>
@@ -32,7 +33,7 @@
           <v-spacer></v-spacer>
 
           <!-- <v-menu bottom v-if="uid===params.uid"> -->
-          <v-menu bottom v-if="$store.state.fireUser">
+          <!-- <v-menu bottom v-if="$store.state.fireUser">
             <template v-slot:activator="{ on, attrs }">
               <v-btn dark icon v-bind="attrs" v-on="on" @click="getUserData">
                 <v-icon>mdi-dots-vertical</v-icon>
@@ -47,7 +48,21 @@
                 <v-btn icon @click="removeData"><v-icon>mdi-delete</v-icon></v-btn>
               </v-list-item> 
             </v-list>
-          </v-menu>
+          </v-menu> -->
+
+          <v-speed-dial v-model="fabEdit"    direction="left"  v-if="$store.state.fireUser&&$store.state.fireUser.uid===params.uid"  >
+            <template v-slot:activator> 
+              <v-btn v-model="fabEdit" small color="transparent" dark fab style="transform: translateX(10px);" >
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template> 
+            <div style="display:flex;transform: translateX(20px);">
+              <v-btn dark icon @click="removeData"><v-icon>mdi-delete</v-icon></v-btn>
+              <v-btn dark icon @click="editData"><v-icon>mdi-pencil</v-icon></v-btn>
+            </div>
+          </v-speed-dial>
+
+
         </v-card-title>
 
         <v-card-text>
@@ -72,7 +87,7 @@
           <v-spacer></v-spacer>
           <v-icon color="white">mdi-account-group</v-icon>
           <span class="mx-2 mt-1">
-            {{ params ? params.members.length : "0" }}
+            {{members }}
           </span>
         </v-card-actions>
       </div>
@@ -84,7 +99,7 @@
         </div>
 
         <!--  2-3.  운동방법 -->
-        <v-container lass="text-left px-10" style=" position: absolute; top: 0; background-color: var(--bg-color); height: 100%; "
+        <v-container style=" position: absolute; top: 0; background-color: var(--bg-color); height: 100%;padding-bottom: 0; "
           v-if="!start && !saveOn" >
           <!-- 비밀번호 입장 물어보기 -->
           <div v-if="params.password!=password">
@@ -194,6 +209,7 @@ export default {
       userData:'',
       id: this.$route.params.id || "",
       params: "",
+      members:'',
       passinput:"",
       password:"",
       userRecord: '',
@@ -230,6 +246,8 @@ export default {
       saveTeam: "",
       Rules: [(v) => !!v || "필수입력란"],
       unsub: "",
+      fab:false,
+      fabEdit:false
     };
   },
   created() {
@@ -256,10 +274,14 @@ export default {
     },
     getRank(){
       if (!this.id) {return }
-      this.unsub = this.$firebase.firestore().collection("workout").doc(this.id)
-        .collection("rank").orderBy("record", "desc")
-        .onSnapshot((sn) => {
+      // this.unsub = this.$firebase.firestore().collection("workout").doc(this.id)
+      //   .collection("rank").orderBy("record", "desc")
+      //   .onSnapshot((sn) => {
+      this.$firebase.firestore().collection("workout").doc(this.id)
+        .collection("rank").orderBy("record", "desc").limit(10)
+        .get().then((sn) => {
           const items = sn.docs.map((e) => e.data());
+          this.members = items.length
           const items2 = [];
           items.forEach((e) => {
             const rank = items.indexOf(e) + 1;
@@ -269,7 +291,10 @@ export default {
           if (!this.$store.state.fireUser) {return }
           const item = items2.filter((e)=>e.uid === this.$store.state.fireUser.uid)
           this.rank = item[0]? item[0].rank:''
-        });
+        }).catch((e) => {console.log(e)}).finally(() =>{
+          if(this.rank){
+            this.dialogRank = true}
+          });
     },
     //유저데이터 가져오기
     getUserData(){
@@ -279,11 +304,17 @@ export default {
       }
     },
     // 챌린지룸 제거
-    removeData() {
-      this.$firebase.firestore().collection("workout").doc(this.id).delete()
-        .then(() => {
-          this.$router.push("/");
-        }).catch((e) => console.log(e));
+  async removeData() {
+    await this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').get().then((sn) => {
+          if(sn.empty){return}  
+          sn.docs.forEach((e) => {
+              this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').doc(e.data().uid).delete().catch(e => console.log(e))
+            })
+          }).catch((e)=>{console.log(e)})
+          
+        this.$firebase.firestore().collection("workout").doc(this.id).delete()
+        .then(() => { this.$router.push("/")}).catch((e) => console.log(e));
+
     },
     editData() {
       this.$router.push({name: "create",params: this.params});
@@ -318,9 +349,11 @@ export default {
           //시간초과 저장
           if(this.$store.state.userData){ 
             console.log("uid있음")
-            this.save().then(() => {
-              this.dialogRank=true
-            });
+            this.recordSave()
+            // .then(() => {
+            //   this.getRank()
+            //   this.dialogRank=true
+            // });
           }else{
             console.log("uid없음")
             this.dialogLogin=true;
@@ -332,13 +365,6 @@ export default {
       this.webcam.update(); // update the webcam frame
       await this.predict(); 
       this.animationframe = window.requestAnimationFrame(this.loop)
-    },
-    cancel(){    
-          this.start = false;
-          this.cameraTF = false;
-      if (this.webcam) { this.webcam.stop() }
-      if(this.circle){clearInterval(this.circle)}     
-      if(this.animationframe){cancelAnimationFrame(this.animationframe)}
     },
     // 동작판별하기
     async predict() {
@@ -372,6 +398,13 @@ export default {
         }
       }
     },
+    cancel(){    
+          this.start = false;
+          this.cameraTF = false;
+      if (this.webcam) { this.webcam.stop() }
+      if(this.circle){clearInterval(this.circle)}     
+      if(this.animationframe){cancelAnimationFrame(this.animationframe)}
+    },
     restart() {
       this.saveOn = false;
     },
@@ -383,7 +416,8 @@ export default {
           .catch(e => { audio.pause() })
       }
     },
-   async save() {
+   async recordSave() {
+    console.log('id',this.id,'uid',this.uid)
     this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').doc(this.uid).get()
     .then((e) => {
       this.userRecord = e.data()
@@ -408,7 +442,7 @@ export default {
       .then(() => {
           this.saveOn = false;
           this.score=0
-        }).catch((e) => { console.log(e); });
+        }).catch((e) => { console.log(e); }).finally(() => {this.getRank()})
     },
     save2(){
       console.log('save2',this.userRecord.record,this.score)
@@ -425,7 +459,7 @@ export default {
       .then(() => {
           this.saveOn = false;
           this.score=0
-        }).catch((e) => { console.log(e); });
+        }).catch((e) => { console.log(e); }).finally(() => {this.getRank()})
     }
   },
 };

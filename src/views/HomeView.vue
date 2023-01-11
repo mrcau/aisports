@@ -1,30 +1,27 @@
 <template>
   <v-container class="font-italic white--text pb-15">
     <!-- 로그인 -->
-    <div class="d-flex login">
-      <!-- <Avataaars :width="50" :height="50" v-if="!$store.state.userData" /> -->
-      
-      <v-progress-circular indeterminate color="var(--main-color)" style="transform: translateY(10px);" v-if="$store.state.fireUser&&!$store.state.userData"  />
-      <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options" v-if="$store.state.fireUser&&$store.state.userData" />
- 
-      <v-avatar  size="50px" v-else>
-        <!-- <img :src="$store.state.userData.avatar" alt="alt" /> -->
-      <v-icon dark>
-        mdi-48px mdi-account
-      </v-icon>
-    </v-avatar>
-      <v-btn rounded color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  style="transform: translateY(10px);" >
-        <h3>Login</h3>
-      </v-btn>
-        <v-btn rounded color="var(--bar-color)" dark @click="logout"  v-else style="transform: translateY(10px);">
-          <h3>Logout</h3>
+    <div class="d-flex login" style="height:45px"> 
+        <v-btn rounded color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  >
+          <h3>Login</h3>
         </v-btn>
-    </div>
+        <v-progress-circular indeterminate color="var(--main-color)"  v-if="$store.state.fireUser&&!$store.state.userData"  />
+        <v-speed-dial v-model="fab"    direction="right"  v-if="$store.state.fireUser&&$store.state.userData"  >
+            <template v-slot:activator> 
+              <v-btn v-model="fab" small color="transparent" dark fab style="transform: translateX(10px);" >
+                <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options"  />
+              </v-btn>
+            </template> 
+            <v-btn rounded dark small @click="logout" color="var(--main-color)" style="color:black"  >
+              Logout
+            </v-btn>
+        </v-speed-dial>
+    </div> 
     <v-dialog v-model="dialogLogin" max-width="500px">
       <DialogLogin @close="dialogLogin = false" />
     </v-dialog>
     <!-- 점보 -->
-    <MainJumbo />
+    <MainJumbo />  
     <!-- 메뉴 -->
     <v-row class="mt-3">
       <!-- <v-col v-for="(n, i) in menus" :key="i" cols="6">
@@ -37,27 +34,27 @@
         </v-card>
       </v-col> -->
       <v-col   cols="6">
-        <v-card style="background: #303030; position: relative">
+        <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card1.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex justify-center align-center menuBox" @click="$router.push('/create')" >
+            <div class="d-flex justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)" >
               <h1 style="font-size:var(--h1-size);color:white;line-height:35px">workout</h1>
             </div>
           </v-img>
         </v-card>
       </v-col>
       <v-col   cols="6">
-        <v-card style="background: #303030; position: relative">
+        <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card2.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex justify-center align-center menuBox" @click="$router.push('/create')" >
+            <div class="d-flex justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)" >
               <h1 style="font-size:var(--h1-size);color:white;line-height:35px">recommend routine</h1>
             </div>
           </v-img>
         </v-card>
       </v-col>
       <v-col   cols="6">
-        <v-card style="background: #303030; position: relative">
+        <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card3.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex justify-center align-center menuBox" @click="$router.push('/create')" >
+            <div class="d-flex justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)"  >
               <h1 style="font-size:var(--h1-size);color:white;line-height:35px">challenge exercise</h1>
             </div>
           </v-img>
@@ -66,7 +63,7 @@
       <v-col   cols="6">
         <v-card style="background: #303030; position: relative">
           <v-img :src="`${require('@/assets/fitness/card4.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex justify-center align-center menuBox" @click="$router.push('/create')" >
+            <div class="d-flex justify-center align-center menuBox" @click="$store.state.admin?$router.push('/create'):'#'"  >
               <h1 style="font-size:var(--h1-size);color:white;line-height:35px">create challenge</h1>
             </div>
           </v-img>
@@ -101,13 +98,13 @@
             </div>
           </v-img>
 
-          <v-card-actions>
-            <v-icon>mdi-timetable</v-icon> {{ n.endDate }}
+          <v-card-actions >
+            <v-icon >mdi-timetable</v-icon> {{ n.endDate }}
             <v-spacer></v-spacer>
-            <v-icon>mdi-account-group</v-icon>
+            <!-- <v-icon>mdi-account-group</v-icon>
             <span class="mx-2 mt-1">
               {{ n.members.length }}
-            </span>
+            </span> -->
           </v-card-actions>
         </v-card>
       </v-col>
@@ -150,10 +147,10 @@
           <v-card-actions>
             <v-icon>mdi-timetable</v-icon> {{ n.endDate }}
             <v-spacer></v-spacer>
-            <v-icon>mdi-account-group</v-icon>
+            <!-- <v-icon>mdi-account-group</v-icon>
             <span class="mx-2 mt-1">
               {{ n.members.length }}
-            </span>
+            </span> -->
           </v-card-actions>
         </v-card>
       </v-col>
@@ -170,6 +167,7 @@ export default {
   components: { MainJumbo, Avataaars, DialogLogin },
   data() {
     return {
+      fab:false,
       today: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substring(0, 10),
@@ -237,14 +235,14 @@ export default {
   transition: all 0.5s;
   backdrop-filter: blur(5px);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 0, 0.5);
   box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 .menuBox:hover {
-  background: rgba(255, 255, 0, 0.5);
+  background: rgba(255, 255, 255, 0.3); 
 }
 .menuBox.workout {
   background: rgba(0, 0, 0, 0.3);
@@ -253,9 +251,7 @@ export default {
   border-bottom: none;
   overflow: hidden;
 }
-.menuBox:hover {
-  background: rgba(255, 255, 0, 0.5);
-}
+ 
 .menuBox.workout:hover {
   background: rgba(255, 255, 0, 0.5);
 }

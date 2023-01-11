@@ -2,8 +2,9 @@
   <v-container class="font-italic white--text pb-3">
     <div class="d-flex mb-2">
       <v-btn color="var(--main-color)" text small to="/">
-        <v-icon>mdi-36px mdi-home</v-icon> </v-btn
-      ><v-spacer></v-spacer>
+        <v-icon>mdi-chevron-left</v-icon> <h3>back</h3> 
+      </v-btn ><v-spacer/>
+        
     </div>
     <div class="aiSection">
       <!-- 상단정보 -->
@@ -66,7 +67,7 @@
                 <v-text-field v-model="data.title" label="제목" required :rules="Rules" dark dense :counter="20" color="var(--main-color)" ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
-                <v-text-field v-model="data.team" label="담당" required :rules="Rules" dark dense :counter="10" color="var(--main-color)" ></v-text-field>
+                <v-text-field v-model="data.team" label="운영" required :rules="Rules" dark dense :counter="10" color="var(--main-color)" ></v-text-field>
               </v-col>
             </v-row>
 
@@ -83,7 +84,7 @@
                 </v-menu>
               </v-col>
               <v-col class="pt-8" cols="6">
-                <v-text-field v-model="data.time" label="운동시간" dense dark required :rules="Rules" color="var(--main-color)" ></v-text-field>
+                <v-text-field v-model="data.time" label="운동시간(초)" dense dark required :rules="Rules" color="var(--main-color)" ></v-text-field>
               </v-col>
             </v-row>
 
@@ -157,18 +158,18 @@ export default {
         id: "",
         uid:this.$store.state.userData?this.$store.state.userData.uid:'',
         creator: this.$store.state.userData?this.$store.state.userData.name:'',
-        team: "한국중학교",
-        title: "어깨깡패 되기",
-        content: "AI 어깨 근력 강화 운동",
+        team: "어벤져스",
+        title: "도전! 숄더프레스",
+        content: "AI 어깨 근력 강화 운동 챌린지",
         time: 60,
         type: "workout",
         aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-        infoImg1: require("@/assets/fitness/sp2.png"),
-        infoImg2: require("@/assets/fitness/sp1.png"),
+        infoImg1: require("@/assets/fitness/sp1.png"),
+        infoImg2: require("@/assets/fitness/sp2.png"),
         fileName1:'',
         fileName2:'',
-        infoText1: "팔을 구부려 두 손을 어깨 높이로 올립니다.",
-        infoText2: "팔을 쭉 펴서 두 손을 머리 위로 올립니다.",
+        infoText1: "팔을 쭉 펴서 두 손을 머리 위로 올립니다.",
+        infoText2: "팔을 구부려 두 손을 어깨 높이로 내립니다.",
         startDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
           .substring(0, 10),
@@ -224,7 +225,6 @@ export default {
         this.data.id = id;
       }      
       //이미지 업로드
-      console.log(this.file1.name)
       if(this.file1.name){
         const sn = await this.$firebase.storage().ref().child('challenge/' + this.file1.size).put(this.file1)
         sn.ref.getDownloadURL().then((url)=>{this.data.infoImg1=url})
@@ -279,7 +279,7 @@ v-data-table {
   justify-content: stretch;
   overflow: hidden;
   background-image: url(../assets/fitness/card-col1.png);
-  border-radius: 18px;
+  border-radius: 10px;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
