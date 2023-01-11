@@ -15,14 +15,14 @@
           {{ item.name }}
         </template>
       </v-data-table> -->
-
       <v-simple-table dark>
         <thead>
           <tr >
             <th class="text-center"  >순위</th>
             <th class="text-right"></th>
             <th class="text-center">이름</th>
-            <th class="text-center">기록</th>
+            <th class="text-center" v-if="maxAdd==='max'">최고기록</th>
+            <th class="text-center" v-else>합산기록</th>
             <th class="text-center">도전</th>
           </tr>
         </thead>
@@ -31,7 +31,7 @@
             <td class="text-center">{{ a.rank }}</td> 
             <td class="text-center" style="width: 30px;padding:0;margin: 0;" > <Avataaars :width="35" :height="35" :avatarOptions="a.options" />    </td> 
             <td class="text-center " style="width: 70px;padding:0;margin: 0;" > <span> {{ a.name }}</span> </td>              
-            <td class="text-center">{{ a.record }}</td>
+            <td class="text-center">{{ maxAdd==='max'?a.record:a.recordSum }}</td>
             <td class="text-center">{{ a.recordRepeat }}</td>
           </tr>
         </tbody>
@@ -44,7 +44,7 @@
 import Avataaars from "vue-avataaars";
 export default {
   name: "DialogRank",
-  props: ['items','rank',"id"],
+  props: ['items','rank',"id",'maxAdd'],
   components: {  Avataaars },
   data() {
     return {

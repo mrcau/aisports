@@ -9,7 +9,7 @@
         <v-progress-circular indeterminate color="var(--main-color)"  v-if="$store.state.fireUser&&!$store.state.userData"  />
         <v-speed-dial v-model="fab"    direction="right"  v-if="$store.state.fireUser&&$store.state.userData"  >
             <template v-slot:activator> 
-              <v-btn v-model="fab" small color="var(--main-color)" dark fab style="transform: translateX(10px);" >
+              <v-btn v-model="fab" small color="transparent" dark fab style="transform: translateX(10px);" >
                 <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options"  />
               </v-btn>
             </template> 
@@ -91,9 +91,9 @@
           <div v-else>
             <h2 class="mt-1" style="color: var(--main-color);font-size: var(--h2-size)">운동방법</h2>
             <v-banner color="var(--bar-color)" dark rounded single-line >
-              <h3 style="font-size: var(--normal-size)">1. 카메라 사용을 허용합니다.</h3>
-              <h3 style="font-size: var(--normal-size)">2. Pose1과 Pose2 동작을 반복합니다.</h3>
-              <h3 style="font-size: var(--normal-size)">3. 정확한 측정을 위해 카메라 거리를 조절합니다.</h3>
+              <h3 style="font-size: var(--normal-size)">1. 'START' 버튼을 클릭후 카메라 사용을 허용합니다.</h3>
+              <h3 style="font-size: var(--normal-size)">2. 전신이 나오도록 카메라 거리를 조절합니다.</h3>
+              <h3 style="font-size: var(--normal-size)">3. Pose1과 Pose2 동작을 반복합니다.</h3>
             </v-banner>
 
             <v-row class="mt-2">
@@ -165,7 +165,7 @@
       </div>
     </v-container>
     <v-dialog v-model="dialogRank" max-width="600px">
-      <DialogRank :items="items" :rank="rank" :id="id"  />
+      <DialogRank :items="items" :rank="rank" :id="id" :maxAdd="params.maxAdd"  />
     </v-dialog>
     <v-dialog v-model="dialogLogin" max-width="600px" :retain-focus="false">
       <DialogLogin :score="score" :id="id" @close="dialogLogin = false" @rank="rankView" />
@@ -231,7 +231,7 @@ export default {
       fabEdit:false,
       light:false,
       timerSound:new Audio(require('@/assets/mp3/timer.mp3')),
-      faultSound: new Audio(require('@/assets/mp3/fault.mp3')),
+      endbell: new Audio(require('@/assets/mp3/endbell.mp3')),
     };
   },
   created() {
@@ -239,6 +239,7 @@ export default {
     this.getRank();
   },
   beforeDestroy() {
+    this.timerSound.pause()
     if(this.cameraTF){ this.cancel() }
     if (this.unsub) this.unsub();
   },
@@ -258,11 +259,13 @@ export default {
     },
     getRank(){
       if (!this.id) {return }
-      // this.unsub = this.$firebase.firestore().collection("workout").doc(this.id)
-      //   .collection("rank").orderBy("record", "desc")
-      //   .onSnapshot((sn) => {
+      this.$firebase.firestore().collection("workout").doc(this.id).get()
+        .then((e) => {this.params = e.data()}).catch((e) => console.log(e))
+        .finally(()=>{
+
+        const order = this.params.maxAdd==='max'?'record':'recordSum'
       this.$firebase.firestore().collection("workout").doc(this.id)
-        .collection("rank").orderBy("record", "desc").limit(10)
+        .collection("rank").orderBy(order, "desc").limit(10)
         .get().then((sn) => {
           const items = sn.docs.map((e) => e.data());
           this.members = items.length
@@ -279,6 +282,7 @@ export default {
           if(this.rank){
             this.dialogRank = true}
           });
+        })
     },
     //유저데이터 가져오기
     getUserData(){
@@ -327,14 +331,14 @@ export default {
       this.loop(); 
       // 운동타이머 시작
       
-      // this.timerSound.loop = true
+      this.timerSound.loop = true
       this.timerSound.play()
 
       this.circle = setInterval(() => {
         this.timer--;
         if (this.timer < 1) { 
           this.cancel()     ;
-      this.faultSound.play()
+      this.endbell.play()
           
           //시간초과 저장
           if(this.$store.state.userData){ 
@@ -529,7 +533,7 @@ export default {
   height: 100px;
 }
 .light{
-  box-shadow: 0 0 30px 10px var(--main-color);
+  box-shadow: 0 0 10px 5px var(--main-color);
 }
 </style>
 a

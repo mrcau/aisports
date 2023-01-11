@@ -8,7 +8,7 @@
         <v-progress-circular indeterminate color="var(--main-color)"  v-if="$store.state.fireUser&&!$store.state.userData"  />
         <v-speed-dial v-model="fab"    direction="right"  v-if="$store.state.fireUser&&$store.state.userData"  >
             <template v-slot:activator> 
-              <v-btn v-model="fab" small color="var(--main-color)" dark fab style="transform: translateX(10px);" >
+              <v-btn v-model="fab" small color="transparent" dark fab style="transform: translateX(10px);" >
                 <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options"  />
               </v-btn>
             </template> 
@@ -37,7 +37,7 @@
         <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card1.png')}`" max-height="200" style="padding: 20px" >
             <div class="d-flex justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)" >
-              <h1 style="font-size:var(--h1-size);color:white;line-height:35px">workout</h1>
+              <h1 style="font-size:var(--h1-size);color:white">WORKOUT</h1>
             </div>
           </v-img>
         </v-card>
@@ -45,8 +45,9 @@
       <v-col   cols="6">
         <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card2.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)" >
-              <h1 style="font-size:var(--h1-size);color:white;line-height:35px">recommend routine</h1>
+            <div class="d-flex flex-column justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)" >
+              <h1 style="font-size:var(--h2-size);color:white">RECOMMEND</h1>
+              <h1 style="font-size:var(--h2-size);color:white">ROUTINE</h1>
             </div>
           </v-img>
         </v-card>
@@ -54,8 +55,9 @@
       <v-col   cols="6">
         <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card3.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)"  >
-              <h1 style="font-size:var(--h1-size);color:white;line-height:35px">challenge exercise</h1>
+            <div class="d-flex flex-column justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)"  >
+              <h1 style="font-size:var(--h2-size);color:white">CHALLENGE</h1>
+              <h1 style="font-size:var(--h2-size);color:white">EXERCISE</h1>
             </div>
           </v-img>
         </v-card>
@@ -63,8 +65,9 @@
       <v-col   cols="6">
         <v-card style="background: #303030; position: relative">
           <v-img :src="`${require('@/assets/fitness/card4.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex justify-center align-center menuBox" @click="$store.state.admin?$router.push('/create'):'#'"  >
-              <h1 style="font-size:var(--h1-size);color:white;line-height:35px">create challenge</h1>
+            <div class="d-flex flex-column justify-center align-center menuBox" @click="$store.state.admin?$router.push('/create'):'#'"  >
+              <h1 style="font-size:var(--h2-size);color:white">CREATE</h1>
+              <h1 style="font-size:var(--h2-size);color:white">CHALLENGE</h1>
             </div>
           </v-img>
         </v-card>

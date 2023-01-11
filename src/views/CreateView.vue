@@ -1,8 +1,8 @@
 <template>
   <v-container class="font-italic white--text pb-3">
     <div class="d-flex mb-2">
-      <v-btn color="var(--main-color)" text small to="/">
-        <v-icon>mdi-chevron-left</v-icon> <h3>back</h3> 
+      <v-btn color="var(--main-color)" text small @click="backTo">
+        <v-icon>mdi-chevron-left</v-icon> <h3>Back</h3> 
       </v-btn ><v-spacer/>
         
     </div>
@@ -67,7 +67,7 @@
                 <v-text-field v-model="data.title" label="제목" required :rules="Rules" dark dense :counter="20" color="var(--main-color)" ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
-                <v-text-field v-model="data.team" label="운영" required :rules="Rules" dark dense :counter="10" color="var(--main-color)" ></v-text-field>
+                <v-text-field v-model="data.team" label="운영자" required :rules="Rules" dark dense :counter="10" color="var(--main-color)" ></v-text-field>
               </v-col>
             </v-row>
 
@@ -87,7 +87,14 @@
                 <v-text-field v-model="data.time" label="운동시간(초)" dense dark required :rules="Rules" color="var(--main-color)" ></v-text-field>
               </v-col>
             </v-row>
-
+            <div style="Toground-color: var(--bg-color);border-radius: 10px;padding:3px">
+              <span>랭킹기준</span>
+              <v-divider></v-divider>
+              <v-radio-group v-model="data.maxAdd" row dense dark style="padding:0">
+                <v-radio label="최고기록" value="max" /> <v-spacer></v-spacer>
+                <v-radio label="합산기록" value="add" />
+              </v-radio-group>
+            </div>
             <v-radio-group v-model="selector" row dense dark>
               <v-radio label="기본동작" value="basic" /> <v-spacer></v-spacer>
               <v-radio label="수정" value="custom" />
@@ -178,6 +185,7 @@ export default {
         people: 7,
         img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
         rating: 3.5,
+        maxAdd:'max',
         members: [],
       },
       members: [1115, "member"],
@@ -202,6 +210,17 @@ export default {
   methods: {
     getData() {
       if (this.$route.params.id) {this.data = this.$route.params;}
+    },
+    backTo(){
+      if (this.$route.params.id) {
+        this.$router.push({
+        name: "play",
+        params: { id: this.$route.params.id },
+      });
+      }
+      else{
+        this.$router.push('/')
+      }
     },
     async addPic(e) { 
       this.file1 = e; 
