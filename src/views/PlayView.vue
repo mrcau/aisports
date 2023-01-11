@@ -31,25 +31,6 @@
         <v-card-title>
           <h3 style="font-size: var(--h1-size)">{{ params.title }}</h3>
           <v-spacer></v-spacer>
-
-          <!-- <v-menu bottom v-if="uid===params.uid"> -->
-          <!-- <v-menu bottom v-if="$store.state.fireUser">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn dark icon v-bind="attrs" v-on="on" @click="getUserData">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
-
-            <v-list v-if="$store.state.fireUser.uid===params.uid">
-              <v-list-item>
-                <v-btn icon @click="editData"><v-icon>mdi-pencil</v-icon></v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn icon @click="removeData"><v-icon>mdi-delete</v-icon></v-btn>
-              </v-list-item> 
-            </v-list>
-          </v-menu> -->
-
           <v-speed-dial v-model="fabEdit"    direction="left"  v-if="$store.state.fireUser&&$store.state.fireUser.uid===params.uid"  >
             <template v-slot:activator> 
               <v-btn v-model="fabEdit" small color="transparent" dark fab style="transform: translateX(10px);" >
@@ -174,7 +155,7 @@
         </button>
       </div>
       <!-- 점수 -->
-      <div class="card" style="flex: 1" v-if="start && !saveOn">
+      <div class="card " :class="{light:light}" style="flex: 1" v-if="start && !saveOn" >
         <h3 style="position: absolute; top: 5px; color: var(--second-color)">
           점수
         </h3>
@@ -247,7 +228,10 @@ export default {
       Rules: [(v) => !!v || "필수입력란"],
       unsub: "",
       fab:false,
-      fabEdit:false
+      fabEdit:false,
+      light:false,
+      timerSound:new Audio(require('@/assets/mp3/timer.mp3')),
+      faultSound: new Audio(require('@/assets/mp3/fault.mp3')),
     };
   },
   created() {
@@ -342,18 +326,20 @@ export default {
       this.ctx = canvas.getContext("2d"); 
       this.loop(); 
       // 운동타이머 시작
+      
+      // this.timerSound.loop = true
+      this.timerSound.play()
+
       this.circle = setInterval(() => {
         this.timer--;
         if (this.timer < 1) { 
           this.cancel()     ;
+      this.faultSound.play()
+          
           //시간초과 저장
           if(this.$store.state.userData){ 
             console.log("uid있음")
-            this.recordSave()
-            // .then(() => {
-            //   this.getRank()
-            //   this.dialogRank=true
-            // });
+            this.recordSave() 
           }else{
             console.log("uid없음")
             this.dialogLogin=true;
@@ -376,10 +362,12 @@ export default {
       if (prediction[0].probability.toFixed(2) > 0.99) {
         if (this.status == 'down') {
           this.score++;
+          this.light = true;
           this.countSound()
         }
         this.status = 'up'
       }else if (prediction[1].probability.toFixed(2) > 0.99) {
+          this.light = false;
         this.status = 'down'
       } 
       //동작판정치수나타내기
@@ -399,6 +387,7 @@ export default {
       }
     },
     cancel(){    
+          this.timerSound.pause()
           this.start = false;
           this.cameraTF = false;
       if (this.webcam) { this.webcam.stop() }
@@ -538,6 +527,9 @@ export default {
 }
 .card {
   height: 100px;
+}
+.light{
+  box-shadow: 0 0 30px 10px var(--main-color);
 }
 </style>
 a

@@ -8,7 +8,7 @@
         <v-progress-circular indeterminate color="var(--main-color)"  v-if="$store.state.fireUser&&!$store.state.userData"  />
         <v-speed-dial v-model="fab"    direction="right"  v-if="$store.state.fireUser&&$store.state.userData"  >
             <template v-slot:activator> 
-              <v-btn v-model="fab" small color="transparent" dark fab style="transform: translateX(10px);" >
+              <v-btn v-model="fab" small color="var(--main-color)" dark fab style="transform: translateX(10px);" >
                 <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options"  />
               </v-btn>
             </template> 

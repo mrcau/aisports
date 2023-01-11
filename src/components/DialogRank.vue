@@ -20,6 +20,7 @@
         <thead>
           <tr >
             <th class="text-center"  >순위</th>
+            <th class="text-right"></th>
             <th class="text-center">이름</th>
             <th class="text-center">기록</th>
             <th class="text-center">도전</th>
@@ -28,9 +29,8 @@
         <tbody>
           <tr  v-for="(a,i) in items"  :key="i" >
             <td class="text-center">{{ a.rank }}</td> 
-            <td class="text-center">
-              <Avataaars :width="30" :height="30" :avatarOptions="a.options" />              
-              {{ a.name }}</td>
+            <td class="text-center" style="width: 30px;padding:0;margin: 0;" > <Avataaars :width="35" :height="35" :avatarOptions="a.options" />    </td> 
+            <td class="text-center " style="width: 70px;padding:0;margin: 0;" > <span> {{ a.name }}</span> </td>              
             <td class="text-center">{{ a.record }}</td>
             <td class="text-center">{{ a.recordRepeat }}</td>
           </tr>
