@@ -27,7 +27,7 @@
     <div class="aiSection">
       <!-- 2-1. 상단 앱바 운동정보 -->
       <div class="topBar">
-  <!-- <div :style=" params.type === 'workout' ? `background-image: url(${canvasBg1})` : `background-image: url(${canvasBg2})` " ></div> -->
+  <!-- <div :style=" params.type === 'game' ? `background-image: url(${canvasBg1})` : `background-image: url(${canvasBg2})` " ></div> -->
         <v-card-title>
           <h3 style="font-size: var(--h1-size)">{{ params.title }}</h3>
           <v-spacer></v-spacer>
@@ -42,10 +42,7 @@
               <v-btn dark icon @click="editData"><v-icon>mdi-pencil</v-icon></v-btn>
             </div>
           </v-speed-dial>
-
-
         </v-card-title>
-
         <v-card-text>
           <v-row class="mx-0">
             <v-rating v-model="rating" color="var(--main-color)" dense ></v-rating>
@@ -54,12 +51,10 @@
               <span style="color: var(--main-color)">{{ params.team }}</span>
             </div>
           </v-row>
-
           <div class="mt-5" style="font-size: var(--h3-size)">
             {{ params.content }}
           </div>
         </v-card-text>
-
         <v-card-actions>
           <v-icon color="white" class="mx-2">mdi-timetable</v-icon>
           <span>
@@ -74,14 +69,9 @@
       </div>
       <!--  2-2. 캔버스배경    -->
       <div class="bgCanvas">
-        <div v-if="start && !cameraTF" style="position: absolute">
-          <h3>카메라 로딩중...</h3>
-          <v-progress-linear color="var(--main-color)" indeterminate rounded height="6" />
-        </div>
-
-        <!--  2-3.  운동방법 -->
+        <!-- 운동방법화면 -->
         <v-container style=" position: absolute; top: 0; background-color: var(--bg-color); height: 100%;padding-bottom: 0; "
-          v-if="!start && !saveOn" >
+          v-if="!start && !saveOn&&test" >
           <!-- 비밀번호 입장 물어보기 -->
           <div v-if="params.password!=password">
             <v-text-field v-model="password" :rules="[v => !!v || '비밀번호를 입력해주세요.']" label="입장 비밀번호" required dark  ></v-text-field>
@@ -95,7 +85,6 @@
               <h3 style="font-size: var(--normal-size)">2. 전신이 나오도록 카메라 거리를 조절합니다.</h3>
               <h3 style="font-size: var(--normal-size)">3. Pose1과 Pose2 동작을 반복합니다.</h3>
             </v-banner>
-
             <v-row class="mt-2">
               <v-col cols="6" style="padding: 0;">
                 <v-img :src="params.infoImg1" width="70%" class="mx-auto " style="border-radius: 5px" v-if="params.infoImg1" />
@@ -104,7 +93,6 @@
                 <v-img :src="params.infoImg2" width="70%" class="mx-auto " style="border-radius: 5px" v-if="params.infoImg2" />
               </v-col>
             </v-row>
-
             <v-row>
               <v-col cols="6" style="padding-top: 0;">
                 <h3 class="text-center" style="color: var(--main-color)"> POSE1 </h3>
@@ -121,50 +109,70 @@
             </v-row>
           </div>
         </v-container> 
-        <!-- 2.5 티처블머신화면 -->
-        <canvas id="canvas">
-        </canvas>
-        <div class="mt-5" style="position: absolute;top:1px;left:10px" v-if="start&&cameraTF" >
+        <!-- 게임화면 -->
+        <v-container class="gamescreen scene" ref="gameScreen"  v-else>
+          <!-- 떨어지는 별 -->
+          <i v-for="(n,i) in starNum" :key="i" 
+          :style="`left:${Math.floor(Math.random() * gameScreenW)}px;
+          height:${Math.random()*100}px;animation-duration:${Math.random() * 5}s ;`" ></i>
+
+          <div ref="monster" class="monster"  :style="`left:${xx+monSize>gameScreenW?gameScreenW-monSize:xx}px;width:${monSize}px`"
+             :class="navi==='left'?'left':navi==='right'?'right':'center'" > 
+              <v-avatar tile :size="monSize" style="position: relative;" >
+               <img :src="`${require('../assets/img/hamster.png')}`" style="position:absolute;top:10;left:10"   />
+              </v-avatar>
+            <img :src="`${require('../assets/img/fire2.gif')}`" style="position:absolute;top:98px;left:30px;width: 50px; transform: rotate(180deg);" v-if="egg" />
+            <img :src="`${require('../assets/img/fire1.gif')}`" style="position:absolute;top:98px;left:30px;width: 50px; transform: rotate(180deg);" v-else />
+          </div>
+        </v-container>
+        <!-- 게임진행정보 -->        
+        <div class="mt-5 ml-3" style="position: absolute;top:1px;left:10px" v-if="start&&cameraTF" >
           <h4>POSE1 : {{ pose1 }}</h4>
           <h4>POSE2 : {{ pose2 }}</h4>
         </div> 
         <v-progress-circular :value="(timer / params.time) * 100" :width="5" size="60" color="var(--main-color)"
-          v-if="start && !saveOn" style="position: absolute;top:10px;right:10px" >   <h2>{{ timer }}</h2>  
+          v-if="start && cameraTF" style="position: absolute;top:10px;right:10px" >   <h2>{{ timer }}</h2>  
         </v-progress-circular>
       </div>
     </div>
-    <!-- 3. 하단바 티처블머신 정보 -->
-    <v-container style="display: flex; width: 100%; gap: 20px; align-items: center" class="cameraInfo" >
-      <!-- 운동확인이미지 -->
-      <div class="card" style="flex: 1" v-if="start && !saveOn">
-        <div :style=" status === 'up' ? `background-image: url(${params.infoImg1})` : `background-image: url(${params.infoImg2})`" class="imgBg" ></div>
+
+      <div class="d-flex "  >
+         <v-btn   style="flex:1;opacity:0.5;background:transparent" elevation="0" @click="btnRun('left') "  >
+           <v-icon>mdi-arrow-left-bold</v-icon>
+         </v-btn> 
+         <v-btn   style="flex:1;opacity:0.5;background:transparent" elevation="0" @click="btnRun('right') "  >
+           <v-icon>mdi-arrow-right-bold</v-icon>
+         </v-btn>
       </div>
 
-      <div class="btnBox" style="flex: 1">
-        <!-- 시작버튼 -->
-        <button @click="init" class="btn btn1 btnCamera" v-if="!start && !saveOn" >
+    <!-- 3. 하단바 티처블머신 정보 -->
+    <v-container class="cameraInfo "  >
+        <v-btn rounded color="var(--main-color)" @click="init" style="width:100%;max-width: 500px;" v-if="!start && !saveOn" >
           <h2>START</h2>
-        </button>
-        <!-- 정지버튼 -->
-        <button @click="cancel" class="btn btn1 btnCamera" v-if="start && !saveOn" >
+        </v-btn>
+        <v-btn rounded color="var(--main-color)" @click="cancel" style="width:100%;max-width: 500px;" v-if="start && !saveOn" >
           <h2>STOP</h2>
-        </button>
-        
-        <!-- 저장버튼 -->
-        <button @click="restart" class="btn btn1 btnCamera" v-if="saveOn">
+        </v-btn>
+        <v-btn rounded color="var(--main-color)" @click="restart" style="width:100%;max-width: 500px;" v-if="saveOn">
           <h3>RESTART</h3>
-        </button>
-      </div>
-      <!-- 점수 -->
-      <div class="card " :class="{light:light}" style="flex: 1" v-if="start && !saveOn" >
-        <h3 style="position: absolute; top: 5px; color: var(--second-color)">
-          점수
-        </h3>
-        <div  >
-          <h1 class="mt-5">{{ score }}</h1>
-        </div>
+        </v-btn>
+      <!-- 티처블머신 -->
+      <div class="mt-4" style="display: flex; width: 100%; gap: 20px; align-items: center" v-if="start && !saveOn">
+         <div class="bgCanvas2 card" style="flex: 1">
+           <div v-if="start && !cameraTF" style="position: absolute">
+             <h3>카메라 로딩중...</h3>
+             <v-progress-linear color="var(--main-color)" indeterminate rounded height="6" />
+           </div>
+           <canvas id="canvas"> </canvas>
+         </div>
+         <!-- 점수 -->
+         <div class="card card2" :class="{light:light}" style="flex: 1"  >
+           <h3 style="position: absolute; top: 5px; color: var(--second-color)"> 점수 </h3>
+           <div> <h1 class="mt-5">{{ score }}</h1> </div>
+         </div>
       </div>
     </v-container>
+
     <v-dialog v-model="dialogRank" max-width="600px">
       <DialogRank :items="items" :rank="rank" :id="id" :maxAdd="params.maxAdd"  />
     </v-dialog>
@@ -177,10 +185,9 @@
 <script>
 import DialogLogin from "@/components/DialogLogin.vue";
 import DialogRank from "@/components/DialogRank.vue";
-// import DialogSave from "@/components/DialogSave.vue";
 import * as tmPose from "@teachablemachine/pose";
 export default {
-  name: "ActivityTryWorkout",
+  name: "ActivityTrygame",
   components: { DialogRank,  DialogLogin },
   data() {
     return {
@@ -190,6 +197,7 @@ export default {
       uid:this.$store.state.fireUser?this.$store.state.fireUser.uid:'',
       userData:'',
       id: this.$route.params.id || "",
+      test:false,
       params: "",
       members:'',
       passinput:"",
@@ -233,6 +241,17 @@ export default {
       light:false,
       timerSound:new Audio(require('@/assets/mp3/timer.mp3')),
       endbell: new Audio(require('@/assets/mp3/endbell.mp3')),
+      crash:false,
+      monSize:100,
+      banana: false,
+      xx: 200,
+      xxx: 10,
+      egg: false,
+      navi:'',
+      starNum:50,
+      starWidth:Math.floor(Math.random() * window.innerWidth),
+      starHeight:Math.random()*100,
+      gameScreenW: window.innerWidth
     };
   },
   created() {
@@ -255,17 +274,17 @@ export default {
     // 랭킹데이터 가져오기
     getData() {
       if (!this.id) {return }
-      this.$firebase.firestore().collection("workout").doc(this.id).get()
+      this.$firebase.firestore().collection("game").doc(this.id).get()
         .then((e) => {this.params = e.data()}).catch((e) => console.log(e))
     },
     getRank(){
       if (!this.id) {return }
-      this.$firebase.firestore().collection("workout").doc(this.id).get()
+      this.$firebase.firestore().collection("game").doc(this.id).get()
         .then((e) => {this.params = e.data()}).catch((e) => console.log(e))
         .finally(()=>{
 
         const order = this.params.maxAdd==='max'?'record':'recordSum'
-      this.$firebase.firestore().collection("workout").doc(this.id)
+      this.$firebase.firestore().collection("game").doc(this.id)
         .collection("rank").orderBy(order, "desc").limit(10)
         .get().then((sn) => {
           const items = sn.docs.map((e) => e.data());
@@ -294,22 +313,23 @@ export default {
     },
     // 챌린지룸 제거
   async removeData() {
-    await this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').get().then((sn) => {
+    await this.$firebase.firestore().collection('game').doc(this.id).collection('rank').get().then((sn) => {
           if(sn.empty){return}  
           sn.docs.forEach((e) => {
-              this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').doc(e.data().uid).delete().catch(e => console.log(e))
+              this.$firebase.firestore().collection('game').doc(this.id).collection('rank').doc(e.data().uid).delete().catch(e => console.log(e))
             })
           }).catch((e)=>{console.log(e)})
           
-        this.$firebase.firestore().collection("workout").doc(this.id).delete()
+        this.$firebase.firestore().collection("game").doc(this.id).delete()
         .then(() => { this.$router.push("/")}).catch((e) => console.log(e));
 
     },
     editData() {
-      this.$router.push({name: "create",params: this.params});
+      this.$router.push({name: "creategame",params: this.params});
     },
     // 티처블 운동 시작
     async init() {
+      this.stars();
       this.start = true;
       this.timer = this.params.time;
       // const URL = "https://teachablemachine.withgoogle.com/models/SLjZUOxCB/";
@@ -318,7 +338,7 @@ export default {
       const metadataURL = this.params.aiSrc + "metadata.json";
       this.model = await tmPose.load(modelURL, metadataURL);
       this.maxPredictions = this.model.getTotalClasses();
-      const size = window.innerWidth < 600 ? window.innerWidth - 20 : 590;
+      const size = window.innerWidth < 600 ? window.innerWidth * 0.4 : 200;
       const flip = true;
       this.webcam = new tmPose.Webcam(size, size, flip);
       await this.webcam.setup();
@@ -365,15 +385,17 @@ export default {
       this.drawPose(pose);
       //동작판정하기
       if (prediction[0].probability.toFixed(2) > 0.99) {
-        if (this.status == 'down') {
-          this.score++;
-          this.light = true;
-          this.countSound()
-        }
+        this.btnRun('left');
         this.status = 'up'
+        // if (this.status == 'down') {
+        //   this.score++;
+        //   this.light = true;
+        //   this.countSound()
+        // }
       }else if (prediction[1].probability.toFixed(2) > 0.99) {
-          this.light = false;
+        this.btnRun('right');
         this.status = 'down'
+        // this.light = false;
       } 
       //동작판정치수나타내기
       this.pose1 = prediction[0].probability.toFixed(2)
@@ -412,7 +434,7 @@ export default {
     },
    async recordSave() {
     console.log('id',this.id,'uid',this.uid)
-    this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').doc(this.uid).get()
+    this.$firebase.firestore().collection('game').doc(this.id).collection('rank').doc(this.uid).get()
     .then((e) => {
       this.userRecord = e.data()
           if (e.data() === undefined) { this.save1() } else { this.save2() }
@@ -432,7 +454,7 @@ export default {
         recordSum: this.score,
         recordRepeat: 1,
       };
-      this.$firebase.firestore().collection("workout").doc(this.id).collection("rank").doc(this.uid).set(data)
+      this.$firebase.firestore().collection("game").doc(this.id).collection("rank").doc(this.uid).set(data)
       .then(() => {
           this.saveOn = false;
           this.score=0
@@ -449,12 +471,42 @@ export default {
         recordRepeat: recordRepeat + 1,
         record: record
       }
-      this.$firebase.firestore().collection('workout').doc(this.id).collection('rank').doc(this.uid).update(data)
+      this.$firebase.firestore().collection('game').doc(this.id).collection('rank').doc(this.uid).update(data)
       .then(() => {
           this.saveOn = false;
           this.score=0
         }).catch((e) => { console.log(e); }).finally(() => {this.getRank()})
-    }
+    },
+    // 게임관련
+    btnRun (e) {
+          if (this.crash) { return }
+          const monster = this.$refs.monster.getBoundingClientRect()
+          const gameScreen = this.$refs.gameScreen.getBoundingClientRect().width - monster.width
+          if (e === 'left') {
+            if (monster.x > 0) {
+              if (gameScreen < this.xx) {
+                this.xx = gameScreen
+              } else {
+                this.xx -= this.xxx
+                this.navi = 'left'
+              }
+            }
+          }
+          if (e === 'right') {
+            if (monster.x < gameScreen) {
+              this.xx += this.xxx
+              this.navi = 'right'
+            } else {
+              this.xx = gameScreen
+            }
+          }
+          if (e === 'stop') { this.navi = 'center' }
+          if (e === 'up') { this.yy -= 10 }
+          if (e === 'down') { this.yy += 10 }
+        },
+        
+    
+       
   },
 };
 </script>
@@ -495,6 +547,10 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .bgCanvas {
   background-color: var(--bg-color);
@@ -509,13 +565,18 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-right: 2px solid rgba(255, 255, 255, 0.2);
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-  // background-image: url("../assets/logo.png");
-  /* background-image: url('../assets/logo.png'); */
-  // background-position: center;
-  // background-repeat: no-repeat;
-  // background-size: cover;
-  // backdrop-filter: blur(25px);
-  // box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+}
+.bgCanvas2 {
+  background-color: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 @media (max-width: 600px) {
   .bgCanvas {
@@ -530,11 +591,68 @@ export default {
   border-radius: 50%;
   font-size: var(--normal-size);
 }
-.card {
-  height: 100px;
+.card2 {
+  height: 150px;
 }
 .light{
   box-shadow: 0 0 10px 5px var(--main-color);
 }
+.gamescreen{
+  height:100%;
+  background-color: black;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position:relative;
+        overflow:hidden;
+      /* background-image:url('@/assets/menu/banner0.png'); */
+      // background-size: cover;
+      // background-repeat:no-repeat;
+      // background-position:center bottom
+    }
+    //게임관련
+.reverse{
+  transform: rotate( 90deg );
+  }
+  .right{
+    animation:right 0.2s  infinite;
+  }
+  .left{
+    animation:left 0.2s  infinite;
+  }
+  .center{
+    transform: rotate(0deg);
+  }
+  .monster{
+    position:absolute;
+    bottom:50px;
+  }
+
+  // 운석떨어지기  
+  .scene i{
+    position:absolute;
+    top: -150px;
+    width:1px;
+    background:rgba(255,255,255,0.5);
+    animation:animate linear infinite;
+  }
+  @keyframes animate{
+    0%{ transform:translateY(0)}
+    100%{transform:translateY(100vh)}
+  }
+  // 햄스터조종
+  @keyframes left{
+    0%,100%{
+    transform:translatey(-2px) rotate(-30deg);
+  }
+  50%{
+    transform:translatey(2px) rotate(-30deg);    
+  } }
+  @keyframes right{
+    0%,100%{
+    transform:translatey(-2px) rotate(30deg);
+  }
+  50%{
+    transform:translatey(2px) rotate(30deg);    
+  } }
 </style>
-a

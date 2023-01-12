@@ -46,8 +46,7 @@
         <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card2.png')}`" max-height="200" style="padding: 20px" >
             <div class="d-flex flex-column justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)" >
-              <h1 style="font-size:var(--h2-size);color:white">RECOMMEND</h1>
-              <h1 style="font-size:var(--h2-size);color:white">ROUTINE</h1>
+              <h1 style="font-size:var(--h1-size);color:white">ROUTINE</h1>
             </div>
           </v-img>
         </v-card>
@@ -55,16 +54,6 @@
       <v-col   cols="6">
         <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card3.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex flex-column justify-center align-center menuBox" style="background: rgba(255, 255, 255, 0.3)"  >
-              <h1 style="font-size:var(--h2-size);color:white">CHALLENGE</h1>
-              <h1 style="font-size:var(--h2-size);color:white">EXERCISE</h1>
-            </div>
-          </v-img>
-        </v-card>
-      </v-col>
-      <v-col   cols="6">
-        <v-card style="background: #303030; position: relative">
-          <v-img :src="`${require('@/assets/fitness/card4.png')}`" max-height="200" style="padding: 20px" >
             <div class="d-flex flex-column justify-center align-center menuBox" @click="$store.state.admin?$router.push('/create'):'#'"  >
               <h1 style="font-size:var(--h2-size);color:white">CREATE</h1>
               <h1 style="font-size:var(--h2-size);color:white">CHALLENGE</h1>
@@ -72,16 +61,27 @@
           </v-img>
         </v-card>
       </v-col>
+      <v-col   cols="6">
+        <v-card style="background: #303030; position: relative">
+          <v-img :src="`${require('@/assets/fitness/card4.png')}`" max-height="200" style="padding: 20px" >
+            <div class="d-flex flex-column justify-center align-center menuBox" @click="$store.state.admin?$router.push('/creategame'):'#'"  >
+              <h1 style="font-size:var(--h2-size);color:white">CREATE</h1>
+              <h1 style="font-size:var(--h2-size);color:white">GAME</h1>
+            </div>
+          </v-img>
+        </v-card>
+      </v-col>
     </v-row>
     <!-- 새로운운동 타이틀 -->
     <h3 class="mt-5 text-left italic title" style="color: #d7e357">
-      <v-icon color="#d7e357" class="mb-1">mdi-dumbbell</v-icon> New challenge
+      <v-icon color="#d7e357" class="mb-1">mdi-dumbbell</v-icon> New Challenge
     </h3>
     <!-- 새로운운동 아이템들 -->
     <v-row class="itemRow">
-      <v-col v-for="(n, i) in items.filter( (n) => n.type === 'workout' && dateCompare(n.endDate) )"
+      <!-- <v-col v-for="(n, i) in items.filter( (n) => n.type === 'workout' && dateCompare(n.endDate) )" -->
+      <v-col v-for="(n, i) in items.filter( (n) => dateCompare(n.endDate) )"
         :key="i" cols="12" sm="6" md="4" lg="3" >
-        <v-card :loading="loading" class="mx-auto" style="background: #d7e357" @click="routLink(n)" >
+        <v-card :loading="loading" class="mx-auto" style="background: #d7e357" @click="routLink(n,'play')" >
           <v-img max-height="150" :src="`${require('@/assets/fitness/card1.png')}`" > 
             <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
               <v-card-title><h3>{{ n.title }}</h3></v-card-title>
@@ -93,21 +93,15 @@
                     <span style="color: var(--second-color)">{{ n.team }}</span>
                   </div>
                 </v-row>
-
                 <div class="mt-5 text-subtitle-1">
                   {{ n.content }}
                 </div>
               </v-card-text>
             </div>
           </v-img>
-
           <v-card-actions >
             <v-icon >mdi-timetable</v-icon> {{ n.endDate }}
             <v-spacer></v-spacer>
-            <!-- <v-icon>mdi-account-group</v-icon>
-            <span class="mx-2 mt-1">
-              {{ n.members.length }}
-            </span> -->
           </v-card-actions>
         </v-card>
       </v-col>
@@ -120,40 +114,30 @@
     </h2>
     <!-- 새로운게임 아이템들 -->
     <v-row class="itemRow">
-      <v-col v-for="(n, i) in items.filter((n) => n.type === 'game' && n.progress)" :key="i"
-        cols="12" sm="6" md="4" lg="3" >
-        <v-card :loading="loading" class="mx-auto" style="background: #c6ef60" @click="routLink(n)" >
-          <v-img height="200" :src="`${require('@/assets/fitness/card3.png')}`">
+      <!-- <v-col v-for="(n, i) in items.filter( (n) => n.type === 'workout' && dateCompare(n.endDate) )" -->
+      <v-col v-for="(n, i) in items2.filter( (n) => dateCompare(n.endDate) )"
+        :key="i" cols="12" sm="6" md="4" lg="3" >
+        <v-card :loading="loading" class="mx-auto" style="background: #d7e357" @click="routLink(n,'game')" >
+          <v-img max-height="150" :src="`${require('@/assets/fitness/card3.png')}`" > 
             <div class="ma-3 pb-5 rounded-lg white--text menuBox workout">
-              <v-card-title>
-                <h2 class="cardTitle">
-                  {{ n.title }}
-                </h2>
-              </v-card-title>
-
+              <v-card-title><h3>{{ n.title }}</h3></v-card-title>
               <v-card-text>
                 <v-row class="mx-0">
-                  <v-rating :value="n.star" color="amber" dense half-increments readonly size="14" ></v-rating>
+                  <v-rating :value="n.rating" color="amber" dense half-increments readonly size="14" ></v-rating>
                   <v-spacer></v-spacer>
                   <div class="grey--text ms-4">
-                    <span style="color: var(--main-color)">{{ n.team }}</span>
+                    <span style="color: var(--second-color)">{{ n.team }}</span>
                   </div>
                 </v-row>
-
                 <div class="mt-5 text-subtitle-1">
                   {{ n.content }}
                 </div>
               </v-card-text>
             </div>
           </v-img>
-
-          <v-card-actions>
-            <v-icon>mdi-timetable</v-icon> {{ n.endDate }}
+          <v-card-actions >
+            <v-icon >mdi-timetable</v-icon> {{ n.endDate }}
             <v-spacer></v-spacer>
-            <!-- <v-icon>mdi-account-group</v-icon>
-            <span class="mx-2 mt-1">
-              {{ n.members.length }}
-            </span> -->
           </v-card-actions>
         </v-card>
       </v-col>
@@ -176,13 +160,12 @@ export default {
         .substring(0, 10),
       dialogLogin: false,
       loading: false,
-      menus: [
-        {title: "workout ai-exercise",content: "운동 참여",src:'create',img: "card1.png",},
-        {title: "game",content: "게임 참여",src:'create',img: "card2.png",},
-        {title: "challenge exercise", content: "운동 생성",src:'create',img: "card3.png",},
-        { title: "create challenge", content: "참여 현황",src:'create', img: "card4.png" },
-      ],
+      // menus: [ 
+      //   {title: "challenge exercise", content: "운동 생성",src:'create',img: "card3.png",},
+      //   { title: "create challenge", content: "참여 현황",src:'create', img: "card4.png" },
+      // ],
       items: [], 
+      items2: [], 
     };
   },
   created() {
@@ -190,14 +173,12 @@ export default {
   },
   methods: {
     getData() {
-      this.$firebase
-        .firestore()
-        .collection("workout")
-        .get()
-        .then((sn) => {
+      this.$firebase.firestore().collection("workout").get().then((sn) => {
           this.items = sn.docs.map((e) => e.data());
-        })
-        .catch((e) => console.log(e));
+        }).catch((e) => console.log(e));
+      this.$firebase.firestore().collection("game").get().then((sn) => {
+          this.items2 = sn.docs.map((e) => e.data());
+        }).catch((e) => console.log(e));
     },
     dateCompare(day) {
       if (day) {
@@ -208,22 +189,12 @@ export default {
         return true;
       }
     },
-    routLink(n) {
+    routLink(n,a) {
       this.$router.push({
-        name: "play",
+        name: a,
         params: { id: n.id },
         // params: { id: n.id, data: n },
       });
-    },
-    dialogGo(n) {
-      console.log(this.$store.state.fireUser);
-      if (n === "create" || n === "board") {
-        if (!this.$store.state.fireUser) {
-          this.dialogLogin = true;
-          return;
-        }
-        this.$router.push("/create");
-      }
     },
     logout() {
       this.$firebase.auth().signOut();

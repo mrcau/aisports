@@ -88,11 +88,11 @@
               </v-col>
             </v-row>
             <div style="background-color: var(--bg-color);border-radius: 10px;padding:3px">
-              <span>랭킹기준</span>
+              <span>게임종류</span>
               <v-divider></v-divider>
               <v-radio-group v-model="data.maxAdd" row dense dark style="padding:0">
-                <v-radio label="최고기록" value="max" /> <v-spacer></v-spacer>
-                <v-radio label="합산기록" value="add" />
+                <v-radio label="플라이" value="max" /> <v-spacer></v-spacer>
+                <v-radio label="슈팅" value="add" />
               </v-radio-group>
             </div>
             <v-radio-group v-model="selector" row dense dark>
@@ -158,16 +158,16 @@
 
 <script>
 export default {
-  name: "DialogCreate",
+  name: "CreateGame",
   data() {
     return {
       data: {
         id: "",
         uid:this.$store.state.userData?this.$store.state.userData.uid:'',
         creator: this.$store.state.userData?this.$store.state.userData.name:'',
-        team: "어벤져스",
-        title: "도전! 숄더프레스",
-        content: "AI 어깨 근력 강화 운동 챌린지",
+        team: "어벤져스 오락실",
+        title: "도전! 게임",
+        content: "AI 게임으로 어깨운동",
         time: 60,
         type: "workout",
         aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
@@ -257,10 +257,10 @@ export default {
       this.upLoad(id)
     },
     upLoad(id){
-      this.$firebase.firestore().collection("workout").doc(id).set(this.data)
+      this.$firebase.firestore().collection("game").doc(id).set(this.data)
         .then(() => {
           this.loading = false;
-          this.$router.push({ name: "play", params: { id: id }});
+          this.$router.push({ name: "game", params: { id: id }});
         })
         .catch((e) => console.log(e)) 
     }
