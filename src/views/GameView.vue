@@ -281,7 +281,7 @@ export default {
       monSize:100,
       banana: false,
       xx:100,
-      yy:400,
+      yy:200,
       // xx: window.innerWidth/2,
       step: 15,
       egg: false,
@@ -442,34 +442,31 @@ export default {
       // 포즈뼈대그리기
       const { pose, posenetOutput } = await this.model.estimatePose( this.webcam.canvas );
       const prediction = await this.model.predict(posenetOutput);
-      this.drawPose(pose);
-      //동작판정하기
-      if (prediction[0].probability.toFixed(2) > 0.95) {
-        this.btnRun('left');
-        this.status = 'left'
-        // if (this.status == 'down') {
-        //   this.score++;
-        //   this.light = true;
-        //   this.countSound()
-        // }
-      }else if (prediction[1].probability.toFixed(2) > 0.95) {
-        this.btnRun('right');
-        this.status = 'right'
-        // this.light = false;
-      }else if (prediction[2].probability.toFixed(2) > 0.95) {
-        this.btnRun('up');
-        this.status = 'up'
-        // this.light = false;
-      }else if (prediction[3].probability.toFixed(2) > 0.95) {
-        this.btnRun('down');
-        this.status = 'down'
-        // this.light = false;
-      }   
-      //동작판정치수나타내기
-      this.pose1 = prediction[0].probability.toFixed(2)
-      this.pose2 = prediction[1].probability.toFixed(2) 
-      this.pose3 = prediction[2].probability.toFixed(2)
-      this.pose4 = prediction[3].probability.toFixed(2) 
+      if(prediction[0]&&prediction[1]&&prediction[2]&&prediction[3]){
+        this.drawPose(pose);
+        //동작판정하기
+        if (prediction[0].probability&&prediction[0].probability.toFixed(2) > 0.95) {
+          this.btnRun('left');
+          this.status = 'left'
+        }else if (prediction[1].probability&&prediction[1].probability.toFixed(2) > 0.95) {
+          this.btnRun('right');
+          this.status = 'right'
+        }else if (prediction[2].probability&&prediction[2].probability.toFixed(2) > 0.95) {
+          this.btnRun('up');
+          this.status = 'up'
+        }else if (prediction[3].probability&&prediction[3].probability.toFixed(2) > 0.95) {
+          this.btnRun('down');
+          this.status = 'down'
+        }   
+        //동작판정치수나타내기
+        this.pose1 = prediction[0].probability.toFixed(2)
+        this.pose2 = prediction[1].probability.toFixed(2) 
+        this.pose3 = prediction[2].probability.toFixed(2)
+        this.pose4 = prediction[3].probability.toFixed(2) 
+      }else{
+        this.cancel();
+        this.$swal.fire({ title: 'Ai모델 오류',text:'Ai모델을 확인해주세요.', icon: 'error' })
+      }
     },
     // 포즈그리기
     drawPose(pose) {
