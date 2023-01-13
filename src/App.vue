@@ -13,7 +13,7 @@ export default {
   data () {
     return {
       loaded: false,
-      version: '011333'
+      version: '0113'
     }
   },
   created () {

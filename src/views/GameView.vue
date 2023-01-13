@@ -280,18 +280,18 @@ export default {
       crash:false,
       monSize:100,
       banana: false,
-      xx:100,
-      yy:200,
       // xx: window.innerWidth/2,
       step: 15,
       egg: false,
+      starSpeed:5,
       navi:'',
       screen:'',
       starfirstY:'',
-      starSpeed:5,
       starX:0,
       starY:0,
       virusY:0,
+      yy:200,
+      xx:100,
       ranX:200,
       ranXX:50,
       fire:false,
@@ -484,8 +484,19 @@ export default {
           this.timerSound.pause()
           this.start = false;
           this.cameraTF = false;
-          this.starY = -this.screen.height 
-          this.virusY = -this.screen.height 
+
+      this.navi=''
+      this.screen=''
+      this.starfirstY=''
+      this.starX=0
+      this.starY=0
+      this.virusY=0
+      this.yy=200
+      this.xx=100
+      this.ranX=200
+      this.ranXX=50
+      this.fire=false
+
       if (this.webcam) { this.webcam.stop() }
       if(this.circle){clearInterval(this.circle)}     
       if(this.animationframe){window.cancelAnimationFrame(this.animationframe)}
