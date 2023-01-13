@@ -1,75 +1,66 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <v-card class="cardRank">
-    <v-card-title class="text-h5 white--text mb-3 rankTop"> RANK </v-card-title>
+    <!-- 랭크제목줄 -->
+    <v-card-title class="text-h5 white--text mb-3 rankTop" style="padding: 5px 12px 0 12px"> 
+      RANK <v-spacer></v-spacer>
+     <h3 v-if="$store.state.userData"> {{ rank }}th </h3>
+      <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options" v-if="$store.state.userData" />
+    </v-card-title>
+    <!-- 랭크테이블 -->
     <v-card-text>
-      <v-data-table
-        dark
-        :headers="headers"
-        :items="items"
-        sort-by="rank"
-        fixed-header
-        hide-default-footer
-      >
-        // eslint-disable-next-line vue/valid-v-slot
-        <template v-slot:item.name="{ item }">
-          <v-avatar size="30">
-            <img :src="item.avatar" alt="alt" />
-          </v-avatar>
+      <!-- <v-data-table dark :headers="headers" :items="items" sort-by="rank" fixed-header hide-default-footer >
+        <template v-slot:item.name="{ item }"> 
+          <Avataaars :width="30" :height="30" :avatarOptions="item.options" />
           {{ item.name }}
         </template>
-      </v-data-table>
+      </v-data-table> -->
+      <v-simple-table dark>
+        <thead>
+          <tr >
+            <th class="text-center"  >순위</th>
+            <th class="text-right"></th>
+            <th class="text-center">이름</th>
+            <th class="text-center" v-if="maxAdd==='max'">최고기록</th>
+            <th class="text-center" v-else>합산기록</th>
+            <th class="text-center">도전</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr  v-for="(a,i) in items"  :key="i" >
+            <td class="text-center">{{ a.rank }}</td> 
+            <td class="text-center" style="width: 30px;padding:0;margin: 0;" > <Avataaars :width="35" :height="35" :avatarOptions="a.options" />    </td> 
+            <td class="text-center " style="width: 70px;padding:0;margin: 0;" > <span> {{ a.name }}</span> </td>              
+            <td class="text-center">{{ maxAdd==='max'?a.record:a.recordSum }}</td>
+            <td class="text-center">{{ a.recordRepeat }}</td>
+          </tr>
+        </tbody>
+      </v-simple-table>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
+import Avataaars from "vue-avataaars";
 export default {
   name: "DialogRank",
-  props: ["id"],
+  props: ['items','rank',"id",'maxAdd'],
+  components: {  Avataaars },
   data() {
     return {
-      items: [],
-      unsub: "",
-
       headers: [
         { value: "rank", text: "순위", align: "center" },
-        { value: "name", text: "이름", align: "center", sortable: false },
-        { value: "team", text: "소속", align: "center" },
-        { value: "record", text: "최고기록", align: "center", sortable: false },
-        // { value: "recordSum", text: "누적기록", sortable: false },
-        // { value: "recordRepeat", text: "도전횟수", sortable: false },
+        { value: "name", text: "이름", align: "center", sortable: false }, 
+        { value: "record", text: "최고기록", align: "center", sortable: false }, 
       ],
     };
   },
 
   created() {
-    this.getData();
   },
   destroyed() {
-    if (this.unsub) this.unsub();
   },
-  methods: {
-    getData() {
-      if (!this.id) {
-        return;
-      }
-      this.unsub = this.$firebase
-        .firestore()
-        .collection("workout")
-        .doc(this.id)
-        .collection("rank")
-        .orderBy("record", "desc")
-        .onSnapshot((sn) => {
-          const items = sn.docs.map((e) => e.data());
-          const items2 = [];
-          items.forEach((e) => {
-            const rank = items.indexOf(e) + 1;
-            items2.push({ ...e, rank: rank });
-          });
-          this.items = items2;
-        });
-    },
+  methods: { 
   },
 };
 </script>

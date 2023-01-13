@@ -2,10 +2,11 @@
   <div class="jumboBox">
     <div class="rounded-lg d-flex jumbo white--text">
       <div class="pa-5" style="flex: 2; z-index: 2">
-        <h1 style="font-size: var(--big-size)">
-          {{ title }}
-        </h1>
-        <p style="font-size: var(--h3-size)">{{ content }}</p>
+        <div class="d-flex justify-center">
+          <div class="logo"></div>
+          <h1 style="font-size: var(--big-size)"> {{ title }} </h1>
+        </div>
+          <p style="font-size: var(--h3-size)">{{ content }}</p>
       </div>
       <!-- <div class="jumboRight" style="flex: 1"></div> -->
       <img class="jumboRight people" :src="bgImg" style="z-index: 1" />
@@ -31,7 +32,7 @@ export default {
 };
 </script>
 <style>
-@media (max-width: 500px) {
+@media (max-width: 600px) {
   .jumboRight {
     display: none;
   }
@@ -48,5 +49,13 @@ export default {
   right: 10px;
   bottom: 10px;
   width: 250px;
+}
+.logo{
+  height: 70px;
+  width: 70px;
+  background-image: url(../assets/logo.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 </style>

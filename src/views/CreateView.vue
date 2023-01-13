@@ -1,9 +1,10 @@
 <template>
   <v-container class="font-italic white--text pb-3">
     <div class="d-flex mb-2">
-      <v-btn color="var(--main-color)" text small to="/">
-        <v-icon>mdi-36px mdi-home</v-icon> </v-btn
-      ><v-spacer></v-spacer>
+      <v-btn color="var(--main-color)" text small @click="backTo">
+        <v-icon>mdi-chevron-left</v-icon> <h3>Back</h3> 
+      </v-btn ><v-spacer/>
+        
     </div>
     <div class="aiSection">
       <!-- 상단정보 -->
@@ -63,189 +64,74 @@
 
             <v-row class="pt-1">
               <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="data.title"
-                  label="제목"
-                  required
-                  :rules="Rules"
-                  dark
-                  dense
-                  :counter="20"
-                  color="var(--main-color)"
-                ></v-text-field>
+                <v-text-field v-model="data.title" label="제목" required :rules="Rules" dark dense :counter="20" color="var(--main-color)" ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="data.team"
-                  label="담당"
-                  required
-                  :rules="Rules"
-                  dark
-                  dense
-                  :counter="10"
-                  color="var(--main-color)"
-                ></v-text-field>
+                <v-text-field v-model="data.team" label="운영자" required :rules="Rules" dark dense :counter="10" color="var(--main-color)" ></v-text-field>
               </v-col>
             </v-row>
 
-            <v-textarea
-              v-model="data.content"
-              label="내용"
-              required
-              :rules="Rules"
-              dark
-              textarea
-              dense
-              filled
-              rows="2"
-              outlined
-              :counter="100"
-              color="var(--main-color)"
-              class="pt-7"
-            ></v-textarea>
+            <v-textarea v-model="data.content" label="내용" required :rules="Rules" dark textarea dense filled rows="2" outlined :counter="100"
+              color="var(--main-color)" class="pt-7" ></v-textarea>
+              <!-- 달력 -->
             <v-row>
               <v-col cols="6">
                 <v-menu transition="scale-transition" offset-y>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="data.endDate"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      label="마감날짜"
-                      v-bind="attrs"
-                      v-on="on"
-                      color="var(--main-color)"
-                      dark
-                    />
+                    <v-text-field v-model="data.endDate" prepend-icon="mdi-calendar" readonly label="마감날짜" v-bind="attrs" v-on="on" color="var(--main-color)" dark />
                   </template>
                   <v-date-picker v-model="data.endDate" no-title scrollable />
                 </v-menu>
               </v-col>
               <v-col class="pt-8" cols="6">
-                <v-text-field
-                  v-model="data.time"
-                  label="운동시간"
-                  dense
-                  dark
-                  required
-                  :rules="Rules"
-                  color="var(--main-color)"
-                ></v-text-field>
+                <v-text-field v-model="data.time" label="운동시간(초)" dense dark required :rules="Rules" color="var(--main-color)" ></v-text-field>
               </v-col>
             </v-row>
-
+            <div style="background-color: var(--bg-color);border-radius: 10px;padding:3px">
+              <span>랭킹기준</span>
+              <v-divider></v-divider>
+              <v-radio-group v-model="data.maxAdd" row dense dark style="padding:0">
+                <v-radio label="최고기록" value="max" /> <v-spacer></v-spacer>
+                <v-radio label="합산기록" value="add" />
+              </v-radio-group>
+            </div>
             <v-radio-group v-model="selector" row dense dark>
               <v-radio label="기본동작" value="basic" /> <v-spacer></v-spacer>
               <v-radio label="수정" value="custom" />
             </v-radio-group>
-            <v-text-field
-              v-model="data.aiSrc"
-              label="AI주소"
-              required
-              :rules="Rules"
-              :disabled="selector != 'custom'"
-              dark
-              dense
-              filled
-              outlined
-              :counter="100"
-              color="var(--main-color)"
-            ></v-text-field>
-            <v-row class="mt-3">
-              <v-col cols="12" sm="6">
-                <v-textarea
-                  v-model="data.infoText1"
-                  label="Pose1"
-                  :disabled="selector != 'custom'"
-                  required
-                  :rules="Rules"
-                  dark
-                  dense
-                  outlined
-                  filled
-                  rows="2"
-                  :counter="50"
-                  color="var(--main-color)"
-                ></v-textarea>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-textarea
-                  v-model="data.infoText2"
-                  label="Pose2"
-                  :disabled="selector != 'custom'"
-                  required
-                  :rules="Rules"
-                  dense
-                  dark
-                  outlined
-                  filled
-                  rows="2"
-                  :counter="50"
-                  color="var(--main-color)"
-                ></v-textarea>
-              </v-col>
-            </v-row>
+            <!--AI 동작설명 -->
+            <div v-if="selector === 'custom'">
+              <v-text-field v-model="data.aiSrc" label="AI주소" required :rules="Rules" :disabled="selector != 'custom'" dark
+                dense filled outlined :counter="100" color="var(--main-color)" ></v-text-field>
+              <v-row class="mt-3">
+                <v-col cols="12" sm="6">
+                  <v-textarea v-model="data.infoText1" label="Pose1" :disabled="selector != 'custom'" required :rules="Rules" dark dense outlined filled
+                    rows="2" :counter="50" color="var(--main-color)" ></v-textarea>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-textarea v-model="data.infoText2" label="Pose2" :disabled="selector != 'custom'" required :rules="Rules" dense dark outlined filled
+                    rows="2" :counter="50" color="var(--main-color)" ></v-textarea>
+                </v-col>
+              </v-row>
+            </div>
+            <!-- 동작 이미지 -->
             <v-row style="margin: 0">
               <v-col cols="6">
                 <div class="text-center">
-                  <v-file-input
-                    accept="image/*"
-                    label="사진"
-                    id="imginput"
-                    @change="addPic"
-                    :disabled="selector != 'custom'"
-                    style="display: none"
-                  />
+                  <v-file-input accept="image/*" label="사진" id="imginput" @change="addPic" :disabled="selector != 'custom'" style="display: none" />
                   <label for="imginput">
-                    <div
-                      class="mx-auto"
-                      :style="`background-image:url(${data.infoImg1})`"
-                      style="
-                        height: 150px;
-                        border-radius: 2px;
-                        background-size: contain;
-                        background-repeat: no-repeat;
-                        background-position: center;
-                      "
-                    >
-                      <h2
-                        style="line-height: 150px; cursor: pointer"
-                        v-if="selector === 'custom'"
-                      >
-                        Pose1 변경
-                      </h2>
+                    <div class="mx-auto imgBg" :style="`background-image:url(${data.infoImg1})`"  >
+                      <h2 style="line-height: 150px; cursor: pointer" v-if="selector === 'custom'" > Pose1 변경 </h2>
                     </div>
                   </label>
                 </div>
               </v-col>
               <v-col cols="6">
                 <div class="text-center">
-                  <v-file-input
-                    accept="image/*"
-                    label="사진"
-                    id="imginput2"
-                    @change="addPic2"
-                    :disabled="selector != 'custom'"
-                    style="display: none"
-                  />
+                  <v-file-input accept="image/*" label="사진" id="imginput2" @change="addPic2" :disabled="selector != 'custom'" style="display: none" />
                   <label for="imginput2">
-                    <div
-                      class="mx-auto"
-                      :style="`background-image:url(${data.infoImg2})`"
-                      style="
-                        height: 150px;
-                        border-radius: 2px;
-                        background-size: contain;
-                        background-repeat: no-repeat;
-                        background-position: center;
-                      "
-                    >
-                      <h2
-                        style="line-height: 150px; cursor: pointer"
-                        v-if="selector === 'custom'"
-                      >
-                        Pose2 변경
-                      </h2>
+                    <div class="mx-auto imgBg" :style="`background-image:url(${data.infoImg2})`" >
+                      <h2 style="line-height: 150px; cursor: pointer" v-if="selector === 'custom'" > Pose2 변경 </h2>
                     </div>
                   </label>
                 </div>
@@ -254,41 +140,16 @@
           </v-container>
         </v-form>
         <v-divider dark color="var(--main-color)"></v-divider>
+        <!-- 저장버튼 -->
         <div class="d-flex pa-2">
-          <v-btn-toggle
-            v-model="openTF"
-            color="var(--main-color)"
-            group
-            mandatory
-            class="mr-3"
-          >
-            <v-btn>
-              <v-icon>mdi-lock-open-variant-outline</v-icon>
-            </v-btn>
-            <v-btn>
-              <v-icon>mdi-lock-outline</v-icon>
-            </v-btn>
+          <v-btn-toggle v-model="openTF" color="var(--main-color)" group mandatory class="mr-3" >
+            <v-btn> <v-icon>mdi-lock-open-variant-outline</v-icon> </v-btn>
+            <v-btn>  <v-icon>mdi-lock-outline</v-icon> </v-btn>
           </v-btn-toggle>
-          <v-text-field
-            v-model="data.password"
-            label="입장 비밀번호"
-            dense
-            dark
-            :disabled="!openTF"
-            color="var(--main-color)"
-            style="transform: translateY(15px)"
-          ></v-text-field>
+          <v-text-field v-model="data.password" label="입장 비밀번호" dense dark :disabled="!openTF" color="var(--main-color)" style="transform: translateY(15px)" ></v-text-field>
         </div>
 
-        <v-btn
-          :loading="loading"
-          color="var(--main-color)"
-          block
-          depressed
-          @click="save"
-        >
-          <h2>SAVE</h2>
-        </v-btn>
+        <v-btn :loading="loading" color="var(--main-color)" block depressed @click="save" > <h2>SAVE</h2> </v-btn>
       </v-card-text>
       <!-- </v-card> -->
     </div>
@@ -302,17 +163,20 @@ export default {
     return {
       data: {
         id: "",
-        creator: "홍길동",
-        team: "한국중학교",
-        title: "어깨깡패 되기",
-        content: "AI 어깨 근력 강화 운동",
+        uid:this.$store.state.userData?this.$store.state.userData.uid:'',
+        creator: this.$store.state.userData?this.$store.state.userData.name:'',
+        team: "어벤져스",
+        title: "도전! 숄더프레스",
+        content: "AI 어깨 근력 강화 운동 챌린지",
         time: 60,
         type: "workout",
         aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-        infoImg1: require("@/assets/fitness/sp2.png"),
-        infoImg2: require("@/assets/fitness/sp1.png"),
-        infoText1: "팔꿈치를 구부려 두 손이 어깨 위치에 오도록 합니다.",
-        infoText2: "팔꿈치를 펴서 두 손을 머리 위로 올립니다.",
+        infoImg1: require("@/assets/fitness/sp1.png"),
+        infoImg2: require("@/assets/fitness/sp2.png"),
+        fileName1:'',
+        fileName2:'',
+        infoText1: "팔을 쭉 펴서 두 손을 머리 위로 올립니다.",
+        infoText2: "팔을 구부려 두 손을 어깨 높이로 내립니다.",
         startDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
           .substring(0, 10),
@@ -321,13 +185,15 @@ export default {
         people: 7,
         img: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
         rating: 3.5,
+        maxAdd:'max',
         members: [],
       },
       members: [1115, "member"],
       progress: "false",
       menuDate1: "false",
       menuDate2: "false",
-      file: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+      file1: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
+      file2: "https://cdn.vuetifyjs.com/images/cards/cooking.png",
       imgsrc: "",
       loading: false,
       toggle: true,
@@ -343,49 +209,61 @@ export default {
   },
   methods: {
     getData() {
+      if (this.$route.params.id) {this.data = this.$route.params;}
+    },
+    backTo(){
       if (this.$route.params.id) {
-        this.data = this.$route.params;
+        this.$router.push({
+        name: "play",
+        params: { id: this.$route.params.id },
+      });
+      }
+      else{
+        this.$router.push('/')
       }
     },
-    async addPic(e) {
-      this.file = e;
+    async addPic(e) { 
+      this.file1 = e; 
       const url = URL.createObjectURL(e);
       this.data.infoImg1 = url;
     },
     async addPic2(e) {
-      this.file = e;
+      this.file2 = e;
       const url = URL.createObjectURL(e);
       this.data.infoImg2 = url;
     },
-    save() {
+   async save() {
       this.loading = true;
       let id = "";
+      //새로만들기 인지 편집인지 판별
       if (this.$route.params.id) {
         id = this.$route.params.id;
         this.data.id = id;
       } else {
         id = Date.now().toString();
         this.data.id = id;
+      }      
+      //이미지 업로드
+      if(this.file1.name){
+        const sn = await this.$firebase.storage().ref().child('challenge/' + this.file1.size).put(this.file1)
+        sn.ref.getDownloadURL().then((url)=>{this.data.infoImg1=url})
+        this.data.fileName1 = this.file1.size
       }
-
-      this.$firebase
-        .firestore()
-        .collection("workout")
-        .doc(id)
-        .set(this.data)
-        .then(() => {
-          console.log("saved");
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          this.loading = false;
-          // this.$router.push("/");
-          this.$router.push({
-            name: "play",
-            params: { id: id },
-          });
-        });
+      if(this.file2.name){
+        const sn = await this.$firebase.storage().ref().child('challenge/' + this.file2.size).put(this.file2)
+        sn.ref.getDownloadURL().then((url)=>{this.data.infoImg2=url})
+        this.data.fileName2 = this.file2.size
+      }
+      this.upLoad(id)
     },
+    upLoad(id){
+      this.$firebase.firestore().collection("workout").doc(id).set(this.data)
+        .then(() => {
+          this.loading = false;
+          this.$router.push({ name: "play", params: { id: id }});
+        })
+        .catch((e) => console.log(e)) 
+    }
   },
 };
 </script>
@@ -420,7 +298,7 @@ v-data-table {
   justify-content: stretch;
   overflow: hidden;
   background-image: url(../assets/fitness/card-col1.png);
-  border-radius: 18px;
+  border-radius: 10px;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -436,5 +314,12 @@ v-data-table {
 }
 .contentBg {
   background-color: rgb(43, 40, 40);
+}
+.imgBg{
+  height: 150px;
+  border-radius: 2px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 </style>
