@@ -83,27 +83,27 @@
             <v-banner color="var(--bar-color)" dark rounded single-line >
               <h3 style="font-size: var(--normal-size)">1. 'START' 버튼을 클릭후 카메라 사용을 허용합니다.</h3>
               <h3 style="font-size: var(--normal-size)">2. 몸 전체가 나오도록 카메라 거리를 조절합니다.</h3>
-              <h3 style="font-size: var(--normal-size)">3. Pose1과 Pose2동작으로 캐릭터를 움직입니다.</h3>
+              <h3 style="font-size: var(--normal-size)">3. 아래 동작을 반복하여 캐릭터를 움직입니다.</h3>
             </v-banner>
-            <v-row class="mt-2">
+            <v-row class="mt-5">
               <v-col cols="6" style="padding: 0;">
-                <v-img :src="params.infoImg1" width="70%" class="mx-auto " style="border-radius: 5px" v-if="params.infoImg1" />
+                <v-img :src="params.infoImg1" width="80%" class="mx-auto " style="border-radius: 5px" v-if="params.infoImg1" />
               </v-col>
               <v-col cols="6" style="padding: 0;">
-                <v-img :src="params.infoImg2" width="70%" class="mx-auto " style="border-radius: 5px" v-if="params.infoImg2" />
+                <v-img :src="params.infoImg2" width="90%" class="mx-auto " style="border-radius: 5px" v-if="params.infoImg2" />
               </v-col>
             </v-row>
-            <v-row>
+            <v-row class="pa-5">
               <v-col cols="6" style="padding-top: 0;">
-                <h3 class="text-center" style="color: var(--main-color)"> POSE1 </h3>
+                <!-- <h3 class="text-center" style="color: var(--main-color)"> POSE1 </h3> -->
                 <v-card class="mx-auto pa-2" color="var(--bar-color)" dark> 
-                    <h3 style="font-size: var(--normal-size)">{{ params.infoText1 }}</h3>
+                    <h3 style="font-size: var(--normal-size);">{{ params.infoText1 }}</h3>
                 </v-card>
               </v-col>
               <v-col cols="6" style="padding-top: 0;">
-                <h3 class="text-center" style="color: var(--main-color)"> POSE2 </h3>
+                <!-- <h3 class="text-center" style="color: var(--main-color)"> POSE2 </h3> -->
                 <v-card class="mx-auto pa-2" color="var(--bar-color)" dark>
-                    <h3 style="font-size: var(--normal-size)">{{ params.infoText2 }}</h3>
+                    <h3 style="font-size: var(--normal-size);">{{ params.infoText2 }}</h3>
                 </v-card>
               </v-col>
             </v-row>
