@@ -50,7 +50,7 @@ export default {
 /* Responsive typography */
 @media screen and (min-width: 600px) {
   :root {
-    --biggest-size: 5rem;
+    --big-size: 3rem;
     --h1-size: 2.25rem;
     --h2-size: 1.5rem;
     --h3-size: 1.25rem;
