@@ -239,6 +239,9 @@ export default {
     this.getData();
     this.getRank();
   },
+  destroyed(){
+    cancelAnimationFrame(this.animationframe)
+  },
   beforeDestroy() {
     this.timerSound.pause()
     if(this.cameraTF){ this.cancel() }
@@ -353,9 +356,11 @@ export default {
       }, 1000);
     },
     async loop() {
+      if(this.start){
       this.webcam.update(); // update the webcam frame
       await this.predict(); 
       this.animationframe = window.requestAnimationFrame(this.loop)
+    }
     },
     // 동작판별하기
     async predict() {

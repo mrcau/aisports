@@ -71,7 +71,7 @@
       <div class="bgCanvas">
         <!-- 운동방법화면 -->
         <v-container style=" position: absolute; top: 0; background-color: var(--bg-color); height: 100%;padding-bottom: 0; "
-          v-if="!start && !saveOn&&test" >
+          v-if="!start && !saveOn" >
           <!-- 비밀번호 입장 물어보기 -->
           <div v-if="params.password!=password">
             <v-text-field v-model="password" :rules="[v => !!v || '비밀번호를 입력해주세요.']" label="입장 비밀번호" required dark  ></v-text-field>
@@ -138,11 +138,11 @@
           </div>
           <!-- 움직이는 캐릭터 -->
           <div ref="monster" class="monster" :class="navi==='left'?'left':navi==='right'?'right':'center'" 
-          :style="`left:${xx}px;width:${monSize}px`" > 
+          :style="`left:${xx}px;top:${yy}px;width:${monSize}px`" > 
               <v-avatar tile :size="monSize" style="position: relative;" >
                <img :src="`${require('../assets/img/hamster.png')}`" style="position:absolute;top:10;left:10"   />
               </v-avatar>
-            <div v-if="starNum">
+            <div v-if="fire">
               <img :src="`${require('../assets/img/fire2.gif')}`" style="position:absolute;top:98px;left:30px;width: 50px; transform: rotate(180deg);" v-if="egg" />
               <img :src="`${require('../assets/img/fire1.gif')}`" style="position:absolute;top:98px;left:30px;width: 50px; transform: rotate(180deg);" v-else />
             </div>
@@ -150,8 +150,10 @@
         </v-container>
         <!-- 게임진행정보 -->        
         <div class="mt-5 ml-3" style="position: absolute;top:1px;left:10px" v-if="start&&cameraTF" >
-          <h4>POSE1 : {{ pose1 }}</h4>
-          <h4>POSE2 : {{ pose2 }}</h4>
+          <h5>POSE1 : {{ pose1 }}</h5>
+          <h5>POSE2 : {{ pose2 }}</h5>
+          <h5>POSE3 : {{ pose3 }}</h5>
+          <h5>POSE4 : {{ pose4 }}</h5>
         </div> 
         <v-progress-circular :value="(timer / params.time) * 100" :width="5" size="60" color="var(--main-color)"
           v-if="start && cameraTF" style="position: absolute;top:10px;right:10px" >   <h2>{{ timer }}</h2>  
@@ -159,14 +161,20 @@
       </div>
     </div>
 
-      <div class="d-flex "  >
+      <!--<div class="d-flex "  >
          <v-btn   style="flex:1;opacity:0.5;background:transparent" elevation="0" @click="btnRun('left') "  >
            <v-icon>mdi-arrow-left-bold</v-icon>
+         </v-btn> 
+         <v-btn   style="flex:1;opacity:0.5;background:transparent" elevation="0" @click="btnRun('down') "  >
+           <v-icon>mdi-arrow-down-bold</v-icon>
+         </v-btn>
+         <v-btn   style="flex:1;opacity:0.5;background:transparent" elevation="0" @click="btnRun('up') "  >
+           <v-icon>mdi-arrow-up-bold</v-icon>
          </v-btn> 
          <v-btn   style="flex:1;opacity:0.5;background:transparent" elevation="0" @click="btnRun('right') "  >
            <v-icon>mdi-arrow-right-bold</v-icon>
          </v-btn>
-      </div>
+      </div>-->
 
     <!-- 3. 하단바 티처블머신 정보 -->
     <v-container class="cameraInfo "  >
@@ -180,14 +188,15 @@
            <canvas id="canvas"> </canvas>
          </div>
          <!-- 점수 -->
-         <div class="card card2" :class="{light:light}" style="flex: 1"  >
-           <h3 style="position: absolute; top: 5px; color: var(--second-color)"> 점수 </h3>
+         <div class="card card2" :class="light==='up'?'light1':light==='down'?'light2':''" style="flex: 1"  >
+          
+           <h2 style="position: absolute; top: 15px; color: var(--second-color)"> 점수 </h2>
            <div> <h1 class="mt-5">{{ score }}</h1> </div>
          </div>
       </div>
       <!-- 시작정지버튼 -->
       
-        <v-btn  class="mt-2" rounded color="var(--main-color)" @click="startGame()" style="width:100%;max-width: 500px;" v-if="!start && !saveOn" >
+        <v-btn  class="mt-2" rounded color="var(--main-color)" @click="init" style="width:100%;max-width: 500px;" v-if="!start && !saveOn" >
           <h2>START</h2>
         </v-btn>
         <v-btn  class="mt-2" rounded color="var(--main-color)" @click="cancel" style="width:100%;max-width: 500px;" v-if="start && !saveOn" >
@@ -243,6 +252,8 @@ export default {
       ctx: "",
       pose1:'',
       pose2:'',
+      pose3:'',
+      pose4:'',
       animationframe:'',
       labelContainer: "",
       maxPredictions: "",
@@ -263,26 +274,27 @@ export default {
       unsub: "",
       fab:false,
       fabEdit:false,
-      light:false,
+      light:'',
       timerSound:new Audio(require('@/assets/mp3/bgm.mp3')),
       endbell: new Audio(require('@/assets/mp3/endbell.mp3')),
       crash:false,
       monSize:100,
       banana: false,
-      xx: 200,
+      xx:100,
+      yy:400,
       // xx: window.innerWidth/2,
-      xxx: 10,
+      step: 15,
       egg: false,
       navi:'',
       screen:'',
       starfirstY:'',
-      starNum:0,
-      starSpeed:1,
+      starSpeed:5,
       starX:0,
       starY:0,
       virusY:0,
       ranX:200,
       ranXX:50,
+      fire:false,
       ranNum:Math.random(),
       randomNum:100,
       gameScreenW: window.innerWidth
@@ -369,13 +381,10 @@ export default {
       this.screen = this.$refs.gameScreen.getBoundingClientRect()
       this.starfirstY = this.$refs.stars.getBoundingClientRect().y
       this.gameScreenW = this.$refs.gameScreen.getBoundingClientRect().width - this.$refs.stars.getBoundingClientRect().width
-      this.init()
-      this.starNum = 50;
-      this.randomX()
+      // this.randomX()
     },
     // 티처블 운동 시작
     async init() {
-      console.log(this.$refs.stars.getBoundingClientRect())
       this.start = true;
       this.timer = this.params.time;
       // const URL = "https://teachablemachine.withgoogle.com/models/SLjZUOxCB/";
@@ -389,6 +398,7 @@ export default {
       this.webcam = new tmPose.Webcam(size, size, flip);
       await this.webcam.setup();
       await this.webcam.play();
+      this.startGame()
       this.cameraTF = true;
       // append/get elements to the DOM
       const canvas = document.getElementById("canvas");
@@ -434,22 +444,32 @@ export default {
       const prediction = await this.model.predict(posenetOutput);
       this.drawPose(pose);
       //동작판정하기
-      if (prediction[0].probability.toFixed(2) > 0.99) {
+      if (prediction[0].probability.toFixed(2) > 0.95) {
         this.btnRun('left');
-        this.status = 'up'
+        this.status = 'left'
         // if (this.status == 'down') {
         //   this.score++;
         //   this.light = true;
         //   this.countSound()
         // }
-      }else if (prediction[1].probability.toFixed(2) > 0.99) {
+      }else if (prediction[1].probability.toFixed(2) > 0.95) {
         this.btnRun('right');
+        this.status = 'right'
+        // this.light = false;
+      }else if (prediction[2].probability.toFixed(2) > 0.95) {
+        this.btnRun('up');
+        this.status = 'up'
+        // this.light = false;
+      }else if (prediction[3].probability.toFixed(2) > 0.95) {
+        this.btnRun('down');
         this.status = 'down'
         // this.light = false;
-      } 
+      }   
       //동작판정치수나타내기
       this.pose1 = prediction[0].probability.toFixed(2)
       this.pose2 = prediction[1].probability.toFixed(2) 
+      this.pose3 = prediction[2].probability.toFixed(2)
+      this.pose4 = prediction[3].probability.toFixed(2) 
     },
     // 포즈그리기
     drawPose(pose) {
@@ -465,10 +485,10 @@ export default {
     },
     cancel(){    
           this.timerSound.pause()
-          this.starNum = 0;
           this.start = false;
           this.cameraTF = false;
           this.starY = -this.screen.height 
+          this.virusY = -this.screen.height 
       if (this.webcam) { this.webcam.stop() }
       if(this.circle){clearInterval(this.circle)}     
       if(this.animationframe){window.cancelAnimationFrame(this.animationframe)}
@@ -532,67 +552,70 @@ export default {
           if (this.crash) { return }
           const monster = this.$refs.monster.getBoundingClientRect()
           // const gameScreen = this.$refs.gameScreen.getBoundingClientRect().width - monster.width
-          const gameScreen = this.$refs.gameScreen.getBoundingClientRect().width 
-          if (e === 'left') {
-            if (0 < monster.x ) {
-              if (0 < this.xx) {
-                this.xx -= this.xxx
-                this.navi = 'left'
-              } else {
-                this.xx = 10
-              }
+          const gameScreen = this.$refs.gameScreen.getBoundingClientRect() 
+          if (e === 'left') { 
+            if(monster.x>gameScreen.x){
+              this.xx -= this.step; this.navi = 'left';this.fire = true
+            }
+            // if (0 < monster.x ) { this.xx -= this.step;this.navi = 'left';this.fire = true;} 
+            // else {this.xx = 10;this.fire = false;}
+          }
+          if (e === 'right') { 
+          if(monster.x<gameScreen.width-monster.width){
+            this.xx += this.step; this.navi = 'right';this.fire = true
+            }
+            // if (monster.x+monster.width < gameScreen.width) { this.xx += this.step ; this.navi = 'right' ; this.fire = true;
+            // } else { this.xx = gameScreen.width - monster.width; this.fire = false;}
+          }
+          if (e === 'up') {  
+          if(monster.y>gameScreen.y){
+            this.yy -= this.step; this.navi = 'center';this.fire = true
             }
           }
-          if (e === 'right') {
-            if (monster.x+monster.width < gameScreen) {
-              this.xx += this.xxx
-              this.navi = 'right'
-            } else {
-              this.xx = gameScreen - monster.width
+          if (e === 'down') { 
+          if(monster.y<gameScreen.y+gameScreen.height-monster.height){
+            this.yy += this.step; this.navi = 'center'; this.fire = false
             }
-          }
+           }
           if (e === 'stop') { this.navi = 'center' }
-          if (e === 'up') { this.yy -= 10 }
-          if (e === 'down') { this.yy += 10 }
         },
-    randomX(){
-          const screen = this.$refs.gameScreen.getBoundingClientRect()
-        const gameScreenW = this.$refs.gameScreen.getBoundingClientRect().width - this.$refs.stars.getBoundingClientRect().width
-          const min = screen.x
-          const max = screen.x + screen.width
-          return Math.floor(Math.random() * gameScreenW)
-          // return Math.floor(Math.random() * max) + min
-    },
+    // randomX(){
+    //       const screen = this.$refs.gameScreen.getBoundingClientRect()
+    //     const gameScreenW = this.$refs.gameScreen.getBoundingClientRect().width - this.$refs.stars.getBoundingClientRect().width
+    //       return Math.floor(Math.random() * gameScreenW)
+    // },
     dropItem(e,i){
       const item = e.getBoundingClientRect()
       const mon = this.$refs.monster.getBoundingClientRect()
+      const screen = this.$refs.gameScreen.getBoundingClientRect()
       this.starY += this.starSpeed
       this.virusY += this.starSpeed
-      this.light = false;
+      this.light = '';
       if(item.y-this.starfirstY>this.screen.height){
         console.log('바닥충돌') 
           
           if(i==='star'){
-            this.ranX = Math.floor(Math.random() * this.gameScreenW)
+            this.ranX = Math.floor(Math.random() * screen.width)+screen.x
           }else if(i==='virus'){
-            this.ranXX = Math.floor(Math.random() * this.gameScreenW)
+            this.ranXX = Math.floor(Math.random() * screen.width)+screen.x
           }
-       i==='star' ? this.starY = -this.screen.height : this.virusY = -this.screen.height
-        this.starSpeed = Math.floor(Math.random() * 3) + 1
+       i==='star' ? this.starY =  -screen.y : this.virusY = -screen.y
       }
       if (item.y + item.height > mon.y && item.x + item.height > mon.x && item.x < mon.x + mon.height) {
           // this.hit = true
-          console.log('점수획득')
+          console.log('충돌')
           if(i==='star'){
             this.score++
-            this.ranX = Math.floor(Math.random() * this.gameScreenW)
+            this.ranX = Math.floor(Math.random() * screen.width)+screen.x
+            this.light = 'up';
+            console.log(this.light)
           }else if(i==='virus'){
             this.score>0?this.score--:this.score =0
-            this.ranXX = Math.floor(Math.random() * this.gameScreenW)
+            this.ranXX = Math.floor(Math.random() * screen.width)+screen.x
+            this.light = 'down';
+            console.log(this.light)
           }
-          this.light = true;
-       i==='star' ? this.starY = -this.screen.height : this.virusY = -this.screen.height
-        this.starSpeed = Math.floor(Math.random() * 3) + 5
+       i==='star' ? this.starY = -screen.y : this.virusY = -screen.y
         }
     }
     
@@ -682,10 +705,16 @@ export default {
   font-size: var(--normal-size);
 }
 .card2 {
-  height: 150px;
+  height: 100%;
 }
-.light{
-  box-shadow: 0 0 10px 5px var(--main-color);
+.light0{
+  box-shadow: 0 0 10px 5px white;
+}
+.light1{
+  box-shadow: 0 0 10px 5px yellow;
+}
+.light2{
+  box-shadow: 0 0 10px 5px red;
 }
 .gamescreen{
   height:100%;
@@ -704,19 +733,17 @@ export default {
 .reverse{
   transform: rotate( 90deg );
   }
-  .right{
-    animation:right 0.2s  infinite;
-  }
-  .left{
-    animation:left 0.2s  infinite;
-  }
-  .center{
-    transform: rotate(0deg);
-  }
+
   .monster{
     position:absolute;
-    bottom:50px;
   }
+  @keyframes updown{
+    0%,100%{
+    transform:translatey(-2px) ;
+  }
+  50%{
+    transform:translatey(2px)  ;    
+  } }
 
   // 운석떨어지기  
   .drop1{
@@ -736,6 +763,22 @@ export default {
     100%{transform:translateY(100vh)}
   }
   // 햄스터조종
+  .right{
+    animation:right 0.2s  infinite;
+  }
+  .left{
+    animation:left 0.2s  infinite;
+  }
+  .center{
+    animation:center 0.2s  infinite;
+  }
+  @keyframes center{
+    0%,100%{
+    transform:translatey(-2px) rotate(0deg);
+  }
+  50%{
+    transform:translatey(2px) rotate(0deg);    
+  } }
   @keyframes left{
     0%,100%{
     transform:translatey(-2px) rotate(-70deg);
