@@ -79,11 +79,11 @@
           </div>
           <!-- 비밀번호 해결 -->
           <div v-else>
-            <h2 class="mt-1" style="color: var(--main-color);font-size: var(--h2-size)">운동방법</h2>
+            <h2 class="mt-1" style="color: var(--main-color);font-size: var(--h2-size)">게임방법</h2>
             <v-banner color="var(--bar-color)" dark rounded single-line >
               <h3 style="font-size: var(--normal-size)">1. 'START' 버튼을 클릭후 카메라 사용을 허용합니다.</h3>
-              <h3 style="font-size: var(--normal-size)">2. 전신이 나오도록 카메라 거리를 조절합니다.</h3>
-              <h3 style="font-size: var(--normal-size)">3. Pose1과 Pose2 동작을 반복합니다.</h3>
+              <h3 style="font-size: var(--normal-size)">2. 몸 전체가 나오도록 카메라 거리를 조절합니다.</h3>
+              <h3 style="font-size: var(--normal-size)">3. Pose1과 Pose2동작으로 캐릭터를 움직입니다.</h3>
             </v-banner>
             <v-row class="mt-2">
               <v-col cols="6" style="padding: 0;">
@@ -111,18 +111,41 @@
         </v-container> 
         <!-- 게임화면 -->
         <v-container class="gamescreen scene" ref="gameScreen"  v-else>
+          <!-- 달 -->
+          <v-img src="../assets/img/moon.png" style="width: 150px;height:150px;position: absolute;right: 0;" ></v-img>
+          <!-- 별 -->
+          <!-- <div v-for="s in 50" :key="s" :style="`position:absolute;left:${Math.floor(Math.random()*300)}px; top:${Math.floor(Math.random()*300)}px;`">
+            <v-icon   :size="`${Math.floor(Math.random()*20)}`" :style="`color:rgba(255,255,255,${Math.random()})`" >
+            mdi-star</v-icon>
+          </div> -->
           <!-- 떨어지는 별 -->
-          <i v-for="(n,i) in starNum" :key="i" 
-          :style="`left:${Math.floor(Math.random() * gameScreenW)}px;
-          height:${Math.random()*100}px;animation-duration:${Math.random() * 5}s ;`" ></i>
-
-          <div ref="monster" class="monster"  :style="`left:${xx+monSize>gameScreenW?gameScreenW-monSize:xx}px;width:${monSize}px`"
-             :class="navi==='left'?'left':navi==='right'?'right':'center'" > 
+          <div ref="stars" :style="`position:absolute;left:${ranX}px;
+          top:-50px;transform:translate(0,${starY}px);`">
+            <v-icon size="50" color="var(--main-color)" >
+            mdi-spin mdi-star</v-icon>
+          </div>
+          <div ref="virus" :style="`position:absolute;left:${ranXX}px;
+          top:-100px;transform:translate(0,${virusY}px);`">
+            <v-icon size="50" color="red" >
+            mdi-spin mdi-virus</v-icon>
+          </div>
+          <!-- 떨어지는 유성 -->
+          <div v-if="start">
+            <div v-for="a in 5" :key="a" class="drop"
+            :style="`left:${Math.floor(Math.random() * gameScreenW)}px;
+            height:${Math.random()*100}px;animation-duration:${Math.random() * 5}s ;`" >
+            </div>
+          </div>
+          <!-- 움직이는 캐릭터 -->
+          <div ref="monster" class="monster" :class="navi==='left'?'left':navi==='right'?'right':'center'" 
+          :style="`left:${xx}px;width:${monSize}px`" > 
               <v-avatar tile :size="monSize" style="position: relative;" >
                <img :src="`${require('../assets/img/hamster.png')}`" style="position:absolute;top:10;left:10"   />
               </v-avatar>
-            <img :src="`${require('../assets/img/fire2.gif')}`" style="position:absolute;top:98px;left:30px;width: 50px; transform: rotate(180deg);" v-if="egg" />
-            <img :src="`${require('../assets/img/fire1.gif')}`" style="position:absolute;top:98px;left:30px;width: 50px; transform: rotate(180deg);" v-else />
+            <div v-if="starNum">
+              <img :src="`${require('../assets/img/fire2.gif')}`" style="position:absolute;top:98px;left:30px;width: 50px; transform: rotate(180deg);" v-if="egg" />
+              <img :src="`${require('../assets/img/fire1.gif')}`" style="position:absolute;top:98px;left:30px;width: 50px; transform: rotate(180deg);" v-else />
+            </div>
           </div>
         </v-container>
         <!-- 게임진행정보 -->        
@@ -147,17 +170,8 @@
 
     <!-- 3. 하단바 티처블머신 정보 -->
     <v-container class="cameraInfo "  >
-        <v-btn rounded color="var(--main-color)" @click="init" style="width:100%;max-width: 500px;" v-if="!start && !saveOn" >
-          <h2>START</h2>
-        </v-btn>
-        <v-btn rounded color="var(--main-color)" @click="cancel" style="width:100%;max-width: 500px;" v-if="start && !saveOn" >
-          <h2>STOP</h2>
-        </v-btn>
-        <v-btn rounded color="var(--main-color)" @click="restart" style="width:100%;max-width: 500px;" v-if="saveOn">
-          <h3>RESTART</h3>
-        </v-btn>
       <!-- 티처블머신 -->
-      <div class="mt-4" style="display: flex; width: 100%; gap: 20px; align-items: center" v-if="start && !saveOn">
+      <div  style="display: flex; width: 100%; gap: 20px; align-items: center" v-if="start && !saveOn">
          <div class="bgCanvas2 card" style="flex: 1">
            <div v-if="start && !cameraTF" style="position: absolute">
              <h3>카메라 로딩중...</h3>
@@ -171,6 +185,17 @@
            <div> <h1 class="mt-5">{{ score }}</h1> </div>
          </div>
       </div>
+      <!-- 시작정지버튼 -->
+      
+        <v-btn  class="mt-2" rounded color="var(--main-color)" @click="startGame()" style="width:100%;max-width: 500px;" v-if="!start && !saveOn" >
+          <h2>START</h2>
+        </v-btn>
+        <v-btn  class="mt-2" rounded color="var(--main-color)" @click="cancel" style="width:100%;max-width: 500px;" v-if="start && !saveOn" >
+          <h2>STOP</h2>
+        </v-btn>
+        <v-btn class="mt-2"  rounded color="var(--main-color)" @click="restart" style="width:100%;max-width: 500px;" v-if="saveOn">
+          <h3>RESTART</h3>
+        </v-btn>
     </v-container>
 
     <v-dialog v-model="dialogRank" max-width="600px">
@@ -239,24 +264,37 @@ export default {
       fab:false,
       fabEdit:false,
       light:false,
-      timerSound:new Audio(require('@/assets/mp3/timer.mp3')),
+      timerSound:new Audio(require('@/assets/mp3/bgm.mp3')),
       endbell: new Audio(require('@/assets/mp3/endbell.mp3')),
       crash:false,
       monSize:100,
       banana: false,
       xx: 200,
+      // xx: window.innerWidth/2,
       xxx: 10,
       egg: false,
       navi:'',
-      starNum:50,
-      starWidth:Math.floor(Math.random() * window.innerWidth),
-      starHeight:Math.random()*100,
+      screen:'',
+      starfirstY:'',
+      starNum:0,
+      starSpeed:1,
+      starX:0,
+      starY:0,
+      virusY:0,
+      ranX:200,
+      ranXX:50,
+      ranNum:Math.random(),
+      randomNum:100,
       gameScreenW: window.innerWidth
+      
     };
   },
   created() {
     this.getData();
     this.getRank();
+  },
+  destroyed(){
+    cancelAnimationFrame(this.animationframe)
   },
   beforeDestroy() {
     this.timerSound.pause()
@@ -275,8 +313,8 @@ export default {
     getData() {
       if (!this.id) {return }
       this.$firebase.firestore().collection("game").doc(this.id).get()
-        .then((e) => {this.params = e.data()}).catch((e) => console.log(e))
-    },
+        .then((e) => {this.params = e.data()}).catch((e) => console.log(e)) 
+      },
     getRank(){
       if (!this.id) {return }
       this.$firebase.firestore().collection("game").doc(this.id).get()
@@ -327,9 +365,17 @@ export default {
     editData() {
       this.$router.push({name: "creategame",params: this.params});
     },
+    startGame(){
+      this.screen = this.$refs.gameScreen.getBoundingClientRect()
+      this.starfirstY = this.$refs.stars.getBoundingClientRect().y
+      this.gameScreenW = this.$refs.gameScreen.getBoundingClientRect().width - this.$refs.stars.getBoundingClientRect().width
+      this.init()
+      this.starNum = 50;
+      this.randomX()
+    },
     // 티처블 운동 시작
     async init() {
-      this.stars();
+      console.log(this.$refs.stars.getBoundingClientRect())
       this.start = true;
       this.timer = this.params.time;
       // const URL = "https://teachablemachine.withgoogle.com/models/SLjZUOxCB/";
@@ -373,9 +419,13 @@ export default {
       }, 1000);
     },
     async loop() {
-      this.webcam.update(); // update the webcam frame
+      if(this.start){
+        this.webcam.update(); // update the webcam frame
       await this.predict(); 
+      this.dropItem(this.$refs.stars,'star')
+      this.dropItem(this.$refs.virus,'virus') 
       this.animationframe = window.requestAnimationFrame(this.loop)
+      }
     },
     // 동작판별하기
     async predict() {
@@ -415,11 +465,13 @@ export default {
     },
     cancel(){    
           this.timerSound.pause()
+          this.starNum = 0;
           this.start = false;
           this.cameraTF = false;
+          this.starY = -this.screen.height 
       if (this.webcam) { this.webcam.stop() }
       if(this.circle){clearInterval(this.circle)}     
-      if(this.animationframe){cancelAnimationFrame(this.animationframe)}
+      if(this.animationframe){window.cancelAnimationFrame(this.animationframe)}
     },
     restart() {
       this.saveOn = false;
@@ -433,7 +485,6 @@ export default {
       }
     },
    async recordSave() {
-    console.log('id',this.id,'uid',this.uid)
     this.$firebase.firestore().collection('game').doc(this.id).collection('rank').doc(this.uid).get()
     .then((e) => {
       this.userRecord = e.data()
@@ -461,7 +512,6 @@ export default {
         }).catch((e) => { console.log(e); }).finally(() => {this.getRank()})
     },
     save2(){
-      console.log('save2',this.userRecord.record,this.score)
       const record = Math.max(this.userRecord.record, this.score)
       const recordSum = this.userRecord.recordSum
       const recordRepeat = this.userRecord.recordRepeat
@@ -481,30 +531,70 @@ export default {
     btnRun (e) {
           if (this.crash) { return }
           const monster = this.$refs.monster.getBoundingClientRect()
-          const gameScreen = this.$refs.gameScreen.getBoundingClientRect().width - monster.width
+          // const gameScreen = this.$refs.gameScreen.getBoundingClientRect().width - monster.width
+          const gameScreen = this.$refs.gameScreen.getBoundingClientRect().width 
           if (e === 'left') {
-            if (monster.x > 0) {
-              if (gameScreen < this.xx) {
-                this.xx = gameScreen
-              } else {
+            if (0 < monster.x ) {
+              if (0 < this.xx) {
                 this.xx -= this.xxx
                 this.navi = 'left'
+              } else {
+                this.xx = 10
               }
             }
           }
           if (e === 'right') {
-            if (monster.x < gameScreen) {
+            if (monster.x+monster.width < gameScreen) {
               this.xx += this.xxx
               this.navi = 'right'
             } else {
-              this.xx = gameScreen
+              this.xx = gameScreen - monster.width
             }
           }
           if (e === 'stop') { this.navi = 'center' }
           if (e === 'up') { this.yy -= 10 }
           if (e === 'down') { this.yy += 10 }
         },
-        
+    randomX(){
+          const screen = this.$refs.gameScreen.getBoundingClientRect()
+        const gameScreenW = this.$refs.gameScreen.getBoundingClientRect().width - this.$refs.stars.getBoundingClientRect().width
+          const min = screen.x
+          const max = screen.x + screen.width
+          return Math.floor(Math.random() * gameScreenW)
+          // return Math.floor(Math.random() * max) + min
+    },
+    dropItem(e,i){
+      const item = e.getBoundingClientRect()
+      const mon = this.$refs.monster.getBoundingClientRect()
+      this.starY += this.starSpeed
+      this.virusY += this.starSpeed
+      this.light = false;
+      if(item.y-this.starfirstY>this.screen.height){
+        console.log('바닥충돌') 
+          
+          if(i==='star'){
+            this.ranX = Math.floor(Math.random() * this.gameScreenW)
+          }else if(i==='virus'){
+            this.ranXX = Math.floor(Math.random() * this.gameScreenW)
+          }
+       i==='star' ? this.starY = -this.screen.height : this.virusY = -this.screen.height
+        this.starSpeed = Math.floor(Math.random() * 3) + 1
+      }
+      if (item.y + item.height > mon.y && item.x + item.height > mon.x && item.x < mon.x + mon.height) {
+          // this.hit = true
+          console.log('점수획득')
+          if(i==='star'){
+            this.score++
+            this.ranX = Math.floor(Math.random() * this.gameScreenW)
+          }else if(i==='virus'){
+            this.score>0?this.score--:this.score =0
+            this.ranXX = Math.floor(Math.random() * this.gameScreenW)
+          }
+          this.light = true;
+       i==='star' ? this.starY = -this.screen.height : this.virusY = -this.screen.height
+        this.starSpeed = Math.floor(Math.random() * 3) + 5
+        }
+    }
     
        
   },
@@ -629,9 +719,14 @@ export default {
   }
 
   // 운석떨어지기  
-  .scene i{
+  .drop1{
     position:absolute;
     top: -150px;
+    animation:animate linear infinite;
+  }
+  .drop{
+    position:absolute;
+    top: -100px;
     width:1px;
     background:rgba(255,255,255,0.5);
     animation:animate linear infinite;
@@ -643,16 +738,16 @@ export default {
   // 햄스터조종
   @keyframes left{
     0%,100%{
-    transform:translatey(-2px) rotate(-30deg);
+    transform:translatey(-2px) rotate(-70deg);
   }
   50%{
-    transform:translatey(2px) rotate(-30deg);    
+    transform:translatey(2px) rotate(-70deg);    
   } }
   @keyframes right{
     0%,100%{
-    transform:translatey(-2px) rotate(30deg);
+    transform:translatey(-2px) scaleX(-1) rotate(-70deg);
   }
   50%{
-    transform:translatey(2px) rotate(30deg);    
+    transform:translatey(2px) scaleX(-1) rotate(-70deg);    
   } }
 </style>

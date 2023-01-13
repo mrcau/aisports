@@ -171,12 +171,12 @@ export default {
         time: 60,
         type: "workout",
         aiSrc: "https://teachablemachine.withgoogle.com/models/JDpmv3fs7/",
-        infoImg1: require("@/assets/fitness/sp1.png"),
-        infoImg2: require("@/assets/fitness/sp2.png"),
+        infoImg1: require("@/assets/fitness/fly1.png"),
+        infoImg2: require("@/assets/fitness/fly2.png"),
         fileName1:'',
         fileName2:'',
-        infoText1: "팔을 쭉 펴서 두 손을 머리 위로 올립니다.",
-        infoText2: "팔을 구부려 두 손을 어깨 높이로 내립니다.",
+        infoText1: "오른팔은 구부리고 왼팔을 쭉 피면 캐릭터가 왼쪽으로 움직입니다.",
+        infoText2: "왼팔은 구부리고 오른팔을 쭉 피면 캐릭터가 오른쪽으로 움직입니다.",
         startDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
           .substring(0, 10),
