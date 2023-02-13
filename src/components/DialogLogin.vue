@@ -193,7 +193,7 @@ export default {
     },
     // 이메일 로그인
     emailLogin() {
-      const valid = this.$refs.form.validate();
+      const valid = this.$refs.form
       if (!valid) {
         return;
       }

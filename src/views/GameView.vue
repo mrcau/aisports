@@ -2,26 +2,25 @@
  
   <v-container class="font-italic white--text pb-3 d-flex flex-column" style="height: 100%"   >
    <!-- 로그인 -->
-   <div class="d-flex login" style="height:45px"> 
+   <div class="d-flex login pr-5" style="height:45px"> 
+        <v-btn icon color="var(--main-color)" to="/" style="transform: translateY(10px);" >
+          <span class="mdi mdi-36px mdi-home"></span>
+        </v-btn>
+      <v-spacer></v-spacer>
         <v-btn rounded color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  >
           <h3>Login</h3>
         </v-btn>
         <v-progress-circular indeterminate color="var(--main-color)"  v-if="$store.state.fireUser&&!$store.state.userData"  />
-        <v-speed-dial v-model="fab"    direction="right"  v-if="$store.state.fireUser&&$store.state.userData"  >
+        <v-speed-dial v-model="fab"  style="padding: 0;margin:0"  direction="left"  v-if="$store.state.fireUser&&$store.state.userData"  >
             <template v-slot:activator> 
               <v-btn v-model="fab" small color="transparent" dark fab style="transform: translateX(10px);" >
                 <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options"  />
               </v-btn>
             </template> 
-            <v-btn rounded dark small @click="logout" color="var(--main-color)" style="color:black"  >
+            <v-btn rounded dark small @click="logout" color="var(--main-color)" style="color:black;transform: translateX(20px);"  >
               Logout
             </v-btn>
         </v-speed-dial>
-      <v-spacer></v-spacer>
-      <v-btn color="var(--main-color)" rounded  @click="dialogRank = true"  >
-        <v-icon color="var(--bg-color)">mdi-trophy-variant-outline</v-icon>
-        <h3 style="color: var(--bg-color)">Rank</h3>
-      </v-btn>
     </div> 
     <!-- 2. 앱바운동정보 / 티처블머신 -->
     <div class="aiSection">

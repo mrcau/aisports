@@ -1,18 +1,19 @@
 <template>
   <v-container class="font-italic white--text pb-15">
     <!-- 로그인 -->
-    <div class="d-flex login" style="height:45px"> 
+    <div class="d-flex login pr-5" style="height:45px"> 
+      <v-spacer></v-spacer>
         <v-btn rounded color="var(--main-color)" @click="dialogLogin = true" v-if="!$store.state.fireUser"  >
           <h3>Login</h3>
         </v-btn>
         <v-progress-circular indeterminate color="var(--main-color)"  v-if="$store.state.fireUser&&!$store.state.userData"  />
-        <v-speed-dial v-model="fab"    direction="right"  v-if="$store.state.fireUser&&$store.state.userData"  >
+        <v-speed-dial v-model="fab"    direction="left"  v-if="$store.state.fireUser&&$store.state.userData"  >
             <template v-slot:activator> 
               <v-btn v-model="fab" small color="transparent" dark fab style="transform: translateX(10px);" >
                 <Avataaars :width="50" :height="50" :avatarOptions="$store.state.userData.options"  />
               </v-btn>
             </template> 
-            <v-btn rounded dark small @click="logout" color="var(--main-color)" style="color:black"  >
+            <v-btn rounded dark small @click="logout" color="var(--main-color)" style="color:black;transform: translateX(20px);"  >
               Logout
             </v-btn>
         </v-speed-dial>
@@ -54,7 +55,7 @@
       <v-col   cols="6">
         <v-card style="background: #303030; position: relative"  >
           <v-img :src="`${require('@/assets/fitness/card3.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex flex-column justify-center align-center menuBox" @click="$store.state.admin?$router.push('/create'):'#'"  >
+            <div class="d-flex flex-column justify-center align-center menuBox" @click="$store.state.fireUser?$router.push('/create'):'#'"  >
               <h1 style="font-size:var(--h2-size);color:white">CREATE</h1>
               <h1 style="font-size:var(--h2-size);color:white">CHALLENGE</h1>
             </div>
@@ -64,7 +65,7 @@
       <v-col   cols="6">
         <v-card style="background: #303030; position: relative">
           <v-img :src="`${require('@/assets/fitness/card4.png')}`" max-height="200" style="padding: 20px" >
-            <div class="d-flex flex-column justify-center align-center menuBox" @click="$store.state.admin?$router.push('/creategame'):'#'"  >
+            <div class="d-flex flex-column justify-center align-center menuBox" @click="$store.state.fireUser?$router.push('/creategame'):'#'"  >
               <h1 style="font-size:var(--h2-size);color:white">CREATE</h1>
               <h1 style="font-size:var(--h2-size);color:white">GAME</h1>
             </div>
@@ -73,11 +74,19 @@
       </v-col>
     </v-row>
     <!-- 새로운운동 타이틀 -->
-    <h3 class="mt-5 text-left italic title" style="color: #d7e357">
-      <v-icon color="#d7e357" class="mb-1">mdi-dumbbell</v-icon> New Challenge
-    </h3>
+    <div class="d-flex justify-space-between">
+      <h3 class="mt-5 text-left italic title" style="color: #d7e357">
+        <v-icon color="#d7e357" class="mb-1">mdi-dumbbell</v-icon> New Challenge
+      </h3>
+      <v-btn class="mt-5" color="var(--main-color)" text>more</v-btn>
+    </div>
     <!-- 새로운운동 아이템들 -->
-    <v-row class="itemRow">
+    <v-row class="itemRow" v-if="itemsTF" >
+      <v-col cols="12" sm="6" md="4" lg="3">
+        <v-skeleton-loader max-height="150" type="card" />
+      </v-col>
+    </v-row>
+    <v-row class="itemRow" v-else >
       <!-- <v-col v-for="(n, i) in items.filter( (n) => n.type === 'workout' && dateCompare(n.endDate) )" -->
       <v-col v-for="(n, i) in items.filter( (n) => dateCompare(n.endDate) )"
         :key="i" cols="12" sm="6" md="4" lg="3" >
@@ -108,14 +117,22 @@
     </v-row>
 
     <!-- 새로운게임 타이들 -->
-    <h2 class="text-left mt-5 title" style="color: #d7e357">
-      <v-icon color="#d7e357" class="mb-1">mdi-gamepad-variant-outline</v-icon>
-      New Game
-    </h2>
+    <div class="d-flex justify-space-between">
+      <h2 class="text-left mt-5 title" style="color: #d7e357">
+        <v-icon color="#d7e357" class="mb-1">mdi-gamepad-variant-outline</v-icon>
+        New Game
+      </h2>
+      <v-btn class="mt-5" color="var(--main-color)" text>more</v-btn>
+    </div>
     <!-- 새로운게임 아이템들 -->
-    <v-row class="itemRow">
+    <v-row class="itemRow" v-if="gameItemsTF" >
+      <v-col cols="12" sm="6" md="4" lg="3">
+        <v-skeleton-loader max-height="150" type="card" />
+      </v-col>
+    </v-row>
+    <v-row class="itemRow" v-else >
       <!-- <v-col v-for="(n, i) in items.filter( (n) => n.type === 'workout' && dateCompare(n.endDate) )" -->
-      <v-col v-for="(n, i) in items2.filter( (n) => dateCompare(n.endDate) )"
+      <v-col v-for="(n, i) in gameItems.filter( (n) => dateCompare(n.endDate) )"
         :key="i" cols="12" sm="6" md="4" lg="3" >
         <v-card :loading="loading" class="mx-auto" style="background: #d7e357" @click="routLink(n,'game')" >
           <v-img max-height="150" :src="`${require('@/assets/fitness/card3.png')}`" > 
@@ -160,12 +177,14 @@ export default {
         .substring(0, 10),
       dialogLogin: false,
       loading: false,
+      itemsTF:true,
+      gameItemsTF:true,
+      items: [], 
+      gameItems: [], 
       // menus: [ 
       //   {title: "challenge exercise", content: "운동 생성",src:'create',img: "card3.png",},
       //   { title: "create challenge", content: "참여 현황",src:'create', img: "card4.png" },
       // ],
-      items: [], 
-      items2: [], 
     };
   },
   created() {
@@ -175,10 +194,10 @@ export default {
     getData() {
       this.$firebase.firestore().collection("workout").get().then((sn) => {
           this.items = sn.docs.map((e) => e.data());
-        }).catch((e) => console.log(e));
+        }).catch((e) => console.log(e)).finally(()=>{this.itemsTF=false});
       this.$firebase.firestore().collection("game").get().then((sn) => {
-          this.items2 = sn.docs.map((e) => e.data());
-        }).catch((e) => console.log(e));
+          this.gameItems = sn.docs.map((e) => e.data());
+        }).catch((e) => console.log(e)).finally(()=>{this.gameItemsTF=false});
     },
     dateCompare(day) {
       if (day) {
